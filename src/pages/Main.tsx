@@ -1,37 +1,74 @@
 import { useEffect, useState } from "react";
 import instance from "../axios";
-import { Card, Col, Row } from "antd";
+import { Row } from "antd";
 import { IGame } from "../interfaces/games";
+import Search from "antd/es/input/Search";
+import { CardList } from "../components/cardList/CardList";
 
 function MainPage() {
   const [games, setGames] = useState<IGame[]>();
+  const [searchValue, setSearchValue] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
+
+
+  const getGames = (search?: string) => {
+    setLoading(true);
+    return instance
+      .get("", { params: { search: search } })
+      .then((res) => {
+        setGames(res.data.results);
+        setLoading(false);
+      })
+      .catch(function (error) {
+        console.log(error.toJSON());
+        setLoading(false);
+      });
+  };
 
   useEffect(() => {
-    instance.get("").then((res) => setGames(res.data.results));
-    console.log(games );
-    
-  }, []);
+    const delayDebounce = setTimeout(() => {
+      getGames(searchValue.trim());
+    }, 500);
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchValue]);
+
+  const handleSearch = (value: string) => {
+    setSearchValue(value.trim());
+  };
 
   return (
     <>
-      {!games || games.length === 0 ? (
-        <p>Нет данных</p>
-      ) : (
-        <Row gutter={[6, 16]}>
-          {games.map((game) => (
-            <Col  key={game.id}>
-              <Card
-                style={{ width: 150,overflow:"hidden" }}
-                styles={{body:{
-                    display:"none"
-                }}}
-                hoverable
-                cover={<img height={"150rem"} alt={game.name} src={game.background_image} />}
-              />
-            </Col>
-          ))}
+      <Search
+        placeholder="Введите название игры"
+        enterButton="Поиск"
+        onChange={(e) => setSearchValue(e.target.value)}
+        size="large"
+        onSearch={handleSearch}
+        loading={loading}
+      />
+      {loading ? <Row
+          gutter={[6, 16]}
+          style={{
+            marginTop: "2vh",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <CardList loading={loading}/>
         </Row>
-      )}
+        :
+        <Row
+          gutter={[6, 16]}
+          style={{
+            marginTop: "2vh",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <CardList games={games} loading={loading}/>
+        </Row>
+        }
     </>
   );
 }
