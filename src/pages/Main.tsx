@@ -7,6 +7,7 @@ import { CardList } from "../components/cardList/CardList";
 import { FilterOutlined } from "@ant-design/icons";
 import { Filter } from "../components/filter/Filter";
 import { RangePickerProps } from "antd/es/date-picker";
+import { TierTable } from "../components/tierTable/TierTable";
 
 function MainPage() {
   const [games, setGames] = useState<IGame[]>();
@@ -24,7 +25,7 @@ function MainPage() {
   const onClose = () => {
     setOpen(false);
   };
-  
+
   const getGames = () => {
     setLoading(true);
     return instanceGames
@@ -55,7 +56,7 @@ function MainPage() {
     }, 500);
 
     return () => clearTimeout(delayDebounce);
-  }, [searchValue, date, genres,tags]);
+  }, [searchValue, date, genres, tags]);
 
   const handleSearch = (value: string) => {
     setSearchValue(value.trim());
@@ -72,6 +73,7 @@ function MainPage() {
   };
   return (
     <>
+    <TierTable/>
       <div style={{ display: "flex", gap: "1vh", marginTop: "2vh" }}>
         <Search
           placeholder="Введите название игры"
@@ -88,29 +90,20 @@ function MainPage() {
           icon={<FilterOutlined />}
         />
       </div>
-      {loading ? (
-        <Row
-          gutter={[6, 16]}
-          style={{
-            marginTop: "2vh",
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
+      <Row
+        gutter={[6, 16]}
+        style={{
+          marginTop: "2vh",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        {loading ? (
           <CardList loading={loading} />
-        </Row>
-      ) : (
-        <Row
-          gutter={[6, 16]}
-          style={{
-            marginTop: "2vh",
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
+        ) : (
           <CardList games={games} loading={loading} />
-        </Row>
-      )}
+        )}
+      </Row>
       <Filter
         onClose={onClose}
         open={open}
