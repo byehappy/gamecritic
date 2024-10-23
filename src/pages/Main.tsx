@@ -1,18 +1,22 @@
 import { useEffect, useState } from "react";
 import instance from "../axios";
-import { Button, DatePicker, DatePickerProps, Drawer, Row } from "antd";
+import { Button, Row, TreeSelectProps } from "antd";
 import { IGame } from "../interfaces/games";
 import Search from "antd/es/input/Search";
 import { CardList } from "../components/cardList/CardList";
 import { FilterOutlined } from "@ant-design/icons";
+import { Filter } from "../components/filter/Filter";
+import { RangePickerProps } from "antd/es/date-picker";
 
 function MainPage() {
   const [games, setGames] = useState<IGame[]>();
-  const [searchValue, setSearchValue] = useState<string>("");
+  const [searchValue, setSearchValue] = useState<string>();
   const [loading, setLoading] = useState<boolean>(true);
   const [open, setOpen] = useState(false);
-  const [date, setDate] = useState<string | string[]>("");
-
+  const [date, setDate] = useState<string[]>();
+  const [genres, setGenres] = useState<string[] | null>();
+  const [tags, setTags] = useState<string[] | null>();
+  const { instanceGames } = instance;
   const showDrawer = () => {
     setOpen(true);
   };
@@ -20,10 +24,21 @@ function MainPage() {
   const onClose = () => {
     setOpen(false);
   };
-  const getGames = (search?: string) => {
+  
+  const getGames = () => {
     setLoading(true);
-    return instance
-      .get("", { params: { search: search, dates: !date ? "":`${date[0]},${date[1]}`} })
+    return instanceGames
+      .get("", {
+        params: {
+          search: searchValue,
+          dates:
+            date?.some((item) => item === "") || date === undefined
+              ? null
+              : `${date[0]},${date[1]}`,
+          genres: !genres || genres.length === 0 ? null : genres.join(","),
+          tags: !tags || tags.length === 0 ? null : tags.join(","),
+        },
+      })
       .then((res) => {
         setGames(res.data.results);
         setLoading(false);
@@ -36,27 +51,28 @@ function MainPage() {
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
-      getGames(searchValue.trim());
+      getGames();
     }, 500);
 
     return () => clearTimeout(delayDebounce);
-  }, [searchValue,date]);
-
+  }, [searchValue, date, genres,tags]);
 
   const handleSearch = (value: string) => {
     setSearchValue(value.trim());
   };
 
-  const handleDateChange: DatePickerProps["onChange"] = (
-    dateObj,
-    dateString
-  ) => {
+  const handleDateChange: RangePickerProps["onChange"] = (_, dateString) => {
     setDate(dateString);
-    console.log(date);
+  };
+  const handleGenresChange: TreeSelectProps["onChange"] = (value) => {
+    setGenres(value);
+  };
+  const handleTagsChange: TreeSelectProps["onChange"] = (value) => {
+    setTags(value);
   };
   return (
     <>
-      <div style={{ display: "flex", gap: "1rem", marginTop: "2rem" }}>
+      <div style={{ display: "flex", gap: "1vh", marginTop: "2vh" }}>
         <Search
           placeholder="Введите название игры"
           enterButton="Поиск"
@@ -95,13 +111,13 @@ function MainPage() {
           <CardList games={games} loading={loading} />
         </Row>
       )}
-      <Drawer title="Фильтрация" onClose={onClose} open={open}>
-        Дата выхода игры:{" "}
-        <DatePicker.RangePicker
-          format={"YYYY-MM-DD"}
-          onChange={handleDateChange}
-        />
-      </Drawer>
+      <Filter
+        onClose={onClose}
+        open={open}
+        handleDateChange={handleDateChange}
+        handleGenresChange={handleGenresChange}
+        handleTagsChange={handleTagsChange}
+      />
     </>
   );
 }

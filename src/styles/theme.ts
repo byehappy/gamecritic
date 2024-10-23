@@ -10,6 +10,11 @@ export const baseTheme:ITheme = {
     bg: "",
     font: ""
   },
+  margins:{
+    min:"3rem",
+    basic:"5rem",
+    big:"10rem"
+  }
 };
 
 export const lightTheme: DefaultTheme = {

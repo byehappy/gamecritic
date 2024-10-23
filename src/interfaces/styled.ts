@@ -1,16 +1,21 @@
-export enum ThemeEnum  {
+export enum ThemeEnum {
   light = "light",
-  dark = "dark"
+  dark = "dark",
 }
 
 export interface ITheme {
-    colors: {
-      primary: string
-      secondary: string
-      success: string
-      danger: string
+  colors: {
+    primary: string;
+    secondary: string;
+    success: string;
+    danger: string;
 
-      bg:string
-      font:string
-    }
+    bg: string;
+    font: string;
+  };
+  margins: {
+    min: string;
+    basic: string;
+    big: string;
+  };
 }

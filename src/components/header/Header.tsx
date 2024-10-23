@@ -1,14 +1,14 @@
 import styled from "styled-components";
 
 const StyledHeader = styled.header`
-  background-color: ${({ theme }) => theme.colors.bg};
-  color: ${({ theme }) => theme.colors.font};
+  background-color: ${({ theme }) => theme.base.colors.bg};
+  color: ${({ theme }) => theme.base.colors.font};
   height: 50px;
   display:flex;
   align-items:center;
   padding: 0 10vw;
   a{
-    color: ${({theme})=> theme.colors.font}
+    color: ${({theme})=> theme.base.colors.font}
   }
 `;
 export const Header = () => (
