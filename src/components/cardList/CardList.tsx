@@ -5,10 +5,11 @@ import React from "react";
 interface CardListPorps {
   games?: IGame[];
   loading: boolean;
+  pageSize?: number
 }
 
-export const CardList: React.FC<CardListPorps> = ({ games, loading }) => {
-  const placeholderCards = new Array(6).fill(null);
+export const CardList: React.FC<CardListPorps> = ({ games, loading,pageSize = 40 }) => {
+  const placeholderCards = new Array(pageSize).fill(null);
 
   return (
     <Row

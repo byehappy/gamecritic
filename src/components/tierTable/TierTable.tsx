@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { Table, Tag } from "antd";
+import { Table } from "antd";
 import { ColumnsType } from "antd/es/table";
 import useToken from "antd/es/theme/useToken";
 

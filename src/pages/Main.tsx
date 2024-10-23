@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import instance from "../axios";
-import { Button, Row, TreeSelectProps } from "antd";
+import {
+  Button,
+  Pagination,
+  PaginationProps,
+  Row,
+  TreeSelectProps,
+} from "antd";
 import { IGame } from "../interfaces/games";
 import Search from "antd/es/input/Search";
 import { CardList } from "../components/cardList/CardList";
@@ -18,6 +24,10 @@ function MainPage() {
   const [genres, setGenres] = useState<string[] | null>();
   const [tags, setTags] = useState<string[] | null>();
   const { instanceGames } = instance;
+  const [page, setPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(40);
+  const [totalCount, setTotalCount] = useState<number>(1);
+
   const showDrawer = () => {
     setOpen(true);
   };
@@ -38,10 +48,13 @@ function MainPage() {
               : `${date[0]},${date[1]}`,
           genres: !genres || genres.length === 0 ? null : genres.join(","),
           tags: !tags || tags.length === 0 ? null : tags.join(","),
+          page: page,
+          page_size:pageSize
         },
       })
       .then((res) => {
         setGames(res.data.results);
+        setTotalCount(res.data.count);
         setLoading(false);
       })
       .catch(function (error) {
@@ -56,7 +69,7 @@ function MainPage() {
     }, 500);
 
     return () => clearTimeout(delayDebounce);
-  }, [searchValue, date, genres, tags]);
+  }, [searchValue, date, genres, tags, page,pageSize]);
 
   const handleSearch = (value: string) => {
     setSearchValue(value.trim());
@@ -71,9 +84,13 @@ function MainPage() {
   const handleTagsChange: TreeSelectProps["onChange"] = (value) => {
     setTags(value);
   };
+  const handlePagination: PaginationProps["onChange"] = (page, pageSize) => {
+    setPage(page);
+    setPageSize(pageSize)
+  };
   return (
     <>
-    <TierTable/>
+      <TierTable />
       <div style={{ display: "flex", gap: "1vh", marginTop: "2vh" }}>
         <Search
           placeholder="Введите название игры"
@@ -99,7 +116,7 @@ function MainPage() {
         }}
       >
         {loading ? (
-          <CardList loading={loading} />
+          <CardList loading={loading} pageSize={pageSize}/>
         ) : (
           <CardList games={games} loading={loading} />
         )}
@@ -111,6 +128,17 @@ function MainPage() {
         handleGenresChange={handleGenresChange}
         handleTagsChange={handleTagsChange}
       />
+      <div style={{ margin: "4vh 0" }}>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <Pagination
+            defaultCurrent={1}
+            defaultPageSize={40}
+            total={totalCount}
+            onChange={handlePagination}
+            pageSizeOptions={[10,20,30,40]}
+          />
+        </div>
+      </div>
     </>
   );
 }
