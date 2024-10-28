@@ -1,35 +1,35 @@
-import { useEffect, useState } from "react";
-import instance from "../axios";
-import {
-  Button,
-  Pagination,
-  PaginationProps,
-  Row,
-  TreeSelectProps,
-} from "antd";
+import { useCallback, useEffect, useState } from "react";
+import { gamesRequest } from "../axios";
+import { Button, Pagination } from "antd";
 import Search from "antd/es/input/Search";
 import { CardList } from "../components/cardList/CardList";
 import { FilterOutlined } from "@ant-design/icons";
 import { Filter } from "../components/filter/Filter";
-import { RangePickerProps } from "antd/es/date-picker";
 import { TierTable } from "../components/tierTable/TierTable";
-import { DndContext, DragEndEvent, DragOverEvent, DragOverlay, DragStartEvent } from "@dnd-kit/core";
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverEvent,
+  DragOverlay,
+  DragStartEvent,
+} from "@dnd-kit/core";
 import { InitTierData } from "../interfaces/tierData";
 import { arrayMove } from "@dnd-kit/sortable";
 import { IGame } from "../interfaces/games";
 import { CardGame } from "../components/Card/Card";
+import { FilterFlags } from "../interfaces/filters";
+
+const DefaultPage = 1;
+const DefaultPageSize = 40;
 
 function MainPage() {
-  const [searchValue, setSearchValue] = useState<string>();
   const [loading, setLoading] = useState<boolean>(true);
   const [open, setOpen] = useState(false);
-  const [date, setDate] = useState<string[]>();
-  const [genres, setGenres] = useState<string[] | null>();
-  const [tags, setTags] = useState<string[] | null>();
-  const { instanceGames } = instance;
-  const [page, setPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(40);
   const [totalCount, setTotalCount] = useState<number>(1);
+  const [flagsParam, setFlagsParam] = useState<FilterFlags>({
+    page: DefaultPage,
+    page_size: DefaultPageSize,
+  });
   const [tierData, setTierData] = useState<InitTierData>({
     rows: [
       { key: "0", id: "0", tier: "Идеально", games: [] },
@@ -44,6 +44,17 @@ function MainPage() {
   });
   const [activeGame, setActiveGame] = useState<IGame | null>(null);
 
+  const handleChangeFiters = (
+    param: keyof FilterFlags,
+    value: string | string[] | number | null
+  ) => {
+    setFlagsParam((prevFlags) => ({
+      ...prevFlags,
+      [param]: value,
+    }));
+    console.log(flagsParam);
+  };
+
   const showDrawer = () => {
     setOpen(true);
   };
@@ -52,39 +63,30 @@ function MainPage() {
     setOpen(false);
   };
 
-  const getGames = () => {
+  const getGames = useCallback(async () => {
     setLoading(true);
-    return instanceGames
-      .get("", {
-        params: {
-          search: searchValue,
-          dates:
-            date?.some((item) => item === "") || date === undefined
-              ? null
-              : `${date[0]},${date[1]}`,
-          genres: !genres || genres.length === 0 ? null : genres.join(","),
-          tags: !tags || tags.length === 0 ? null : tags.join(","),
-          page,
-          page_size: pageSize,
-        },
-      })
-      .then((res) => {
-        const existingGamesInRows = tierData.rows.flatMap(row => row.games);
-        
-        const newGames = res.data.results.filter((game:IGame)=> 
-          !existingGamesInRows.some(existingGame => existingGame.id === game.id)
-        );
-  
-        setTierData(prev => ({ ...prev, tray: { games: newGames } }));
-        setTotalCount(res.data.count);
-        setLoading(false);
-      })
-      .catch(function (error) {
-        console.log(error.toJSON());
-        setLoading(false);
+    try {
+      const response = await gamesRequest({
+        ...flagsParam,
       });
-  };
-  
+      const existingGamesInRows = tierData.rows.flatMap((row) => row.games);
+
+      const newGames = response.data.results.filter(
+        (game: IGame) =>
+          !existingGamesInRows.some(
+            (existingGame) => existingGame.id === game.id
+          )
+      );
+
+      setTierData((prev) => ({ ...prev, tray: { games: newGames } }));
+      setTotalCount(response.data.count);
+      setLoading(false);
+    } catch (error: any) {
+      console.log(error.toJSON());
+    } finally {
+      setLoading(false);
+    }
+  }, [flagsParam]);
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -92,25 +94,7 @@ function MainPage() {
     }, 500);
 
     return () => clearTimeout(delayDebounce);
-  }, [searchValue, date, genres, tags, page, pageSize]);
-
-  const handleSearch = (value: string) => {
-    setSearchValue(value.trim());
-  };
-
-  const handleDateChange: RangePickerProps["onChange"] = (_, dateString) => {
-    setDate(dateString);
-  };
-  const handleGenresChange: TreeSelectProps["onChange"] = (value) => {
-    setGenres(value);
-  };
-  const handleTagsChange: TreeSelectProps["onChange"] = (value) => {
-    setTags(value);
-  };
-  const handlePagination: PaginationProps["onChange"] = (page, pageSize) => {
-    setPage(page);
-    setPageSize(pageSize);
-  };
+  }, [getGames]);
 
   const findContainer = (id: any) => {
     if (id == "tray") {
@@ -144,7 +128,7 @@ function MainPage() {
     const activeContainer = findContainer(active.id);
     const overContainer = findContainer(over.id);
     const draggedGame = findGame(active.id as number);
-    
+
     if (!draggedGame) return;
 
     if (activeContainer && overContainer) {
@@ -163,7 +147,7 @@ function MainPage() {
           .map((e) => e.id)
           .indexOf(active.id as number);
         const overIndex = overItems.map((e) => e.id).indexOf(over.id as number);
-        
+
         let newActiveItems = [...activeItems];
         const newOverItems = [...overItems];
 
@@ -206,47 +190,51 @@ function MainPage() {
   const handleDragOver = (event: DragOverEvent) => {
     const { active, over } = event;
     if (!over) return;
-  
+
     const activeId = active.id;
     const overId = over.id;
-  
+
     const activeContainer = findContainer(activeId);
     const overContainer = findContainer(overId);
     const draggedGame = findGame(activeId as number);
     if (!draggedGame) return;
-    
-  
-    if (!activeContainer || !overContainer || activeContainer === overContainer) return;
-  
+
+    if (!activeContainer || !overContainer || activeContainer === overContainer)
+      return;
+
     setTierData((prevData) => {
       const getOverItems = (containerId: string) =>
         containerId === "tray"
           ? prevData.tray.games
           : prevData.rows.find((row) => row.id === containerId)?.games || [];
-  
+
       const overItems = getOverItems(overContainer);
       let newIndex;
       if (activeContainer === overContainer) {
         newIndex = overItems.length;
       } else {
         const overIndex = overItems.findIndex((game) => game.id === overId);
-        const isBelowLastItem =
-          overIndex === overItems.length - 1 ? 1 : 0 
-  
-        newIndex = overIndex >= 0 ? overIndex + isBelowLastItem : overItems.length;
+        const isBelowLastItem = overIndex === overItems.length - 1 ? 1 : 0;
+
+        newIndex =
+          overIndex >= 0 ? overIndex + isBelowLastItem : overItems.length;
       }
-      const updatedData:InitTierData = {
+      const updatedData: InitTierData = {
         ...prevData,
         tray: {
-          games: activeContainer === "tray"
-            ? prevData.tray.games.filter((item) => item.id !== activeId)
-            : overContainer === "tray"
-            ? [...prevData.tray.games, draggedGame]
-            : prevData.tray.games,
+          games:
+            activeContainer === "tray"
+              ? prevData.tray.games.filter((item) => item.id !== activeId)
+              : overContainer === "tray"
+              ? [...prevData.tray.games, draggedGame]
+              : prevData.tray.games,
         },
         rows: prevData.rows.map((row) => {
           if (row.id === activeContainer) {
-            return { ...row, games: row.games.filter((item) => item.id !== activeId) };
+            return {
+              ...row,
+              games: row.games.filter((item) => item.id !== activeId),
+            };
           }
           if (row.id === overContainer) {
             return {
@@ -261,38 +249,40 @@ function MainPage() {
           return row;
         }),
       };
-  
+
       return updatedData;
     });
   };
   const handleDragStart = (event: DragStartEvent) => {
     const activeId = event.active.id;
-  
-    let activeGame = tierData.tray.games.find(item => item.id === activeId);
- 
+
+    let activeGame = tierData.tray.games.find((item) => item.id === activeId);
+
     if (!activeGame) {
       for (const row of tierData.rows) {
-        activeGame = row.games.find(game => game.id === activeId);
-        if (activeGame) break; 
+        activeGame = row.games.find((game) => game.id === activeId);
+        if (activeGame) break;
       }
     }
     if (activeGame) {
       setActiveGame(activeGame);
     }
   };
-  
-  
 
   return (
-    <DndContext onDragEnd={handleDragEnd} onDragOver={handleDragOver} onDragStart={handleDragStart}>
+    <DndContext
+      onDragEnd={handleDragEnd}
+      onDragOver={handleDragOver}
+      onDragStart={handleDragStart}
+    >
       <TierTable tierData={tierData.rows} />
       <div style={{ display: "flex", gap: "1vh", marginTop: "2vh" }}>
         <Search
           placeholder="Введите название игры"
           enterButton="Поиск"
-          onChange={(e) => setSearchValue(e.target.value)}
+          onChange={(e) => handleChangeFiters("search", e.target.value)}
           size="large"
-          onSearch={handleSearch}
+          onSearch={(value) => handleChangeFiters("search", value)}
           loading={loading}
         />
         <Button
@@ -302,25 +292,15 @@ function MainPage() {
           icon={<FilterOutlined />}
         />
       </div>
-      <Row
-        style={{
-          marginTop: "2vh",
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        {loading ? (
-          <CardList loading={loading} pageSize={pageSize} />
-        ) : (
-          <CardList games={tierData.tray.games} loading={loading} />
-        )}
-      </Row>
+      {loading ? (
+        <CardList loading={loading} pageSize={flagsParam.page_size} />
+      ) : (
+        <CardList games={tierData.tray.games} loading={loading} />
+      )}
       <Filter
         onClose={onClose}
         open={open}
-        handleDateChange={handleDateChange}
-        handleGenresChange={handleGenresChange}
-        handleTagsChange={handleTagsChange}
+        handleChangeFiters={handleChangeFiters}
       />
       <div style={{ margin: "4vh 0" }}>
         <div style={{ display: "flex", justifyContent: "center" }}>
@@ -328,16 +308,19 @@ function MainPage() {
             defaultCurrent={1}
             defaultPageSize={40}
             total={totalCount}
-            onChange={handlePagination}
+            onChange={(page, pageSize) => {
+              handleChangeFiters("page", page);
+              handleChangeFiters("page_size", pageSize);
+            }}
             pageSizeOptions={[10, 20, 30, 40]}
           />
         </div>
       </div>
       <DragOverlay>
-          {activeGame ? (
-            <CardGame loading={loading} id={activeGame.id} game={activeGame} />
-          ) : null}
-        </DragOverlay>
+        {activeGame ? (
+          <CardGame loading={loading} id={activeGame.id} game={activeGame} />
+        ) : null}
+      </DragOverlay>
     </DndContext>
   );
 }

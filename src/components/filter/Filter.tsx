@@ -1,16 +1,17 @@
-import { Drawer, DatePicker, Space, TreeSelect, TreeSelectProps } from "antd";
-import instance from "../../axios";
+import { Drawer, DatePicker, Space, TreeSelect } from "antd";
 import { useEffect, useState } from "react";
-import { IGenres } from "../../interfaces/genres";
-import { RangePickerProps } from "antd/es/date-picker/generatePicker/interface";
-import { ITags } from "../../interfaces/tags";
+import { IGenres } from "../../interfaces/filters/genres";
+import { ITags } from "../../interfaces/filters/tags";
+import { FilterFlags } from "../../interfaces/filters";
+import { rawgRequest } from "../../axios";
 
 interface FilterProps {
   onClose: () => void;
   open: boolean;
-  handleDateChange: RangePickerProps["onChange"];
-  handleGenresChange: TreeSelectProps["onChange"];
-  handleTagsChange: TreeSelectProps["onChange"]
+  handleChangeFiters: (
+    param: keyof FilterFlags,
+    value: string | string[] | number | null
+  ) => void;
 }
 
 interface TreeDataState {
@@ -21,30 +22,27 @@ interface TreeDataState {
 export const Filter: React.FC<FilterProps> = ({
   onClose,
   open,
-  handleDateChange,
-  handleGenresChange,
-  handleTagsChange
+  handleChangeFiters,
 }) => {
   const [treeDataGenres, setTreeDataGenres] = useState<TreeDataState[]>();
   const [treeDataTags, setTreeDataTags] = useState<TreeDataState[]>();
-  const { instanceGenres,instanceTags } = instance;
 
   useEffect(() => {
-    instanceGenres.get("").then((res) => {
+    rawgRequest("/genres").then((res) => {
       const resArray = res.data.results.map((genre: IGenres) => ({
         title: genre.name,
         value: genre.slug,
       }));
       setTreeDataGenres(resArray);
     });
-    instanceTags.get("").then((res) => {
+    rawgRequest("/tags").then((res) => {
       const resArray = res.data.results.map((tag: ITags) => ({
         title: tag.name,
         value: tag.slug,
       }));
       setTreeDataTags(resArray);
     });
-  }, [instanceGenres,instanceTags]);
+  }, []);
 
   return (
     <Drawer title="Фильтры" onClose={onClose} open={open}>
@@ -53,7 +51,12 @@ export const Filter: React.FC<FilterProps> = ({
           Дата выхода игры:
           <DatePicker.RangePicker
             format={"YYYY-MM-DD"}
-            onChange={handleDateChange}
+            onChange={(_, value) =>
+              handleChangeFiters(
+                "dates",
+                value.every((val) => val === "") ? null : value.join(",")
+              )
+            }
           />
         </Space>
         <Space wrap styles={{ item: { width: "100%" } }}>
@@ -65,7 +68,12 @@ export const Filter: React.FC<FilterProps> = ({
             allowClear
             multiple
             treeData={treeDataGenres}
-            onChange={handleGenresChange}
+            onChange={(value) =>
+              handleChangeFiters(
+                "genres",
+                value.every((val:string) => val === "") ? null : value.join(",")
+              )
+            }
           />
         </Space>
         <Space wrap styles={{ item: { width: "100%" } }}>
@@ -77,7 +85,12 @@ export const Filter: React.FC<FilterProps> = ({
             allowClear
             multiple
             treeData={treeDataTags}
-            onChange={handleTagsChange}
+            onChange={(value) =>
+              handleChangeFiters(
+                "tags",
+                value.every((val:string) => val === "") ? null : value.join(",")
+              )
+            }
           />
         </Space>
       </div>
