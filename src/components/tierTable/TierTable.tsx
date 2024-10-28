@@ -17,10 +17,11 @@ const DroppableCell: React.FC<{ id: string; children?: React.ReactNode }> = ({
 
   const style = {
     backgroundColor: isOver ? "#e6f7ff" : token[1].colorBgTextActive,
-    minHeight: "9.5rem",
+    minHeight: "12rem",
     display: "flex",
     flexWrap: "wrap",
-    width:"100%"
+    width:"100%",
+    gap:".5vh .5vh"
   };
 
   return (
@@ -33,8 +34,9 @@ const DroppableCell: React.FC<{ id: string; children?: React.ReactNode }> = ({
 const containerStyle = {
   display: "flex",
   flexDirection: "row",
-  alignItems: "start",
+  alignItems: "stretch",
   width: "100%",
+  border: "1px solid black",
 };
 const RowHeader = styled(Col)`
   display: flex;
@@ -42,7 +44,6 @@ const RowHeader = styled(Col)`
   width:10vw;
   align-items: center;
   justify-content: center;
-  margin: 1px;
   color: white;
   font-size: 1rem;
 `;

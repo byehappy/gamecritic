@@ -24,6 +24,8 @@ export const CardGame: React.FC<{
     boxShadow: isDragging ? "0px 0px 9px 1px #000000" : "none",
     overflow: "hidden",
     minHeight:"12rem",
+    maxHeight:"12rem",
+    maxWidth:"130px",
     border: "none"
   };
   

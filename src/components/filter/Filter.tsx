@@ -1,4 +1,4 @@
-import { Drawer, DatePicker, Space, TreeSelect } from "antd";
+import { Drawer, DatePicker, Space, Select } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import { FilterFlags } from "../../interfaces/filters";
 import { genresRequest, platformsRequest, tagsRequest } from "../../axios/requests/games.requests";
@@ -14,7 +14,7 @@ interface FilterProps {
 
 interface TreeDataState {
   value: string | number;
-  title: string;
+  label: string;
 }
 
 export const Filter: React.FC<FilterProps> = ({
@@ -36,21 +36,21 @@ export const Filter: React.FC<FilterProps> = ({
   
       setTreeDataGenres(
         genresRes.data.results.map((genre) => ({
-          title: genre.name,
+          label: genre.name,
           value: genre.slug
         }))
       );
   
       setTreeDataTags(
         tagsRes.data.results.map((tag) => ({
-          title: tag.name,
+          label: tag.name,
           value: tag.slug
         }))
       );
   
       setTreeDataPlatform(
         platformsRes.data.results.map((platform) => ({
-          title: platform.name,
+          label: platform.name,
           value: platform.id
         }))
       );
@@ -80,13 +80,12 @@ export const Filter: React.FC<FilterProps> = ({
         </Space>
         <Space wrap styles={{ item: { width: "100%" } }}>
           Жанр:
-          <TreeSelect
+          <Select
             placeholder="Выберите жанр"
             style={{ width: "100%" }}
             dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
             allowClear
-            multiple
-            treeData={treeDataGenres}
+            options={treeDataGenres}
             onChange={(value) =>
               handleChangeFiters(
                 "genres",
@@ -97,13 +96,12 @@ export const Filter: React.FC<FilterProps> = ({
         </Space>
         <Space wrap styles={{ item: { width: "100%" } }}>
           Тэги:
-          <TreeSelect
+          <Select
             placeholder="Выберите тэг"
             style={{ width: "100%" }}
             dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
             allowClear
-            multiple
-            treeData={treeDataTags}
+            options={treeDataTags}
             onChange={(value) =>
               handleChangeFiters(
                 "tags",
@@ -114,13 +112,12 @@ export const Filter: React.FC<FilterProps> = ({
         </Space>
         <Space wrap styles={{ item: { width: "100%" } }}>
           Платформы:
-          <TreeSelect
+          <Select
             placeholder="Выберите платформу"
             style={{ width: "100%" }}
             dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
             allowClear
-            multiple
-            treeData={treeDataPlatform}
+            options={treeDataPlatform}
             onChange={(value) =>
               handleChangeFiters(
                 "platforms",

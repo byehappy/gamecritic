@@ -268,7 +268,7 @@ function MainPage() {
       setActiveGame(activeGame);
     }
   };
-  
+
   return (
     <DndContext
       onDragEnd={handleDragEnd}
@@ -276,13 +276,26 @@ function MainPage() {
       onDragStart={handleDragStart}
     >
       <TierTable tierData={tierData.rows} />
-      <div style={{ display: "flex", gap: "1vh", marginTop: "3vh",marginBottom:"1vh" }}>
+      <div
+        style={{
+          display: "flex",
+          gap: "1vh",
+          marginTop: "3vh",
+          marginBottom: "1vh",
+        }}
+      >
         <Search
           placeholder="Введите название игры"
           enterButton="Поиск"
-          onChange={(e) => handleChangeFiters("search", e.target.value)}
+          onChange={(e) => {
+            handleChangeFiters("page", 1);
+            handleChangeFiters("search", e.target.value);
+          }}
           size="large"
-          onSearch={(value) => handleChangeFiters("search", value)}
+          onSearch={(value) => {
+            handleChangeFiters("page", 1);
+            handleChangeFiters("search", value);
+          }}
           loading={loading}
         />
         <Button
@@ -293,7 +306,7 @@ function MainPage() {
         />
       </div>
       {!loading && tierData.tray.games.length === 0 ? (
-        <p style={{textAlign:"center"}}>Ничего не найдено</p>
+        <p style={{ textAlign: "center" }}>Ничего не найдено</p>
       ) : (
         <CardList
           games={tierData.tray.games}
