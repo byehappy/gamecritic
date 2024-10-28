@@ -27,7 +27,7 @@ export const CardList: React.FC<CardListPorps> = ({ games, loading,pageSize = 40
       style={{
         display: "grid",
         gridTemplateColumns:" repeat(auto-fit, minmax(130px,1fr)",
-        gap:"2% 1%"
+        gap:"1rem"
       }} ref={setNodeRef}
     >
       {!games || loading
