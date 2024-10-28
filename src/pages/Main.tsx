@@ -52,7 +52,6 @@ function MainPage() {
       ...prevFlags,
       [param]: value,
     }));
-    console.log(flagsParam);
   };
 
   const showDrawer = () => {
@@ -82,6 +81,7 @@ function MainPage() {
       setTotalCount(response.data.count);
       setLoading(false);
     } catch (error: any) {
+      setTierData((prev) => ({ ...prev, tray: { games: [] } }));
       console.log(error.toJSON());
     } finally {
       setLoading(false);
@@ -268,7 +268,7 @@ function MainPage() {
       setActiveGame(activeGame);
     }
   };
-
+  
   return (
     <DndContext
       onDragEnd={handleDragEnd}
@@ -276,7 +276,7 @@ function MainPage() {
       onDragStart={handleDragStart}
     >
       <TierTable tierData={tierData.rows} />
-      <div style={{ display: "flex", gap: "1vh", marginTop: "2vh" }}>
+      <div style={{ display: "flex", gap: "1vh", marginTop: "3vh",marginBottom:"1vh" }}>
         <Search
           placeholder="Введите название игры"
           enterButton="Поиск"
@@ -292,10 +292,14 @@ function MainPage() {
           icon={<FilterOutlined />}
         />
       </div>
-      {loading ? (
-        <CardList loading={loading} pageSize={flagsParam.page_size} />
+      {!loading && tierData.tray.games.length === 0 ? (
+        <p style={{textAlign:"center"}}>Ничего не найдено</p>
       ) : (
-        <CardList games={tierData.tray.games} loading={loading} />
+        <CardList
+          games={tierData.tray.games}
+          loading={loading}
+          pageSize={flagsParam.page_size}
+        />
       )}
       <Filter
         onClose={onClose}

@@ -25,7 +25,6 @@ export const CardList: React.FC<CardListPorps> = ({ games, loading,pageSize = 40
   return (
     <Row
       style={{
-        marginTop: "2vh",
         display: "grid",
         gridTemplateColumns:" repeat(auto-fit, minmax(130px,1fr)", 
         gap:"2% 1%"
@@ -33,7 +32,7 @@ export const CardList: React.FC<CardListPorps> = ({ games, loading,pageSize = 40
     >
       {!games || loading
         ? placeholderCards.map((item) => (
-              <CardGame key={item.id} loading id={item.id}/>
+              <CardGame key={item.id} loading={loading} id={item.id}/>
           ))
         : 
         <SortableContext strategy={rectSortingStrategy} items={!games ? placeholderCards : games}>
