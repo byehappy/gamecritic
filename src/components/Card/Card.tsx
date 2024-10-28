@@ -22,9 +22,9 @@ export const CardGame: React.FC<{
     transition,
     opacity: isDragging ? "0.5" : "1",
     boxShadow: isDragging ? "0px 0px 9px 1px #000000" : "none",
-    width: 150,
     overflow: "hidden",
-    minHeight: "9.5rem",
+    minHeight:"12rem",
+    border: "none"
   };
   
   return (
@@ -35,7 +35,7 @@ export const CardGame: React.FC<{
       styles={{
         body: {
           display: "none",
-        },
+        }
       }}
       ref={setNodeRef}
       {...listeners}
@@ -43,7 +43,7 @@ export const CardGame: React.FC<{
       hoverable
       cover={
         !game || game === undefined ? null : (
-          <img height={"150rem"} alt={game.name} src={game.background_image} />
+          <img style={{objectFit:"cover"}} height={"200vh"} alt={game.name} src={game.background_image} />
         )
       }
     />

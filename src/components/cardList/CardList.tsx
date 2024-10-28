@@ -24,13 +24,12 @@ export const CardList: React.FC<CardListPorps> = ({ games, loading,pageSize = 40
   });
   return (
     <Row
-      gutter={[6, 16]}
       style={{
         marginTop: "2vh",
-        display: "flex",
-        justifyContent: "center",
-      }}
-      key="5" ref={setNodeRef}
+        display: "grid",
+        gridTemplateColumns:" repeat(auto-fit, minmax(130px,1fr)", 
+        gap:"2% 1%"
+      }} ref={setNodeRef}
     >
       {!games || loading
         ? placeholderCards.map((item) => (
