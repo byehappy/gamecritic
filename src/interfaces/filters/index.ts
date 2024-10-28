@@ -3,6 +3,7 @@ export interface FilterFlags {
     dates?: string,
     genres?: string[] ,
     tags?:string[] ,
+    platforms?: string[],
     page:number,
     page_size:number
 }

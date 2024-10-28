@@ -1,1 +1,1 @@
-export {gamesRequest,rawgRequest} from "./requests/games.requests"
+export {gamesRequest, tagsRequest,platformsRequest,genresRequest} from "./requests/games.requests"

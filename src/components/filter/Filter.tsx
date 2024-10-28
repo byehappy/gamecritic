@@ -1,9 +1,7 @@
 import { Drawer, DatePicker, Space, TreeSelect } from "antd";
-import { useEffect, useState } from "react";
-import { IGenres } from "../../interfaces/filters/genres";
-import { ITags } from "../../interfaces/filters/tags";
+import { useCallback, useEffect, useState } from "react";
 import { FilterFlags } from "../../interfaces/filters";
-import { rawgRequest } from "../../axios";
+import { genresRequest, platformsRequest, tagsRequest } from "../../axios/requests/games.requests";
 
 interface FilterProps {
   onClose: () => void;
@@ -15,7 +13,7 @@ interface FilterProps {
 }
 
 interface TreeDataState {
-  value: string;
+  value: string | number;
   title: string;
 }
 
@@ -26,23 +24,44 @@ export const Filter: React.FC<FilterProps> = ({
 }) => {
   const [treeDataGenres, setTreeDataGenres] = useState<TreeDataState[]>();
   const [treeDataTags, setTreeDataTags] = useState<TreeDataState[]>();
-
-  useEffect(() => {
-    rawgRequest("/genres").then((res) => {
-      const resArray = res.data.results.map((genre: IGenres) => ({
-        title: genre.name,
-        value: genre.slug,
-      }));
-      setTreeDataGenres(resArray);
-    });
-    rawgRequest("/tags").then((res) => {
-      const resArray = res.data.results.map((tag: ITags) => ({
-        title: tag.name,
-        value: tag.slug,
-      }));
-      setTreeDataTags(resArray);
-    });
+  const [treeDataPlatform, setTreeDataPlatform] = useState<TreeDataState[]>();
+  
+  const fetchData = useCallback(async () => {
+    try {
+      const [genresRes, tagsRes, platformsRes] = await Promise.all([
+        genresRequest(),
+        tagsRequest(),
+        platformsRequest()
+      ]);
+  
+      setTreeDataGenres(
+        genresRes.data.results.map((genre) => ({
+          title: genre.name,
+          value: genre.slug
+        }))
+      );
+  
+      setTreeDataTags(
+        tagsRes.data.results.map((tag) => ({
+          title: tag.name,
+          value: tag.slug
+        }))
+      );
+  
+      setTreeDataPlatform(
+        platformsRes.data.results.map((platform) => ({
+          title: platform.name,
+          value: platform.id
+        }))
+      );
+    } catch (error: any) {
+      console.error(error.toJSON());
+    }
   }, []);
+  
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   return (
     <Drawer title="Фильтры" onClose={onClose} open={open}>
@@ -88,6 +107,23 @@ export const Filter: React.FC<FilterProps> = ({
             onChange={(value) =>
               handleChangeFiters(
                 "tags",
+                value.every((val:string) => val === "") ? null : value.join(",")
+              )
+            }
+          />
+        </Space>
+        <Space wrap styles={{ item: { width: "100%" } }}>
+          Платформы:
+          <TreeSelect
+            placeholder="Выберите платформу"
+            style={{ width: "100%" }}
+            dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
+            allowClear
+            multiple
+            treeData={treeDataPlatform}
+            onChange={(value) =>
+              handleChangeFiters(
+                "platforms",
                 value.every((val:string) => val === "") ? null : value.join(",")
               )
             }
