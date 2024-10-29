@@ -18,6 +18,7 @@ import { arrayMove } from "@dnd-kit/sortable";
 import { IGameDis } from "../interfaces/games";
 import { CardGame } from "../components/Card/Card";
 import { FilterFlags } from "../interfaces/filters";
+import debounce from "debounce";
 
 const DefaultPage = 1;
 const DefaultPageSize = 40;
@@ -311,7 +312,7 @@ function MainPage() {
   return (
     <DndContext
       onDragEnd={handleDragEnd}
-      onDragOver={handleDragOver}
+      onDragOver={debounce(handleDragOver,10)}
       onDragStart={handleDragStart}
     >
       <TierTable tierData={tierData.rows} changeIndex={handleChageIndexRow} />
