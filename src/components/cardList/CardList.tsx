@@ -1,12 +1,12 @@
 import { Row } from "antd";
-import { IGame } from "../../interfaces/games";
+import { IGameDis } from "../../interfaces/games";
 import React from "react";
 import { CardGame } from "../Card/Card";
 import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
 
 interface CardListPorps {
-  games?: IGame[];
+  games?: IGameDis[];
   loading: boolean;
   pageSize?: number
 }

@@ -1,15 +1,15 @@
-import { IGame } from "./games";
+import { IGameDis } from "./games";
 
 export interface TierData {
     key:string;
     id:string;
     tier:string;
-    games:IGame[];
+    games:IGameDis[];
 }
 
 export interface InitTierData {
     rows:TierData[];
     tray:{
-        games:IGame[]
+        games:IGameDis[]
     }
 }

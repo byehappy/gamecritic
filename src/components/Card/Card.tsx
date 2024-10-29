@@ -1,5 +1,5 @@
 import { Skeleton } from "antd";
-import { IGame } from "../../interfaces/games";
+import { IGameDis } from "../../interfaces/games";
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
 import styled from "styled-components";
@@ -34,10 +34,12 @@ const StyleCoverImage = styled.div<{ $name: string }>`
   }
 `;
 export const CardGame: React.FC<{
-  game?: IGame;
+  game?: IGameDis;
   loading: boolean;
-  id: number;
+  id: number | string;
 }> = ({ game, loading, id }) => {
+  const isDisabled = game?.disabled ?? false;
+
   const {
     attributes,
     listeners,
@@ -47,11 +49,12 @@ export const CardGame: React.FC<{
     isDragging,
   } = useSortable({
     id: id,
+    disabled: isDisabled
   });
   const style: React.CSSProperties = {
     transform: CSS.Translate.toString(transform),
     transition,
-    opacity: isDragging ? "0.5" : "1",
+    opacity: isDragging || game?.disabled ? "0.5" : "1",
     boxShadow: isDragging ? "0px 0px 9px 1px #000000" : "none",
     overflow: "hidden",
     minHeight: "12rem",
@@ -79,6 +82,7 @@ export const CardGame: React.FC<{
               height={"200vh"}
               alt={game.name}
               src={game.background_image}
+              draggable={!game.disabled}
             />
           </StyleCoverImage>
         )

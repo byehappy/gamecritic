@@ -15,7 +15,7 @@ import {
 } from "@dnd-kit/core";
 import { InitTierData } from "../interfaces/tierData";
 import { arrayMove } from "@dnd-kit/sortable";
-import { IGame } from "../interfaces/games";
+import { IGameDis } from "../interfaces/games";
 import { CardGame } from "../components/Card/Card";
 import { FilterFlags } from "../interfaces/filters";
 
@@ -41,7 +41,7 @@ function MainPage() {
       games: [],
     },
   });
-  const [activeGame, setActiveGame] = useState<IGame | null>(null);
+  const [activeGame, setActiveGame] = useState<IGameDis | null>(null);
 
   const handleChangeFiters = (
     param: keyof FilterFlags,
@@ -53,21 +53,27 @@ function MainPage() {
     }));
   };
 
-  const handleChageIndexRow = (index:number, direction : "up" | "down") =>{
-    const newTierData = [...tierData.rows]
-    
-    if (direction === "up" && index > 0){
-      [newTierData[index - 1], newTierData[index]] = [newTierData[index],newTierData[index - 1]]
-    } else if ( direction === "down" && index < tierData.rows.length - 1){
-      [newTierData[index + 1], newTierData[index]] = [newTierData[index],newTierData[index + 1]]
+  const handleChageIndexRow = (index: number, direction: "up" | "down") => {
+    const newTierData = [...tierData.rows];
+
+    if (direction === "up" && index > 0) {
+      [newTierData[index - 1], newTierData[index]] = [
+        newTierData[index],
+        newTierData[index - 1],
+      ];
+    } else if (direction === "down" && index < tierData.rows.length - 1) {
+      [newTierData[index + 1], newTierData[index]] = [
+        newTierData[index],
+        newTierData[index + 1],
+      ];
     }
-    setTierData((prev)=>{
+    setTierData((prev) => {
       return {
         ...prev,
-        rows:newTierData
-      }
-    })
-  }
+        rows: newTierData,
+      };
+    });
+  };
 
   const getGames = useCallback(async () => {
     setLoading(true);
@@ -77,19 +83,24 @@ function MainPage() {
       });
       const existingGamesInRows = tierData.rows.flatMap((row) => row.games);
 
-      const newGames = response.data.results.filter(
-        (game: IGame) =>
-          !existingGamesInRows.some(
-            (existingGame) => existingGame.id === game.id
-          )
-      );
+      const newGames = response.data.results.map((game) => ({
+        ...game,
+        disabled: existingGamesInRows.some(
+          (existingGame) => existingGame.id === game.id
+        ),
+        id: existingGamesInRows.some(
+          (existingGame) => existingGame.id === game.id
+        )
+          ? `disable-${game.id}`
+          : game.id,
+      }));
 
       setTierData((prev) => ({ ...prev, tray: { games: newGames } }));
       setTotalCount(response.data.count);
       setLoading(false);
-    } catch (error: any) {
+    } catch (error) {
       setTierData((prev) => ({ ...prev, tray: { games: [] } }));
-      console.log(error.toJSON());
+      console.log((error as Error).message);
     } finally {
       setLoading(false);
     }
@@ -103,7 +114,7 @@ function MainPage() {
     return () => clearTimeout(delayDebounce);
   }, [getGames]);
 
-  const findContainer = (id: any) => {
+  const findContainer = (id: string | number) => {
     if (id == "tray") {
       return "tray";
     }
@@ -117,7 +128,7 @@ function MainPage() {
     }
     return id;
   };
-  const findGame = (id: number): IGame | undefined => {
+  const findGame = (id: number): IGameDis | undefined => {
     for (const tier of tierData.rows) {
       const foundGame = tier.games.find((game) => game.id === id);
       if (foundGame) {
@@ -171,9 +182,21 @@ function MainPage() {
         let trayItems = prevData.tray.games;
 
         if (activeContainer == "tray") {
-          trayItems = newActiveItems;
+          if (overContainer === "tray") {
+            trayItems = newActiveItems;
+          } else {
+            trayItems = activeItems.map((game) =>
+              game.id === draggedGame.id
+                ? { ...game, disabled: true, id: `disable-${game.id}` }
+                : game
+            );
+          }
         } else if (overContainer == "tray") {
-          trayItems = newOverItems;
+          trayItems = overItems.map((game) =>
+            game.id === `disable-${draggedGame.id}`
+              ? { ...game, disabled: false }
+              : game
+          );
         }
 
         return {
@@ -210,12 +233,12 @@ function MainPage() {
       return;
 
     setTierData((prevData) => {
-      const getOverItems = (containerId: string) =>
-        containerId === "tray"
-          ? prevData.tray.games
-          : prevData.rows.find((row) => row.id === containerId)?.games || [];
-
-      const overItems = getOverItems(overContainer);
+      const overItems =
+          overContainer === "tray"
+            ? prevData.tray.games
+            : prevData.rows.find((row) => row.key.toString() === overContainer)!
+                .games;
+                
       let newIndex;
       if (activeContainer === overContainer) {
         newIndex = overItems.length;
@@ -226,15 +249,26 @@ function MainPage() {
         newIndex =
           overIndex >= 0 ? overIndex + isBelowLastItem : overItems.length;
       }
-      const updatedData: InitTierData = {
+
+      let trayItems
+      if (activeContainer === "tray"){
+        trayItems = prevData.tray.games.map((item) =>
+          item.id === activeId
+            ? { ...item, disabled: true, id: `disable-${item.id}` }
+            : item
+        )} else if (overContainer === "tray"){
+          trayItems = [
+            ...prevData.tray.games.filter(
+              (item) => item.id !== `disable-${draggedGame.id}`
+            ),{...draggedGame, disabled: false,}
+          ]
+        } else {
+          trayItems = prevData.tray.games
+        }
+     return {
         ...prevData,
         tray: {
-          games:
-            activeContainer === "tray"
-              ? prevData.tray.games.filter((item) => item.id !== activeId)
-              : overContainer === "tray"
-              ? [...prevData.tray.games, draggedGame]
-              : prevData.tray.games,
+          games:trayItems
         },
         rows: prevData.rows.map((row) => {
           if (row.id === activeContainer) {
@@ -255,9 +289,7 @@ function MainPage() {
           }
           return row;
         }),
-      };
-
-      return updatedData;
+     }
     });
   };
   const handleDragStart = (event: DragStartEvent) => {
@@ -282,7 +314,7 @@ function MainPage() {
       onDragOver={handleDragOver}
       onDragStart={handleDragStart}
     >
-      <TierTable tierData={tierData.rows} changeIndex={handleChageIndexRow}/>
+      <TierTable tierData={tierData.rows} changeIndex={handleChageIndexRow} />
       <div
         style={{
           display: "flex",

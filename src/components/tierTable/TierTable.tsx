@@ -5,7 +5,7 @@ import { TierData } from "../../interfaces/tierData";
 import { rectSortingStrategy, SortableContext } from "@dnd-kit/sortable";
 import styled from "styled-components";
 import { Col } from "antd";
-import { UpOutlined, DownOutlined, SettingOutlined } from "@ant-design/icons";
+import { UpOutlined, DownOutlined } from "@ant-design/icons";
 
 const DroppableCell: React.FC<{ id: string; children?: React.ReactNode }> = ({
   id,
@@ -16,7 +16,7 @@ const DroppableCell: React.FC<{ id: string; children?: React.ReactNode }> = ({
   });
   const token = useToken();
 
-  const style = {
+  const style:React.CSSProperties = {
     backgroundColor: isOver ? "#e6f7ff" : token[1].colorBgContainerDisabled,
     minHeight: "12rem",
     display: "flex",
@@ -32,7 +32,7 @@ const DroppableCell: React.FC<{ id: string; children?: React.ReactNode }> = ({
   );
 };
 
-const containerStyle = {
+const containerStyle:React.CSSProperties = {
   display: "flex",
   flexDirection: "row",
   alignItems: "stretch",
