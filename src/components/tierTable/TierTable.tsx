@@ -16,12 +16,12 @@ const DroppableCell: React.FC<{ id: string; children?: React.ReactNode }> = ({
   const token = useToken();
 
   const style = {
-    backgroundColor: isOver ? "#e6f7ff" : token[1].colorBgTextActive,
+    backgroundColor: isOver ? "#e6f7ff" : token[1].colorBgContainerDisabled,
     minHeight: "12rem",
     display: "flex",
     flexWrap: "wrap",
     width:"100%",
-    gap:".5vh .5vh"
+    gap:".5vh"
   };
 
   return (

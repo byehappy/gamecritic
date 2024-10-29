@@ -14,16 +14,18 @@ const StyleCoverImage = styled.div<{$name: string}>`
         filter: brightness(50%)
       }
       &::before{
-        content: '${props => props.$name}';
+        content: '${props => props.$name.replace(/'/g," ")}';
         position:absolute;
         top:50%;
         left:50%;
         transform: translate(-50%,-50%);
         color:white;
         opacity:0;
-        transition: opacity 0.3 ease ;
         pointer-events: none;
-        z-index:999
+        z-index:999;
+        text-overflow: ellipsis;
+        max-height:65px;
+        overflow:hidden;
       }
       &:hover{
         &:before{

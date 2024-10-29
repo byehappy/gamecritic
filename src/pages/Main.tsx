@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { gamesRequest } from "../axios";
-import { Button, Pagination } from "antd";
+import { Button, Pagination, Popover } from "antd";
 import Search from "antd/es/input/Search";
 import { CardList } from "../components/cardList/CardList";
 import { FilterOutlined } from "@ant-design/icons";
@@ -24,7 +24,6 @@ const DefaultPageSize = 40;
 
 function MainPage() {
   const [loading, setLoading] = useState<boolean>(true);
-  const [open, setOpen] = useState(false);
   const [totalCount, setTotalCount] = useState<number>(1);
   const [flagsParam, setFlagsParam] = useState<FilterFlags>({
     page: DefaultPage,
@@ -52,14 +51,6 @@ function MainPage() {
       ...prevFlags,
       [param]: value,
     }));
-  };
-
-  const showDrawer = () => {
-    setOpen(true);
-  };
-
-  const onClose = () => {
-    setOpen(false);
   };
 
   const getGames = useCallback(async () => {
@@ -298,12 +289,14 @@ function MainPage() {
           }}
           loading={loading}
         />
-        <Button
-          size="large"
-          type="primary"
-          onClick={showDrawer}
-          icon={<FilterOutlined />}
-        />
+        <Popover
+          content={<Filter handleChangeFiters={handleChangeFiters} />}
+          placement="bottom"
+          trigger="click"
+          title={"Фильтры"}
+        >
+          <Button size="large" type="primary" icon={<FilterOutlined />} />
+        </Popover>
       </div>
       {!loading && tierData.tray.games.length === 0 ? (
         <p style={{ textAlign: "center" }}>Ничего не найдено</p>
@@ -314,11 +307,6 @@ function MainPage() {
           pageSize={flagsParam.page_size}
         />
       )}
-      <Filter
-        onClose={onClose}
-        open={open}
-        handleChangeFiters={handleChangeFiters}
-      />
       <div style={{ margin: "4vh 0" }}>
         <div style={{ display: "flex", justifyContent: "center" }}>
           <Pagination
