@@ -1,4 +1,4 @@
-import { Card, Skeleton } from "antd";
+import { Skeleton } from "antd";
 import { IGame } from "../../interfaces/games";
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";

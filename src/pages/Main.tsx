@@ -53,6 +53,22 @@ function MainPage() {
     }));
   };
 
+  const handleChageIndexRow = (index:number, direction : "up" | "down") =>{
+    const newTierData = [...tierData.rows]
+    
+    if (direction === "up" && index > 0){
+      [newTierData[index - 1], newTierData[index]] = [newTierData[index],newTierData[index - 1]]
+    } else if ( direction === "down" && index < tierData.rows.length - 1){
+      [newTierData[index + 1], newTierData[index]] = [newTierData[index],newTierData[index + 1]]
+    }
+    setTierData((prev)=>{
+      return {
+        ...prev,
+        rows:newTierData
+      }
+    })
+  }
+
   const getGames = useCallback(async () => {
     setLoading(true);
     try {
@@ -266,7 +282,7 @@ function MainPage() {
       onDragOver={handleDragOver}
       onDragStart={handleDragStart}
     >
-      <TierTable tierData={tierData.rows} />
+      <TierTable tierData={tierData.rows} changeIndex={handleChageIndexRow}/>
       <div
         style={{
           display: "flex",

@@ -5,6 +5,7 @@ import { TierData } from "../../interfaces/tierData";
 import { rectSortingStrategy, SortableContext } from "@dnd-kit/sortable";
 import styled from "styled-components";
 import { Col } from "antd";
+import { UpOutlined, DownOutlined, SettingOutlined } from "@ant-design/icons";
 
 const DroppableCell: React.FC<{ id: string; children?: React.ReactNode }> = ({
   id,
@@ -20,8 +21,8 @@ const DroppableCell: React.FC<{ id: string; children?: React.ReactNode }> = ({
     minHeight: "12rem",
     display: "flex",
     flexWrap: "wrap",
-    width:"100%",
-    gap:".5vh"
+    width: "100%",
+    gap: ".5vh",
   };
 
   return (
@@ -38,20 +39,40 @@ const containerStyle = {
   width: "100%",
   border: "1px solid black",
 };
+const FilterRow = styled.div`
+  background: #ff9f00;
+  width: 8vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  gap: 1vw;
+  span {
+    transition: opacity 0.3s ease-in-out;
+  }
+  span:hover {
+    opacity: 0.7;
+    cursor: pointer;
+  }
+`;
 const RowHeader = styled(Col)`
   display: flex;
-  min-height:9.5rem;
-  width:10vw;
+  min-height: 9.5rem;
+  width: 10vw;
   align-items: center;
   justify-content: center;
   color: white;
   font-size: 1rem;
 `;
 
-export const TierTable: React.FC<{ tierData: TierData[] }> = ({ tierData }) => {
+export const TierTable: React.FC<{
+  tierData: TierData[];
+  changeIndex: (index: number, direction: "up" | "down") => void;
+}> = ({ tierData,changeIndex }) => {
   const token = useToken();
+  
 
-  return tierData.map((tier) => (
+  return tierData.map((tier,index) => (
     <div style={containerStyle} key={tier.id}>
       <RowHeader style={{ backgroundColor: token[1].blue }}>
         <div
@@ -81,6 +102,12 @@ export const TierTable: React.FC<{ tierData: TierData[] }> = ({ tierData }) => {
           })}
         </DroppableCell>
       </SortableContext>
+      <FilterRow>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <UpOutlined style={{ fontSize: "2rem" }} onClick={()=>changeIndex(index,"up")}/>
+          <DownOutlined style={{ fontSize: "2rem" }} onClick={()=>changeIndex(index,"down")}/>
+        </div>
+      </FilterRow>
     </div>
-  ))
+  ));
 };
