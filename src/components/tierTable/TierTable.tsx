@@ -7,6 +7,15 @@ import styled from "styled-components";
 import { Col } from "antd";
 import { UpOutlined, DownOutlined } from "@ant-design/icons";
 
+const DroppableWrapper = styled.div<{$isOver:boolean}>`
+background-color: ${props => props.$isOver ? "#e6f7ff" : "rgba(0, 0, 0,0.04)"};
+min-height: 12rem;
+display: flex;
+flex-wrap: wrap;
+width: 100%;
+gap: .5vh;
+`
+
 const DroppableCell: React.FC<{ id: string; children?: React.ReactNode }> = ({
   id,
   children,
@@ -14,31 +23,22 @@ const DroppableCell: React.FC<{ id: string; children?: React.ReactNode }> = ({
   const { isOver, setNodeRef } = useDroppable({
     id,
   });
-  const token = useToken();
 
-  const style:React.CSSProperties = {
-    backgroundColor: isOver ? "#e6f7ff" : token[1].colorBgContainerDisabled,
-    minHeight: "12rem",
-    display: "flex",
-    flexWrap: "wrap",
-    width: "100%",
-    gap: ".5vh",
-  };
 
   return (
-    <div ref={setNodeRef} style={style}>
+    <DroppableWrapper $isOver={isOver} ref={setNodeRef}>
       {children}
-    </div>
+    </DroppableWrapper>
   );
 };
 
-const containerStyle:React.CSSProperties = {
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "stretch",
-  width: "100%",
-  border: "1px solid black",
-};
+const Container = styled.div`
+    display: flex;
+  flex-direction:row;
+  align-items: stretch;
+  width: 100%;
+  border: 1px solid black;
+`
 const FilterRow = styled.div`
   background: #ff9f00;
   width: 8vw;
@@ -73,7 +73,7 @@ export const TierTable: React.FC<{
   
 
   return tierData.map((tier,index) => (
-    <div style={containerStyle} key={tier.id}>
+    <Container key={tier.id}>
       <RowHeader style={{ backgroundColor: token[1].blue }}>
         <div
           style={{
@@ -108,6 +108,6 @@ export const TierTable: React.FC<{
           <DownOutlined style={{ fontSize: "2rem" }} onClick={()=>changeIndex(index,"down")}/>
         </div>
       </FilterRow>
-    </div>
+    </Container>
   ));
 };
