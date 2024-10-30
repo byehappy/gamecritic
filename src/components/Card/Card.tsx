@@ -61,6 +61,7 @@ export const CardGame: React.FC<{
     maxHeight: "12rem",
     maxWidth: "130px",
     border: "none",
+    cursor: isDisabled ? "not-allowed" : "grab",
   };
 
   return (
@@ -81,7 +82,7 @@ export const CardGame: React.FC<{
               style={{ objectFit: "cover", width: "100%" }}
               height={"200vh"}
               alt={game.name}
-              src={game.background_image}
+              src={game.background_image.replace("/media/","/media/crop/600/400/")}
               draggable={!game.disabled}
             />
           </StyleCoverImage>

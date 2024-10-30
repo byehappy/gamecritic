@@ -193,11 +193,13 @@ function MainPage() {
             );
           }
         } else if (overContainer == "tray") {
-          trayItems = overItems.map((game) =>
-            game.id === `disable-${draggedGame.id}`
-              ? { ...game, disabled: false }
-              : game
-          );
+          trayItems = overItems.map((game) => {
+            if (game.id === `disable-${draggedGame.id}`) {
+              return { ...game, disabled: false };
+            } else {
+              return game;
+            }
+          });
         }
 
         return {
@@ -235,11 +237,11 @@ function MainPage() {
 
     setTierData((prevData) => {
       const overItems =
-          overContainer === "tray"
-            ? prevData.tray.games
-            : prevData.rows.find((row) => row.key.toString() === overContainer)!
-                .games;
-                
+        overContainer === "tray"
+          ? prevData.tray.games
+          : prevData.rows.find((row) => row.key.toString() === overContainer)!
+              .games;
+
       let newIndex;
       if (activeContainer === overContainer) {
         newIndex = overItems.length;
@@ -251,25 +253,30 @@ function MainPage() {
           overIndex >= 0 ? overIndex + isBelowLastItem : overItems.length;
       }
 
-      let trayItems
-      if (activeContainer === "tray"){
+      let trayItems;
+      const gameInTray = prevData.tray.games.some(
+        (item) => item.id === `disable-${draggedGame.id}`
+      )
+      if (activeContainer === "tray") {
         trayItems = prevData.tray.games.map((item) =>
           item.id === activeId
             ? { ...item, disabled: true, id: `disable-${item.id}` }
             : item
-        )} else if (overContainer === "tray"){
-          trayItems = [
-            ...prevData.tray.games.filter(
-              (item) => item.id !== `disable-${draggedGame.id}`
-            ),{...draggedGame, disabled: false,}
-          ]
-        } else {
-          trayItems = prevData.tray.games
-        }
-     return {
+        );
+      } else if (overContainer === "tray") {
+        trayItems = gameInTray ? [
+          ...prevData.tray.games.filter(
+            (item) => item.id !== `disable-${draggedGame.id}` 
+          ),
+          { ...draggedGame, disabled: false },
+        ]: prevData.tray.games;
+      } else {
+        trayItems = prevData.tray.games;
+      }
+      return {
         ...prevData,
         tray: {
-          games:trayItems
+          games: trayItems,
         },
         rows: prevData.rows.map((row) => {
           if (row.id === activeContainer) {
@@ -290,7 +297,7 @@ function MainPage() {
           }
           return row;
         }),
-     }
+      };
     });
   };
   const handleDragStart = (event: DragStartEvent) => {
@@ -312,7 +319,7 @@ function MainPage() {
   return (
     <DndContext
       onDragEnd={handleDragEnd}
-      onDragOver={debounce(handleDragOver,10)}
+      onDragOver={debounce(handleDragOver, 10)}
       onDragStart={handleDragStart}
     >
       <TierTable tierData={tierData.rows} changeIndex={handleChageIndexRow} />
