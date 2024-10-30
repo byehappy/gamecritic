@@ -1,6 +1,7 @@
 import { ReactNode, useCallback, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { ModalOverlay, ModalWindow } from "./Modal.style";
+import { ModalHeader, ModalOverlay, ModalWindow } from "./Modal.style";
+import { CloseOutlined } from "@ant-design/icons";
 const modalRootElement: Element = document.querySelector("#portal")!;
 
 export const Modal: React.FC<{
@@ -46,7 +47,10 @@ export const Modal: React.FC<{
   return createPortal(
     isOpen ? (
       <ModalOverlay>
-        <ModalWindow ref={ref}>{children}</ModalWindow>
+        <ModalWindow ref={ref}>
+          <ModalHeader><CloseOutlined onClick={onClose}/></ModalHeader>
+          {children}
+          </ModalWindow>
       </ModalOverlay>
     ) : null,
     modalRootElement
