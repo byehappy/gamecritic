@@ -3,6 +3,8 @@ import { IGameDis } from "../../interfaces/games";
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
 import styled from "styled-components";
+import { useState } from "react";
+import { Modal } from "../modal/Modal";
 const StyleCoverImage = styled.div<{ $name: string }>`
   position: relative;
   display: block;
@@ -39,7 +41,8 @@ export const CardGame: React.FC<{
   id: number | string;
 }> = ({ game, loading, id }) => {
   const isDisabled = game?.disabled ?? false;
-
+  const [openModal,setOpenModal] = useState(false)
+  const [modalInfo,setModalInfo] = useState<IGameDis>()
   const {
     attributes,
     listeners,
@@ -63,13 +66,17 @@ export const CardGame: React.FC<{
     border: "none",
     cursor: isDisabled ? "not-allowed" : "grab",
   };
-
+  function handleClick(game:IGameDis) {
+    setModalInfo(game)
+    setOpenModal(true)
+  }
   return (
     <>
       {loading ? (
         <Skeleton.Image active style={style} />
       ) : (
         game && (
+          <>
           <StyleCoverImage
             $name={game.name}
             ref={setNodeRef}
@@ -77,6 +84,7 @@ export const CardGame: React.FC<{
             {...attributes}
             key={id}
             style={style}
+            onClick={() => handleClick(game)}
           >
             <img
               style={{ objectFit: "cover", width: "100%" }}
@@ -86,6 +94,8 @@ export const CardGame: React.FC<{
               draggable={!game.disabled}
             />
           </StyleCoverImage>
+          {modalInfo ? <Modal key={`${game.id}-modal`} isOpen={openModal} onClose={()=> setOpenModal(false)}>{modalInfo.name}</Modal> : null}
+          </>
         )
       )}
     </>

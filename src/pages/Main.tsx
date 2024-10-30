@@ -12,6 +12,9 @@ import {
   DragOverEvent,
   DragOverlay,
   DragStartEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
 } from "@dnd-kit/core";
 import { InitTierData } from "../interfaces/tierData";
 import { arrayMove } from "@dnd-kit/sortable";
@@ -43,6 +46,13 @@ function MainPage() {
     },
   });
   const [activeGame, setActiveGame] = useState<IGameDis | null>(null);
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 0.01,
+      },
+    })
+  )
 
   const handleChangeFiters = (
     param: keyof FilterFlags,
@@ -321,6 +331,7 @@ function MainPage() {
       onDragEnd={handleDragEnd}
       onDragOver={debounce(handleDragOver, 10)}
       onDragStart={handleDragStart}
+      sensors={sensors}
     >
       <TierTable tierData={tierData.rows} changeIndex={handleChageIndexRow} />
       <div
