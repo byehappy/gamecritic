@@ -7,6 +7,13 @@ export interface TierData {
     games:IGameDis[];
 }
 
+export interface LocalTierData {
+    key:string;
+    id:string;
+    tier:string;
+    games:number[];
+}
+
 export interface InitTierData {
     rows:TierData[];
     tray:{

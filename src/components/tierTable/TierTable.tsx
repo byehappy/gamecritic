@@ -4,8 +4,8 @@ import { CardGame } from "../Card/Card";
 import { TierData } from "../../interfaces/tierData";
 import { rectSortingStrategy, SortableContext } from "@dnd-kit/sortable";
 import styled from "styled-components";
-import { Col } from "antd";
-import { UpOutlined, DownOutlined } from "@ant-design/icons";
+import { Col, Flex, Spin } from "antd";
+import { UpOutlined, DownOutlined, LoadingOutlined } from "@ant-design/icons";
 
 const DroppableWrapper = styled.div<{$isOver:boolean}>`
 background-color: ${props => props.$isOver ? "#e6f7ff" : "rgba(0, 0, 0,0.04)"};
@@ -68,11 +68,12 @@ const RowHeader = styled(Col)`
 export const TierTable: React.FC<{
   tierData: TierData[];
   changeIndex: (index: number, direction: "up" | "down") => void;
-}> = ({ tierData,changeIndex }) => {
+  loading:boolean
+}> = ({ tierData,changeIndex,loading }) => {
   const token = useToken();
   
 
-  return tierData.map((tier,index) => (
+  return loading ? <Flex justify="center"><Spin indicator={<LoadingOutlined spin />} size="large" /></Flex>: tierData.map((tier,index) => (
     <Container key={tier.id}>
       <RowHeader style={{ backgroundColor: token[1].blue }}>
         <div

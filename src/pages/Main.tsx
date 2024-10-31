@@ -16,18 +16,19 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { InitTierData } from "../interfaces/tierData";
+import { InitTierData, LocalTierData, TierData } from "../interfaces/tierData";
 import { arrayMove } from "@dnd-kit/sortable";
 import { IGameDis } from "../interfaces/games";
 import { CardGame } from "../components/Card/Card";
 import { FilterFlags } from "../interfaces/filters";
 import debounce from "debounce";
+import { gameRequest } from "../axios/requests/games.requests";
 
 const DefaultPage = 1;
 const DefaultPageSize = 40;
 
 function MainPage() {
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState({rows:true,tray:true});
   const [totalCount, setTotalCount] = useState<number>(1);
   const [flagsParam, setFlagsParam] = useState<FilterFlags>({
     page: DefaultPage,
@@ -52,7 +53,35 @@ function MainPage() {
         distance: 0.01,
       },
     })
-  )
+  );
+  const loadGamesStorage = useCallback(async () => {
+    const tiers = localStorage.getItem("tierData");
+    if (tiers) {
+      const parsedTiers: LocalTierData[] = JSON.parse(tiers);
+      const tierGamesMap: Record<string, IGameDis[]> = {};
+
+      await Promise.all(
+        parsedTiers.map(async (row) => {
+          const gamesData = await Promise.all(
+            row.games.map((id) => gameRequest(id).then((res) => res.data))
+          );
+          tierGamesMap[row.id] = gamesData;
+        })
+      );
+      setTierData((prev) => {
+        const updateRows:TierData[] = parsedTiers.map((row) =>{
+          const games = tierGamesMap[row.id] || []
+          return {...row,games}
+        })
+        return { ...prev, rows: updateRows };
+      });
+    }
+    setLoading((prev)=> ({...prev,rows:false}))
+  }, []);
+
+  useEffect(() => {
+    loadGamesStorage();
+  }, [loadGamesStorage]);
 
   const handleChangeFiters = (
     param: keyof FilterFlags,
@@ -87,33 +116,34 @@ function MainPage() {
   };
 
   const getGames = useCallback(async () => {
-    setLoading(true);
+    setLoading((prev)=>({...prev,tray:true}));
     try {
       const response = await gamesRequest({
         ...flagsParam,
       });
-      const existingGamesInRows = tierData.rows.flatMap((row) => row.games);
-
+      const localStorageGames = localStorage.getItem("tierData");
+      const parsedLocalRows: LocalTierData[] = localStorageGames
+        ? JSON.parse(localStorageGames)
+        : [];
+      const existingGamesInRows = parsedLocalRows.flatMap((row) => row.games);
       const newGames = response.data.results.map((game) => ({
         ...game,
         disabled: existingGamesInRows.some(
-          (existingGame) => existingGame.id === game.id
+          (existingGame) => existingGame === game.id
         ),
-        id: existingGamesInRows.some(
-          (existingGame) => existingGame.id === game.id
-        )
+        id: existingGamesInRows.some((existingGame) => existingGame === game.id)
           ? `disable-${game.id}`
           : game.id,
       }));
 
       setTierData((prev) => ({ ...prev, tray: { games: newGames } }));
       setTotalCount(response.data.count);
-      setLoading(false);
+    setLoading((prev)=>({...prev,tray:false}));
     } catch (error) {
       setTierData((prev) => ({ ...prev, tray: { games: [] } }));
       console.log((error as Error).message);
     } finally {
-      setLoading(false);
+      setLoading((prev)=>({...prev,tray:false}));
     }
   }, [flagsParam]);
 
@@ -124,6 +154,18 @@ function MainPage() {
 
     return () => clearTimeout(delayDebounce);
   }, [getGames]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "tierData",
+      JSON.stringify(
+        tierData.rows.map((row) => ({
+          ...row,
+          games: row.games.map((game) => game.id),
+        }))
+      )
+    );
+  }, [tierData.rows]);
 
   const findContainer = (id: string | number) => {
     if (id == "tray") {
@@ -266,7 +308,7 @@ function MainPage() {
       let trayItems;
       const gameInTray = prevData.tray.games.some(
         (item) => item.id === `disable-${draggedGame.id}`
-      )
+      );
       if (activeContainer === "tray") {
         trayItems = prevData.tray.games.map((item) =>
           item.id === activeId
@@ -274,12 +316,14 @@ function MainPage() {
             : item
         );
       } else if (overContainer === "tray") {
-        trayItems = gameInTray ? [
-          ...prevData.tray.games.filter(
-            (item) => item.id !== `disable-${draggedGame.id}` 
-          ),
-          { ...draggedGame, disabled: false },
-        ]: prevData.tray.games;
+        trayItems = gameInTray
+          ? [
+              ...prevData.tray.games.filter(
+                (item) => item.id !== `disable-${draggedGame.id}`
+              ),
+              { ...draggedGame, disabled: false },
+            ]
+          : prevData.tray.games;
       } else {
         trayItems = prevData.tray.games;
       }
@@ -333,7 +377,7 @@ function MainPage() {
       onDragStart={handleDragStart}
       sensors={sensors}
     >
-      <TierTable tierData={tierData.rows} changeIndex={handleChageIndexRow} />
+      <TierTable loading={loading.rows} tierData={tierData.rows} changeIndex={handleChageIndexRow} />
       <div
         style={{
           display: "flex",
@@ -354,7 +398,7 @@ function MainPage() {
             handleChangeFiters("page", 1);
             handleChangeFiters("search", value);
           }}
-          loading={loading}
+          loading={loading.tray}
         />
         <Popover
           content={<Filter handleChangeFiters={handleChangeFiters} />}
@@ -365,12 +409,12 @@ function MainPage() {
           <Button size="large" type="primary" icon={<FilterOutlined />} />
         </Popover>
       </div>
-      {!loading && tierData.tray.games.length === 0 ? (
+      {!loading.tray && tierData.tray.games.length === 0 ? (
         <p style={{ textAlign: "center" }}>Ничего не найдено</p>
       ) : (
         <CardList
           games={tierData.tray.games}
-          loading={loading}
+          loading={loading.tray}
           pageSize={flagsParam.page_size}
         />
       )}
@@ -390,7 +434,7 @@ function MainPage() {
       </div>
       <DragOverlay>
         {activeGame ? (
-          <CardGame loading={loading} id={activeGame.id} game={activeGame} />
+          <CardGame loading={loading.tray} id={activeGame.id} game={activeGame} />
         ) : null}
       </DragOverlay>
     </DndContext>
