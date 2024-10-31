@@ -3,6 +3,7 @@ import { useState, useCallback, useEffect } from "react";
 import { platformsRequest } from "../../../axios";
 import { FilterFlags } from "../../../interfaces/filters";
 import { TreeDataState } from "../../../interfaces/filters/filterState";
+import { keysPlatformIcons, platformIcons } from "../../../assets/icons/platfroms";
 
 export const PlatformFilter: React.FC<{
   handleChangeFiters: (
@@ -15,10 +16,15 @@ export const PlatformFilter: React.FC<{
   const getPlatforms = useCallback(async () => {
     const res = await platformsRequest();
     setPlatforms(
-      res.data.results.map((platform) => ({
-        label: platform.name,
-        value: platform.id,
-      }))
+      res.data.results.map((platform) => {
+
+        const IconComponent =  platformIcons[keysPlatformIcons.find((key) => platform.name.includes(key)) ?? "global"]
+        return {
+          label: platform.name,
+          value: platform.id,
+          icon:<IconComponent/>,
+        };
+      })
     );
   }, []);
 
@@ -35,6 +41,12 @@ export const PlatformFilter: React.FC<{
         dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
         allowClear
         options={platforms}
+        optionRender={(option) => (
+          <Space>
+            {option.data.icon}
+            {option.data.label}
+          </Space>
+        )}
         onChange={(value) =>
           handleChangeFiters(
             "platforms",
