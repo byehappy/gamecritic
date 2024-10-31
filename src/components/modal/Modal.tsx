@@ -43,7 +43,7 @@ export const Modal: React.FC<{
       document.removeEventListener("mousedown", checkOutside);
     };
   }, [checkKeyEscape, checkOutside, isOpen]);
-
+  
   return createPortal(
     isOpen ? (
       <ModalOverlay>

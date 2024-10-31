@@ -19,9 +19,10 @@ export const ModalWindow = styled.div`
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  width: 25rem;
+  min-width: 25rem;
 `
 export const ModalHeader = styled.div`
   display:flex;
   justify-content:right;
+  margin-bottom:1vw;
 `

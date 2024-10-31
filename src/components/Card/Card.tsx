@@ -41,8 +41,7 @@ export const CardGame: React.FC<{
   id: number | string;
 }> = ({ game, loading, id }) => {
   const isDisabled = game?.disabled ?? false;
-  const [openModal,setOpenModal] = useState(false)
-  const [modalInfo,setModalInfo] = useState<IGameDis>()
+  const [openModalGameId,setOpenModalGameId] = useState<number | null>()
   const {
     attributes,
     listeners,
@@ -67,8 +66,7 @@ export const CardGame: React.FC<{
     cursor: isDisabled ? "not-allowed" : "grab",
   };
   function handleClick(game:IGameDis) {
-    setModalInfo(game)
-    setOpenModal(true)
+    setOpenModalGameId(game.id as number)
   }
   return (
     <>
@@ -94,7 +92,7 @@ export const CardGame: React.FC<{
               draggable={!game.disabled}
             />
           </StyleCoverImage>
-          {modalInfo ? <Modal key={`${game.id}-modal`} isOpen={openModal} onClose={()=> setOpenModal(false)}>{modalInfo.name}</Modal> : null}
+          {openModalGameId===game.id ? <Modal key={`${game.id}-modal`} isOpen={true} onClose={()=> setOpenModalGameId(null)}>{game.name}</Modal> : null}
           </>
         )
       )}

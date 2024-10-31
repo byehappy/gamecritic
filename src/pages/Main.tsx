@@ -23,12 +23,13 @@ import { CardGame } from "../components/Card/Card";
 import { FilterFlags } from "../interfaces/filters";
 import debounce from "debounce";
 import { gameRequest } from "../axios/requests/games.requests";
+import uuid4 from "uuid4";
 
 const DefaultPage = 1;
 const DefaultPageSize = 40;
 
 function MainPage() {
-  const [loading, setLoading] = useState({rows:true,tray:true});
+  const [loading, setLoading] = useState({ rows: true, tray: true });
   const [totalCount, setTotalCount] = useState<number>(1);
   const [flagsParam, setFlagsParam] = useState<FilterFlags>({
     page: DefaultPage,
@@ -36,11 +37,11 @@ function MainPage() {
   });
   const [tierData, setTierData] = useState<InitTierData>({
     rows: [
-      { key: "0", id: "0", tier: "Идеально", games: [] },
-      { key: "1", id: "1", tier: "Супер", games: [] },
-      { key: "2", id: "2", tier: "Отлично", games: [] },
-      { key: "3", id: "3", tier: "Неинтересно", games: [] },
-      { key: "4", id: "4", tier: "Ужасно", games: [] },
+      { key: "0", id: "0", tier: "Идеально", games: [], color: "#1677FF" },
+      { key: "1", id: "1", tier: "Супер", games: [], color: "#1677FF" },
+      { key: "2", id: "2", tier: "Отлично", games: [], color: "#1677FF" },
+      { key: "3", id: "3", tier: "Неинтересно", games: [], color: "#1677FF" },
+      { key: "4", id: "4", tier: "Ужасно", games: [], color: "#1677FF" },
     ],
     tray: {
       games: [],
@@ -69,14 +70,14 @@ function MainPage() {
         })
       );
       setTierData((prev) => {
-        const updateRows:TierData[] = parsedTiers.map((row) =>{
-          const games = tierGamesMap[row.id] || []
-          return {...row,games}
-        })
+        const updateRows: TierData[] = parsedTiers.map((row) => {
+          const games = tierGamesMap[row.id] || [];
+          return { ...row, games };
+        });
         return { ...prev, rows: updateRows };
       });
     }
-    setLoading((prev)=> ({...prev,rows:false}))
+    setLoading((prev) => ({ ...prev, rows: false }));
   }, []);
 
   useEffect(() => {
@@ -115,8 +116,67 @@ function MainPage() {
     });
   };
 
+  const handleCreateNewTier = (index: number, direction: "up" | "down") => {
+    setTierData((prev) => {
+      const newId = uuid4();
+      const newTier = {
+        id: newId,
+        tier: "Новое",
+        games: [],
+        key: newId,
+        color: "#1677FF",
+      };
+      const updateTiers = [...prev.rows];
+      const insertIndex = direction === "up" ? index : index + 1;
+      updateTiers.splice(insertIndex, 0, newTier);
+      return {
+        ...prev,
+        rows: updateTiers,
+      };
+    });
+  };
+  const updateTier = (
+    id: string,
+    tierName?: string,
+    color: string = "primary",
+    deleteGames: boolean = false
+  ) => {
+    setTierData((prev) => {
+      const updateTiers = prev.rows.map((tier) => {
+        if (tier.id === id) {
+          return {
+            ...tier,
+            tier: tierName ?? tier.tier,
+            color,
+            games: deleteGames ? [] : tier.games,
+          };
+        }
+        return tier;
+      });
+      const updateTrayGames:IGameDis[] = deleteGames
+        ? prev.tray.games.map((gameTray) =>
+            prev.rows
+              .find((tier) => tier.id === id)
+              ?.games.some((game) => game.id === gameTray.id)
+              ? {
+                  ...gameTray,
+                  disabled: false,
+                  id: Number((gameTray.id as string).replace("disable-", "")),
+                }
+              : gameTray
+          )
+        : prev.tray.games;
+        
+      return {
+        ...prev,
+        tray: {games:updateTrayGames},
+        rows: updateTiers,
+      };
+    });
+  };
+
   const getGames = useCallback(async () => {
-    setLoading((prev)=>({...prev,tray:true}));
+    setLoading((prev) => ({ ...prev, tray: true }));
     try {
       const response = await gamesRequest({
         ...flagsParam,
@@ -138,12 +198,12 @@ function MainPage() {
 
       setTierData((prev) => ({ ...prev, tray: { games: newGames } }));
       setTotalCount(response.data.count);
-    setLoading((prev)=>({...prev,tray:false}));
+      setLoading((prev) => ({ ...prev, tray: false }));
     } catch (error) {
       setTierData((prev) => ({ ...prev, tray: { games: [] } }));
       console.log((error as Error).message);
     } finally {
-      setLoading((prev)=>({...prev,tray:false}));
+      setLoading((prev) => ({ ...prev, tray: false }));
     }
   }, [flagsParam]);
 
@@ -377,7 +437,13 @@ function MainPage() {
       onDragStart={handleDragStart}
       sensors={sensors}
     >
-      <TierTable loading={loading.rows} tierData={tierData.rows} changeIndex={handleChageIndexRow} />
+      <TierTable
+        loading={loading.rows}
+        tierData={tierData.rows}
+        changeIndex={handleChageIndexRow}
+        createNewTier={handleCreateNewTier}
+        updateTier={updateTier}
+      />
       <div
         style={{
           display: "flex",
@@ -434,7 +500,11 @@ function MainPage() {
       </div>
       <DragOverlay>
         {activeGame ? (
-          <CardGame loading={loading.tray} id={activeGame.id} game={activeGame} />
+          <CardGame
+            loading={loading.tray}
+            id={activeGame.id}
+            game={activeGame}
+          />
         ) : null}
       </DragOverlay>
     </DndContext>
