@@ -37,11 +37,11 @@ function MainPage() {
   });
   const [tierData, setTierData] = useState<InitTierData>({
     rows: [
-      {  id: "0", tier: "Идеально", games: [], color: "#1677FF" },
-      {  id: "1", tier: "Супер", games: [], color: "#1677FF" },
-      {  id: "2", tier: "Отлично", games: [], color: "#1677FF" },
-      {  id: "3", tier: "Неинтересно", games: [], color: "#1677FF" },
-      {  id: "4", tier: "Ужасно", games: [], color: "#1677FF" },
+      { id: "0", tier: "Идеально", games: [], color: "#1677FF" },
+      { id: "1", tier: "Супер", games: [], color: "#1677FF" },
+      { id: "2", tier: "Отлично", games: [], color: "#1677FF" },
+      { id: "3", tier: "Неинтересно", games: [], color: "#1677FF" },
+      { id: "4", tier: "Ужасно", games: [], color: "#1677FF" },
     ],
     tray: {
       games: [],
@@ -141,35 +141,34 @@ function MainPage() {
     deleteGames: boolean = false
   ) => {
     setTierData((prev) => {
-      const updateTiers = prev.rows.map((tier) => {
-        if (tier.id === id) {
-          return {
-            ...tier,
-            tier: tierName ?? tier.tier,
-            color,
-            games: deleteGames ? [] : tier.games,
-          };
-        }
-        return tier;
-      });
-      const updateTrayGames:IGameDis[] = deleteGames
-        ? prev.tray.games.map((gameTray) =>
-            prev.rows
-              .find((tier) => tier.id === id)
-              ?.games.some((game) => game.id === gameTray.id)
-              ? {
-                  ...gameTray,
-                  disabled: false,
-                  id: Number((gameTray.id as string).replace("disable-", "")),
-                }
-              : gameTray
-          )
-        : prev.tray.games;
-        
+      const findedTier = prev.rows.find((tier) => id === tier.id);
+
       return {
-        ...prev,
-        tray: {games:updateTrayGames},
-        rows: updateTiers,
+        rows: prev.rows.map((tier) =>
+          tier.id === id
+            ? {
+                ...tier,
+                tier: tierName ?? tier.tier,
+                color,
+                games: deleteGames ? [] : tier.games,
+              }
+            : tier
+        ),
+        tray: deleteGames
+          ? {
+              games: prev.tray.games.map((game) =>
+                findedTier?.games.some(
+                  (tierGame) => game.id === `disable-${tierGame.id}`
+                )
+                  ? {
+                      ...game,
+                      disabled: false,
+                      id: Number((game.id as string).replace("disable-", "")),
+                    }
+                  : game
+              ),
+            }
+          : prev.tray,
       };
     });
   };
