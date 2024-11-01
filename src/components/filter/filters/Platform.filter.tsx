@@ -3,7 +3,7 @@ import { useState, useCallback, useEffect } from "react";
 import { platformsRequest } from "../../../axios";
 import { FilterFlags } from "../../../interfaces/filters";
 import { TreeDataState } from "../../../interfaces/filters/filterState";
-import { keysPlatformIcons, platformIcons } from "../../../assets/icons/platfroms";
+import { platformIcons } from "../../../assets/icons/platfroms";
 
 export const PlatformFilter: React.FC<{
   handleChangeFiters: (
@@ -17,8 +17,8 @@ export const PlatformFilter: React.FC<{
     const res = await platformsRequest();
     setPlatforms(
       res.data.results.map((platform) => {
-
-        const IconComponent =  platformIcons[keysPlatformIcons.find((key) => platform.name.includes(key)) ?? "global"]
+        const IconComponent =  platformIcons[platform.name as keyof typeof platformIcons] || platformIcons.Global
+        
         return {
           label: platform.name,
           value: platform.id,

@@ -121,19 +121,54 @@ export const LinuxSvg = () => (
 export const LinuxIcon = (props: Partial<CustomIconComponentProps>) => (
   <Icon component={LinuxSvg} {...props} />
 );
-
+type Platform =
+  | "PC"
+  | "PlayStation"
+  | "PlayStation 2"
+  | "PlayStation 3"
+  | "PlayStation 4"
+  | "PlayStation 5"
+  | "PSP"
+  | "PS Vita"
+  | "iOS"
+  | "macOS"
+  | "Android"
+  | "Xbox"
+  | "Xbox 360"
+  | "Xbox One"
+  | "Xbox Series S/X"
+  | "Linux"
+  | "Nintendo 64"
+  | "Nintendo DS"
+  | "Nintendo DSi"
+  | "Nintendo 3DS"
+  | "Nintendo Switch"
+  | "Global";
 export const platformIcons: Record<
-  string,
+  Platform,
   (props: Partial<CustomIconComponentProps>) => JSX.Element
 > = {
-  PC: PCIcon,
-  global: GloablIcon,
-  Android: AndroidIcon,
-  iOS: IphoneIcon,
-  macOS: IphoneIcon,
-  PlayStation: PlaystationIcon,
-  Nintendo: NintendoIcon,
-  Xbox: XboxIcon,
-  Linux: LinuxIcon,
+  "PC" : PCIcon,
+  "PlayStation" : PlaystationIcon,
+  "PlayStation 2" : PlaystationIcon,
+  "PlayStation 3" : PlaystationIcon,
+  "PlayStation 4" : PlaystationIcon,
+  "PlayStation 5" : PlaystationIcon,
+  "PSP" : PlaystationIcon,
+  "PS Vita" : PlaystationIcon,
+  "iOS" : IphoneIcon,
+  "macOS" : IphoneIcon,
+  "Android" : AndroidIcon,
+  "Xbox" : XboxIcon,
+  "Xbox 360" : XboxIcon,
+  "Xbox One" : XboxIcon,
+  "Xbox Series S/X" : XboxIcon,
+  "Linux" : LinuxIcon,
+  "Nintendo 64" : NintendoIcon,
+  "Nintendo DS" : NintendoIcon,
+  "Nintendo DSi" : NintendoIcon,
+  "Nintendo 3DS" : NintendoIcon,
+  "Nintendo Switch" : NintendoIcon,
+  "Global" : GloablIcon
 };
 export const keysPlatformIcons = Object.keys(platformIcons);

@@ -1,5 +1,4 @@
 import { useDroppable } from "@dnd-kit/core";
-import useToken from "antd/es/theme/useToken";
 import { CardGame } from "../Card/Card";
 import { TierData } from "../../interfaces/tierData";
 import { rectSortingStrategy, SortableContext } from "@dnd-kit/sortable";
