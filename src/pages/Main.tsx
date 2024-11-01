@@ -37,11 +37,11 @@ function MainPage() {
   });
   const [tierData, setTierData] = useState<InitTierData>({
     rows: [
-      { key: "0", id: "0", tier: "Идеально", games: [], color: "#1677FF" },
-      { key: "1", id: "1", tier: "Супер", games: [], color: "#1677FF" },
-      { key: "2", id: "2", tier: "Отлично", games: [], color: "#1677FF" },
-      { key: "3", id: "3", tier: "Неинтересно", games: [], color: "#1677FF" },
-      { key: "4", id: "4", tier: "Ужасно", games: [], color: "#1677FF" },
+      {  id: "0", tier: "Идеально", games: [], color: "#1677FF" },
+      {  id: "1", tier: "Супер", games: [], color: "#1677FF" },
+      {  id: "2", tier: "Отлично", games: [], color: "#1677FF" },
+      {  id: "3", tier: "Неинтересно", games: [], color: "#1677FF" },
+      {  id: "4", tier: "Ужасно", games: [], color: "#1677FF" },
     ],
     tray: {
       games: [],
@@ -123,7 +123,6 @@ function MainPage() {
         id: newId,
         tier: "Новое",
         games: [],
-        key: newId,
         color: "#1677FF",
       };
       const updateTiers = [...prev.rows];
@@ -236,7 +235,7 @@ function MainPage() {
     }
     for (const row of tierData.rows) {
       if (row.games.map((e) => e.id).includes(id)) {
-        return row.key;
+        return row.id;
       }
     }
     return id;
@@ -267,12 +266,12 @@ function MainPage() {
         const activeItems =
           activeContainer === "tray"
             ? prevData.tray.games
-            : prevData.rows.find((row) => row.key === activeContainer)!.games;
+            : prevData.rows.find((row) => row.id === activeContainer)!.games;
 
         const overItems =
           overContainer === "tray"
             ? prevData.tray.games
-            : prevData.rows.find((row) => row.key.toString() === overContainer)!
+            : prevData.rows.find((row) => row.id.toString() === overContainer)!
                 .games;
         const activeIndex = activeItems
           .map((e) => e.id)
@@ -318,10 +317,10 @@ function MainPage() {
           ...prevData,
           tray: { games: trayItems },
           rows: prevData.rows.map((row) => {
-            if (row.key === activeContainer) {
+            if (row.id === activeContainer) {
               return { ...row, games: newActiveItems };
             }
-            if (row.key === overContainer) {
+            if (row.id === overContainer) {
               return { ...row, games: newOverItems };
             }
 
@@ -351,7 +350,7 @@ function MainPage() {
       const overItems =
         overContainer === "tray"
           ? prevData.tray.games
-          : prevData.rows.find((row) => row.key.toString() === overContainer)!
+          : prevData.rows.find((row) => row.id.toString() === overContainer)!
               .games;
 
       let newIndex;
