@@ -16,10 +16,11 @@ export const ModalOverlay = styled.div`
 
 export const ModalWindow = styled.div`
   background: white;
-  padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   min-width: 25rem;
+  max-width:70vw;
+  padding: 3rem 2rem;
 `
 export const ModalHeader = styled.div`
   display:flex;

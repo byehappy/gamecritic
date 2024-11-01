@@ -119,11 +119,8 @@ function MainPage() {
     tray: { games: IGameDis[] },
     findedTier?: TierData
   ): IGameDis[] {
-    
     return tray.games.map((game) =>
-      findedTier?.games.some(
-        (tierGame) => game.id === `disable-${tierGame.id}`
-      )
+      findedTier?.games.some((tierGame) => game.id === `disable-${tierGame.id}`)
         ? {
             ...game,
             disabled: false,
@@ -235,15 +232,17 @@ function MainPage() {
   }, [getGames]);
 
   useEffect(() => {
-    localStorage.setItem(
-      "tierData",
-      JSON.stringify(
-        tierData.rows.map((row) => ({
-          ...row,
-          games: row.games.map((game) => game.id),
-        }))
-      )
-    );
+    if (!loading.rows) {
+      localStorage.setItem(
+        "tierData",
+        JSON.stringify(
+          tierData.rows.map((row) => ({
+            ...row,
+            games: row.games.map((game) => game.id),
+          }))
+        )
+      );
+    }
   }, [tierData.rows]);
 
   const findContainer = (id: string | number) => {

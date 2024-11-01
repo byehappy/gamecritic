@@ -1,7 +1,7 @@
 import axios from "axios"
 import { FilterFlags } from "../../interfaces/filters"
 import { GetGames, GetGenres, GetPlatforms, GetTags } from "../../interfaces/axios/rawg.response"
-import { IGameDis } from "../../interfaces/games"
+import { IGameDis, IGameOnly } from "../../interfaces/games"
 
 const instanceRawg = axios.create({
     baseURL: "https://api.rawg.io/api",
@@ -16,7 +16,7 @@ export const gamesRequest = (params:FilterFlags) =>{
 }
 
 export const gameRequest = (id:number) =>{
-    return instanceRawg.get<IGameDis>(`/games/${id}`)
+    return instanceRawg.get<IGameOnly | IGameDis>(`/games/${id}`)
 }
 
 export const tagsRequest = () =>{

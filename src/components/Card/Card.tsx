@@ -4,7 +4,8 @@ import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
 import styled from "styled-components";
 import { useState } from "react";
-import { Modal } from "../modal/Modal";
+import { CardModal } from "./modalCard/Card.modal";
+import { isString } from "antd/es/button";
 const StyleCoverImage = styled.div<{ $name: string }>`
   position: relative;
   display: block;
@@ -41,7 +42,9 @@ export const CardGame: React.FC<{
   id: number | string;
 }> = ({ game, loading, id }) => {
   const isDisabled = game?.disabled ?? false;
-  const [openModalGameId,setOpenModalGameId] = useState<number | null>()
+  const [openModalGameId, setOpenModalGameId] = useState<
+    number | string | null
+  >();
   const {
     attributes,
     listeners,
@@ -51,7 +54,7 @@ export const CardGame: React.FC<{
     isDragging,
   } = useSortable({
     id: id,
-    disabled: isDisabled
+    disabled: isDisabled,
   });
   const style: React.CSSProperties = {
     transform: CSS.Translate.toString(transform),
@@ -65,8 +68,8 @@ export const CardGame: React.FC<{
     border: "none",
     cursor: isDisabled ? "not-allowed" : "grab",
   };
-  function handleClick(game:IGameDis) {
-    setOpenModalGameId(game.id as number)
+  function handleClick(game: IGameDis) {
+    setOpenModalGameId(game.id);
   }
   return (
     <>
@@ -75,24 +78,36 @@ export const CardGame: React.FC<{
       ) : (
         game && (
           <>
-          <StyleCoverImage
-            $name={game.name}
-            ref={setNodeRef}
-            {...listeners}
-            {...attributes}
-            key={id}
-            style={style}
-            onClick={() => handleClick(game)}
-          >
-            <img
-              style={{ objectFit: "cover", width: "100%" }}
-              height={"200vh"}
-              alt={game.name}
-              src={game.background_image.replace("/media/","/media/crop/600/400/")}
-              draggable={!game.disabled}
-            />
-          </StyleCoverImage>
-          {openModalGameId===game.id ? <Modal key={`${game.id}-modal`} isOpen={true} onClose={()=> setOpenModalGameId(null)}>{game.name}</Modal> : null}
+            <StyleCoverImage
+              $name={game.name}
+              ref={setNodeRef}
+              {...listeners}
+              {...attributes}
+              key={id}
+              style={style}
+              onClick={() => handleClick(game)}
+            >
+              <img
+                style={{ objectFit: "cover", width: "100%" }}
+                height={"200vh"}
+                alt={game.name}
+                src={game.background_image.replace(
+                  "/media/",
+                  "/media/crop/600/400/"
+                )}
+                draggable={!game.disabled}
+              />
+            </StyleCoverImage>
+            {openModalGameId === game.id ? (
+              <CardModal
+                id={
+                  isString(openModalGameId)
+                    ? Number(openModalGameId.replace("disable-", ""))
+                    : openModalGameId
+                }
+                setOpenModalGameId={setOpenModalGameId}
+              />
+            ) : null}
           </>
         )
       )}
