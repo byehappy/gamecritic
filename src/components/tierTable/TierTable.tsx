@@ -73,10 +73,10 @@ const RowHeader = styled(Col)`
 export const TierTable: React.FC<{
   tierData: TierData[];
   changeIndex: (index: number, direction: "up" | "down") => void;
-  createNewTier: (index: number, direction: "up" | "down") => void;
+  handleManipulatorTier: (index: number, direction?: "up" | "down",deleteTier?:boolean) => void;
   updateTier: (id: string, tierName?: string, color?: string, deleteGames?: boolean) => void;
   loading: boolean;
-}> = ({ tierData, changeIndex, loading, createNewTier,updateTier }) => {
+}> = ({ tierData, changeIndex, loading, handleManipulatorTier,updateTier }) => {
   const [isOpenTierId, setIsOpenTierId] = useState<string | null>();
   return loading ? (
     <Flex justify="center">
@@ -136,7 +136,7 @@ export const TierTable: React.FC<{
             isOpen={true}
             onClose={() => setIsOpenTierId(null)}
             tier={tier}
-            createNewTier={createNewTier}
+            handleManipulatorTier={handleManipulatorTier}
             updateTier={updateTier}
           />
         ) : null}

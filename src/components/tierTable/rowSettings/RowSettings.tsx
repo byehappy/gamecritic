@@ -9,14 +9,26 @@ export const RowSettings: React.FC<{
   index: number;
   isOpen: boolean;
   onClose: () => void;
-  createNewTier: (index: number, direction: "up" | "down") => void;
+  handleManipulatorTier: (
+    index: number,
+    direction?: "up" | "down",
+    deleteTier?: boolean
+  ) => void;
   updateTier: (
     id: string,
     tierName?: string,
     color?: string,
     deleteGames?: boolean
   ) => void;
-}> = ({ id, tier, index, isOpen, onClose, createNewTier, updateTier }) => {
+}> = ({
+  id,
+  tier,
+  index,
+  isOpen,
+  onClose,
+  handleManipulatorTier,
+  updateTier,
+}) => {
   const [settingsRow, setSettingsRow] = useState({
     tierName: tier.tier,
     color: tier.color,
@@ -42,7 +54,9 @@ export const RowSettings: React.FC<{
           }
         />
       </div>
-      <div style={{ marginBottom: "1rem",display:"flex",alignItems:"center" }}>
+      <div
+        style={{ marginBottom: "1rem", display: "flex", alignItems: "center" }}
+      >
         Цвет:
         <ColorPicker
           value={settingsRow.color}
@@ -63,18 +77,34 @@ export const RowSettings: React.FC<{
           Очистить игры
         </Checkbox>
       </div>
-      <div style={{display:"flex",gap:"2vh 0",flexDirection:"column"}}>
-      <Button type="primary" onClick={handleSave}>
-        Сохранить
-      </Button>
-      <div style={{ display: "flex", gap: "0.5rem",justifyContent:"space-between" }}>
-        <Button onClick={() => createNewTier(index, "up")}>
-          Добавить ряд сверху
+      <div style={{ display: "flex", gap: "2vh 0", flexDirection: "column" }}>
+        <Button type="primary" onClick={handleSave}>
+          Сохранить
         </Button>
-        <Button onClick={() => createNewTier(index, "down")}>
-          Добавить ряд снизу
-        </Button>
-      </div>
+        <div
+          style={{
+            display: "flex",
+            gap: "0.5rem",
+            justifyContent: "space-between",
+          }}
+        >
+          <Button onClick={() => handleManipulatorTier(index, "up")}>
+            Добавить ряд сверху
+          </Button>
+          <Button
+            danger
+            type="primary"
+            onClick={() => {
+              handleManipulatorTier(index, undefined, true);
+              onClose();
+            }}
+          >
+            Удалить ряд
+          </Button>
+          <Button onClick={() => handleManipulatorTier(index, "down")}>
+            Добавить ряд снизу
+          </Button>
+        </div>
       </div>
     </Modal>
   );

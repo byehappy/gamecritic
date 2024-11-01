@@ -115,9 +115,31 @@ function MainPage() {
       };
     });
   };
+  function enabledGamesInTray(
+    tray: { games: IGameDis[] },
+    findedTier?: TierData
+  ): IGameDis[] {
+    
+    return tray.games.map((game) =>
+      findedTier?.games.some(
+        (tierGame) => game.id === `disable-${tierGame.id}`
+      )
+        ? {
+            ...game,
+            disabled: false,
+            id: Number((game.id as string).replace("disable-", "")),
+          }
+        : game
+    );
+  }
 
-  const handleCreateNewTier = (index: number, direction: "up" | "down") => {
+  const handleManipulatorTier = (
+    index: number,
+    direction?: "up" | "down",
+    deleteTier?: boolean
+  ) => {
     setTierData((prev) => {
+      const findedTier = prev.rows[index];
       const newId = uuid4();
       const newTier = {
         id: newId,
@@ -126,11 +148,20 @@ function MainPage() {
         color: "#1677FF",
       };
       const updateTiers = [...prev.rows];
-      const insertIndex = direction === "up" ? index : index + 1;
-      updateTiers.splice(insertIndex, 0, newTier);
+      if (deleteTier) {
+        updateTiers.splice(index, 1);
+      } else {
+        const insertIndex = direction === "up" ? index : index + 1;
+        updateTiers.splice(insertIndex, 0, newTier);
+      }
       return {
         ...prev,
         rows: updateTiers,
+        tray: {
+          games: deleteTier
+            ? enabledGamesInTray(prev.tray, findedTier)
+            : prev.tray.games,
+        },
       };
     });
   };
@@ -154,21 +185,11 @@ function MainPage() {
               }
             : tier
         ),
-        tray: deleteGames
-          ? {
-              games: prev.tray.games.map((game) =>
-                findedTier?.games.some(
-                  (tierGame) => game.id === `disable-${tierGame.id}`
-                )
-                  ? {
-                      ...game,
-                      disabled: false,
-                      id: Number((game.id as string).replace("disable-", "")),
-                    }
-                  : game
-              ),
-            }
-          : prev.tray,
+        tray: {
+          games: deleteGames
+            ? enabledGamesInTray(prev.tray, findedTier)
+            : prev.tray.games,
+        },
       };
     });
   };
@@ -439,7 +460,7 @@ function MainPage() {
         loading={loading.rows}
         tierData={tierData.rows}
         changeIndex={handleChageIndexRow}
-        createNewTier={handleCreateNewTier}
+        handleManipulatorTier={handleManipulatorTier}
         updateTier={updateTier}
       />
       <div
