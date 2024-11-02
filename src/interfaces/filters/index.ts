@@ -9,6 +9,7 @@ export interface FilterFlags {
 }
 
 export interface FilterTierType{
+  name:string;
   genres?: string[] | string;
   tags?: string[] | string;
   platforms?: string[] | string;

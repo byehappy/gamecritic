@@ -82,7 +82,7 @@ function TierPage() {
       });
     }
     setLoading((prev) => ({ ...prev, rows: false }));
-  }, []);
+  }, [params.tierType]);
 
   useEffect(() => {
     if(params.tierType){
@@ -461,6 +461,7 @@ function TierPage() {
       onDragStart={handleDragStart}
       sensors={sensors}
     >
+      <h1 style={{margin:"1vw 0",width:"100%",textAlign:"center"}}>{filterFlags?.name}</h1>
       <TierTable
         loading={loading.rows}
         tierData={tierData.rows}
