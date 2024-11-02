@@ -24,16 +24,20 @@ import { FilterFlags } from "../interfaces/filters";
 import debounce from "debounce";
 import { gameRequest } from "../axios/requests/games.requests";
 import uuid4 from "uuid4";
-
+import { useParams } from "react-router-dom";
+import getFiltersTierType from "../utils/getFilterOnName";
 const DefaultPage = 1;
 const DefaultPageSize = 40;
 
-function MainPage() {
+function TierPage() {
+  const params = useParams();
+  const filterFlags = getFiltersTierType(params.tierType as string);
   const [loading, setLoading] = useState({ rows: true, tray: true });
   const [totalCount, setTotalCount] = useState<number>(1);
   const [flagsParam, setFlagsParam] = useState<FilterFlags>({
     page: DefaultPage,
     page_size: DefaultPageSize,
+    ...filterFlags,
   });
   const [tierData, setTierData] = useState<InitTierData>({
     rows: [
@@ -56,7 +60,7 @@ function MainPage() {
     })
   );
   const loadGamesStorage = useCallback(async () => {
-    const tiers = localStorage.getItem("tierData");
+    const tiers = localStorage.getItem(params.tierType!.toString());
     if (tiers) {
       const parsedTiers: LocalTierData[] = JSON.parse(tiers);
       const tierGamesMap: Record<string, IGameDis[]> = {};
@@ -81,8 +85,10 @@ function MainPage() {
   }, []);
 
   useEffect(() => {
-    loadGamesStorage();
-  }, [loadGamesStorage]);
+    if(params.tierType){
+      loadGamesStorage();
+    }
+  }, [loadGamesStorage, params]);
 
   const handleChangeFiters = (
     param: keyof FilterFlags,
@@ -202,7 +208,7 @@ function MainPage() {
         ? JSON.parse(localStorageGames)
         : [];
       const existingGamesInRows = parsedLocalRows.flatMap((row) => row.games);
-      const newGames = response.data.results.map((game) => ({
+      const newGames: IGameDis[] = response.data.results.map((game) => ({
         ...game,
         disabled: existingGamesInRows.some(
           (existingGame) => existingGame === game.id
@@ -232,9 +238,9 @@ function MainPage() {
   }, [getGames]);
 
   useEffect(() => {
-    if (!loading.rows) {
+    if (!loading.rows && params.tierType) {
       localStorage.setItem(
-        "tierData",
+        params.tierType.toString(),
         JSON.stringify(
           tierData.rows.map((row) => ({
             ...row,
@@ -485,7 +491,12 @@ function MainPage() {
           loading={loading.tray}
         />
         <Popover
-          content={<Filter handleChangeFiters={handleChangeFiters} />}
+          content={
+            <Filter
+              handleChangeFiters={handleChangeFiters}
+              filterFlags={filterFlags}
+            />
+          }
           placement="bottom"
           trigger="click"
           title={"Фильтры"}
@@ -529,4 +540,4 @@ function MainPage() {
   );
 }
 
-export default MainPage;
+export default TierPage;

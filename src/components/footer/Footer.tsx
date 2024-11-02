@@ -8,6 +8,8 @@ const StyledFooter = styled.footer`
   display:flex;
   justify-content: space-around;
   align-items:center;
+  font-family: "Silkscreen";
+  font-size:2rem;
   a{
     color: ${({theme})=> theme.base.colors.font}
   }

@@ -10,7 +10,6 @@ export interface IGame {
   }
 
   export interface IGameDis extends IGame {
-    website: string | undefined;
     disabled:boolean
   }
 

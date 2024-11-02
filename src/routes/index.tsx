@@ -1,7 +1,8 @@
 import { createBrowserRouter } from "react-router-dom";
 import ErrorPage from "../pages/Error";
 import Root from "./Route";
-import MainPage from "../pages/Main";
+import TierPage from "../pages/TierPage";
+import { HomePage } from "../pages/HomePage";
 
 
 export const router = createBrowserRouter([
@@ -14,7 +15,11 @@ export const router = createBrowserRouter([
     children:[
       {
         path:"",
-        element: <MainPage/>
+        element:<HomePage/>
+      },
+      {
+        path:"/:tierType",
+        element: <TierPage/>
       }
     ]
   },
