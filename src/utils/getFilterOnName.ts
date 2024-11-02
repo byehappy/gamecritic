@@ -9,5 +9,10 @@ export default function (tierType:string):FilterTierType | undefined {
                 name:"Лучшее РПГ",
                 genres:"role-playing-games-rpg"
             }
+        case "Singleplayer":
+            return {
+                name: "Лучшие одиночные игры",
+                tags:"singleplayer"
+            }
     } 
 }

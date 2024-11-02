@@ -54,6 +54,13 @@ export const HomePage = () => {
               />
               <span>Лучшее РПГ</span>
             </Item>
+            <Item to="Singleplayer">
+              <img
+                src="https://tiermaker.com/images/templates/single-player-games-1081443/10814431624177063.jpg"
+                alt="rpg"
+              />
+              <span>Лучшие одиночные игры</span>
+            </Item>
           </ContainerItems>
         </div>
       </CarouselWrapper>
