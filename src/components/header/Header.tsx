@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { useEffect } from "react";
 import { resetAuthState, switchLoading } from "../../redux/slice/userSlice";
 import { Button } from "antd";
+import { Link } from "react-router-dom";
 
 const StyledHeader = styled.header`
   background-color: ${({ theme }) => theme.base.colors.bg};
@@ -30,8 +31,12 @@ export const Header = () => {
       GameCritic
       {loading || !username ? (
         <div style={{ display: "flex", gap: "1vw" }}>
-          <Button>Регистрация</Button>
-          <Button>Авторизация</Button>
+          <Link to="/sign-up">
+            <Button>Регистрация</Button>
+          </Link>
+          <Link to="/sign-in">
+            <Button>Авторизация</Button>
+          </Link>
         </div>
       ) : (
         username && (
