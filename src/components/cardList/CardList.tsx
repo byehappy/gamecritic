@@ -1,7 +1,7 @@
 import { Row } from "antd";
 import { IGameDis } from "../../interfaces/games";
 import React from "react";
-import { CardGame } from "../Card/Card";
+import { CardGame } from "../card/Card";
 import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
 

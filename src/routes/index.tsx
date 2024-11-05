@@ -3,6 +3,7 @@ import ErrorPage from "../pages/Error";
 import Root from "./Route";
 import TierPage from "../pages/TierPage";
 import { HomePage } from "../pages/HomePage";
+import { TemplatesPage } from "../pages/TemplatesPage";
 
 
 export const router = createBrowserRouter([
@@ -18,8 +19,12 @@ export const router = createBrowserRouter([
         element:<HomePage/>
       },
       {
-        path:"/:tierType",
+        path:"/tier-list/:tierType",
         element: <TierPage/>
+      },
+      {
+        path:"/all",
+        element:<TemplatesPage/>
       }
     ]
   },

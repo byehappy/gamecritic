@@ -19,7 +19,7 @@ import {
 import { InitTierData, LocalTierData, TierData } from "../interfaces/tierData";
 import { arrayMove } from "@dnd-kit/sortable";
 import { IGameDis } from "../interfaces/games";
-import { CardGame } from "../components/Card/Card";
+import { CardGame } from "../components/card/Card";
 import { FilterFlags } from "../interfaces/filters";
 import debounce from "debounce";
 import { gameRequest } from "../axios/requests/games.requests";
