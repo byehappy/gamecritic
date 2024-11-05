@@ -7,12 +7,16 @@ export default function (tierType:string):FilterTierType | undefined {
         case "RPG":
             return {
                 name:"Лучшее РПГ",
-                genres:"role-playing-games-rpg"
+                filters:{
+                    genres:"role-playing-games-rpg"
+                }
             }
         case "Singleplayer":
             return {
                 name: "Лучшие одиночные игры",
-                tags:"singleplayer"
+                filters:{
+                    tags:"singleplayer"
+                }
             }
     } 
 }

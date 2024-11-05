@@ -8,9 +8,11 @@ export interface FilterFlags {
   page_size: number;
 }
 
-export interface FilterTierType{
-  name:string;
-  genres?: string[] | string;
-  tags?: string[] | string;
-  platforms?: string[] | string;
+export interface FilterTierType {
+  name: string;
+  filters?: {
+    genres?: string[] | string;
+    tags?: string[] | string;
+    platforms?: string[] | string;
+  };
 }

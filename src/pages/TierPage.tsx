@@ -37,7 +37,7 @@ function TierPage() {
   const [flagsParam, setFlagsParam] = useState<FilterFlags>({
     page: DefaultPage,
     page_size: DefaultPageSize,
-    ...filterFlags,
+    ...filterFlags?.filters,
   });
   const [tierData, setTierData] = useState<InitTierData>({
     rows: [
@@ -203,7 +203,7 @@ function TierPage() {
       const response = await gamesRequest({
         ...flagsParam,
       });
-      const localStorageGames = localStorage.getItem("tierData");
+      const localStorageGames = localStorage.getItem(params.tierType as string);
       const parsedLocalRows: LocalTierData[] = localStorageGames
         ? JSON.parse(localStorageGames)
         : [];
