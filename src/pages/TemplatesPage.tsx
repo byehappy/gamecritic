@@ -1,11 +1,15 @@
 import styled from "styled-components";
 import { TemplateCard } from "../components/templateCard/TemplateCard";
+import { Item } from "../components/templateCard/TemplateCard.style";
 
 const TepmlatesContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, 8vw);
   grid-template-rows:repeat(auto-fit, 20vh);
-  gap: 1vw;
+  gap: 2vw;
+  ${Item}:hover{
+    transform:scale(1.25,1.25);
+  }
 `;
 
 export const TemplatesPage = () => {

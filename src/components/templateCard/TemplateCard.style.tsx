@@ -6,6 +6,7 @@ export const Item = styled(Link)`
   position: relative;
   flex: none;
   max-height:20vh;
+  transition: transform 0.3s ease-in-out;
   img {
     object-fit: cover;
     width: 100%;
