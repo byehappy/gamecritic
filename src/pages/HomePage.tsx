@@ -12,7 +12,6 @@ const CarouselWrapper = styled(Carousel)`
 `;
 const ContainerItems = styled.div`
   display: flex;
-  justify-content: space-between;
   gap: 1vw;
   max-height: 20vh;
   padding: 0 1vw;
@@ -100,17 +99,10 @@ export const HomePage = () => {
               />
               <TemplateCard
                 img={
-                  "https://tiermaker.com/images/templates/1000-video-games-15303565/153035651681682831.png"
+                  "https://tiermaker.com/images/templates/single-player-games-1081443/10814431624177063.jpg"
                 }
-                name={"Все игры"}
-                slug={"main"}
-              />
-              <TemplateCard
-                img={
-                  "https://tiermaker.com/images/templates/best-rpg-games-of-all-time-1366519/13665191650477068.jpg"
-                }
-                name={"Лучшее РПГ"}
-                slug={"RPG"}
+                name={"Лучшие одиночные игры"}
+                slug={"Singleplayer"}
               />
             </ContainerItems>
           </div>
@@ -164,13 +156,6 @@ export const HomePage = () => {
                 }
                 name={"Все игры"}
                 slug={"main"}
-              />
-              <TemplateCard
-                img={
-                  "https://tiermaker.com/images/templates/best-rpg-games-of-all-time-1366519/13665191650477068.jpg"
-                }
-                name={"Лучшее РПГ"}
-                slug={"RPG"}
               />
             </ContainerItems>
           </div>

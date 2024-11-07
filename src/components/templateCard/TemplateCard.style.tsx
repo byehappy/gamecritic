@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 export const Item = styled(Link)`
-  width: 8vw;
+  width: 130px;
   position: relative;
   flex: none;
   max-height:20vh;
