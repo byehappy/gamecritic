@@ -1,9 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 import tierDataReducer from './slice/tierDataSlice'
-
+import userReducer from './slice/userSlice'
 export const store = configureStore({
     reducer:{
-        tierData:tierDataReducer
+        tierData:tierDataReducer,
+        user:userReducer
     }
 })
 

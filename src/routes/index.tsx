@@ -4,7 +4,8 @@ import Root from "./Route";
 import TierPage from "../pages/TierPage";
 import { HomePage } from "../pages/HomePage";
 import { TemplatesPage } from "../pages/TemplatesPage";
-
+import { SignInPage } from "../pages/auth/SignIn";
+import { SignUpPage } from "../pages/auth/SignUp";
 
 export const router = createBrowserRouter([
   {
@@ -13,7 +14,7 @@ export const router = createBrowserRouter([
     Component() {
       return <Root />;
     },
-    children:[
+    children: [
       {
         path:"",
         element:<HomePage/>
@@ -25,7 +26,15 @@ export const router = createBrowserRouter([
       {
         path:"/all",
         element:<TemplatesPage/>
-      }
+      },
+      {
+        path: "/sign-in",
+        element: <SignInPage />,
+      },
+      {
+        path: "/sign-up",
+        element: <SignUpPage />,
+      },
     ]
   },
 ]);
