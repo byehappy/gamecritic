@@ -16,7 +16,5 @@ export interface LocalTierData {
 
 export interface InitTierData {
     rows:TierData[];
-    tray:{
-        games:IGameDis[]
-    }
+    games:IGameDis[]
 }

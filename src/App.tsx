@@ -6,6 +6,7 @@ import { ConfigProvider } from "antd";
 import ThemeProvider from "./utils/theme-provider";
 
 function App() {
+  localStorage.setItem("theme","light")
   return (
     <ConfigProvider>
       <ThemeProvider>

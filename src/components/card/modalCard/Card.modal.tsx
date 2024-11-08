@@ -4,6 +4,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { gameRequest } from "../../../axios/requests/games.requests";
 import { useEffect, useState } from "react";
 import { IGameOnly } from "../../../interfaces/games";
+import uuid4 from "uuid4";
 export const CardModal: React.FC<{
   id: number;
   setOpenModalGameId: (
@@ -50,14 +51,14 @@ export const CardModal: React.FC<{
       </p>
       <p>
         <strong>Описание:</strong>{" "}
-        <div dangerouslySetInnerHTML={{ __html: game.description }}></div>
+        <span dangerouslySetInnerHTML={{ __html: game.description }}></span>
       </p>
       {game.platforms && (
         <div>
           <h3>Платформы:</h3>
           <ul style={{ paddingLeft: "1vw" }}>
             {game.platforms.map((platform) => (
-              <li key={platform.platform.id}>
+              <li key={uuid4()}>
                 {platform.platform.name} - {platform.released_at}
               </li>
             ))}
@@ -71,7 +72,7 @@ export const CardModal: React.FC<{
 
   return (
     <Modal
-      key={`${id}-modal`}
+      key={uuid4()}
       isOpen={true}
       onClose={() => setOpenModalGameId(null)}
     >

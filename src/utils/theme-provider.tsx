@@ -1,13 +1,13 @@
 import { ThemeProvider } from "styled-components";
 import { theme } from "antd";
 import React from "react";
-import { useAppSelector } from "../redux/hooks";
+import { darkTheme, lightTheme } from "../styles/theme";
 
 export default ({ children }: React.PropsWithChildren) => {
-  const themeSC = useAppSelector((state) => state.theme.value);
+  const themeSC = localStorage.getItem("theme")
   const { token } = theme.useToken();
   return (
-    <ThemeProvider theme={{ antd: token, base: themeSC }}>
+    <ThemeProvider theme={{ antd: token, base: themeSC === "light" ? lightTheme : darkTheme }}>
       {children}
     </ThemeProvider>
   );

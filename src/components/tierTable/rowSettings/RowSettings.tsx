@@ -2,6 +2,10 @@ import { Button, Checkbox, ColorPicker, Input } from "antd";
 import { TierData } from "../../../interfaces/tierData";
 import { Modal } from "../../modal/Modal";
 import { useState } from "react";
+import uuid4 from "uuid4";
+import { IGameDis } from "../../../interfaces/games";
+import { useAppSelector, useAppDispatch } from "../../../redux/hooks";
+import { setRows, setTrayGames } from "../../../redux/slice/tierDataSlice";
 
 export const RowSettings: React.FC<{
   id: string;
@@ -9,26 +13,88 @@ export const RowSettings: React.FC<{
   index: number;
   isOpen: boolean;
   onClose: () => void;
-  handleManipulatorTier: (
-    index: number,
-    direction?: "up" | "down",
-    deleteTier?: boolean
-  ) => void;
-  updateTier: (
-    id: string,
-    tierName?: string,
-    color?: string,
-    deleteGames?: boolean
-  ) => void;
 }> = ({
   id,
   tier,
   index,
   isOpen,
-  onClose,
-  handleManipulatorTier,
-  updateTier,
+  onClose
 }) => {
+  const tierData = useAppSelector((state) => state.tierData);
+  const dispatch = useAppDispatch();
+  function enabledGamesInTray(
+    games: IGameDis[],
+    findedTier?: TierData
+  ): IGameDis[] {
+    return games.map((game) =>
+      findedTier?.games.some((tierGame) => game.id === `disable-${tierGame.id}`)
+        ? {
+            ...game,
+            disabled: false,
+            id: Number((game.id as string).replace("disable-", "")),
+          }
+        : game
+    );
+  }
+
+  const handleManipulatorTier = (
+    index: number,
+    direction?: "up" | "down",
+    deleteTier?: boolean
+  ) => {
+    const findedTier = tierData.rows[index];
+    const newId = uuid4();
+    const newTier = {
+      id: newId,
+      tier: "Новое",
+      games: [],
+      color: "#1677FF",
+    };
+    const updateTiers = [...tierData.rows];
+    if (deleteTier) {
+      updateTiers.splice(index, 1);
+    } else {
+      const insertIndex = direction === "up" ? index : index + 1;
+      updateTiers.splice(insertIndex, 0, newTier);
+    }
+    dispatch(setRows(updateTiers));
+    dispatch(
+      setTrayGames(
+        deleteTier
+          ? enabledGamesInTray(tierData.games, findedTier)
+          : tierData.games
+      )
+    );
+  };
+  const updateTier = (
+    id: string,
+    tierName?: string,
+    color: string = "primary",
+    deleteGames: boolean = false
+  ) => {
+    const findedTier = tierData.rows.find((tier) => id === tier.id);
+    dispatch(
+      setRows(
+        tierData.rows.map((tier) =>
+          tier.id === id
+            ? {
+                ...tier,
+                tier: tierName ?? tier.tier,
+                color,
+                games: deleteGames ? [] : tier.games,
+              }
+            : tier
+        )
+      )
+    );
+    dispatch(
+      setTrayGames(
+        deleteGames
+          ? enabledGamesInTray(tierData.games, findedTier)
+          : tierData.games
+      )
+    );
+  };
   const [settingsRow, setSettingsRow] = useState({
     tierName: tier.tier,
     color: tier.color,

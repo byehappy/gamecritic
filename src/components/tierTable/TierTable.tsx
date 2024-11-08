@@ -1,6 +1,5 @@
 import { useDroppable } from "@dnd-kit/core";
 import { CardGame } from "../card/Card";
-import { TierData } from "../../interfaces/tierData";
 import { rectSortingStrategy, SortableContext } from "@dnd-kit/sortable";
 import styled from "styled-components";
 import { Col, Flex, Spin } from "antd";
@@ -12,6 +11,9 @@ import {
 } from "@ant-design/icons";
 import { useState } from "react";
 import { RowSettings } from "./rowSettings/RowSettings";
+import uuid4 from "uuid4";
+import { useAppSelector, useAppDispatch } from "../../redux/hooks";
+import { setRows } from "../../redux/slice/tierDataSlice";
 
 const DroppableWrapper = styled.div<{ $isOver: boolean }>`
   background-color: ${(props) =>
@@ -71,20 +73,34 @@ const RowHeader = styled(Col)`
   font-size: 1rem;
 `;
 export const TierTable: React.FC<{
-  tierData: TierData[];
-  changeIndex: (index: number, direction: "up" | "down") => void;
-  handleManipulatorTier: (index: number, direction?: "up" | "down",deleteTier?:boolean) => void;
-  updateTier: (id: string, tierName?: string, color?: string, deleteGames?: boolean) => void;
   loading: boolean;
-}> = ({ tierData, changeIndex, loading, handleManipulatorTier,updateTier }) => {
+}> = ({   loading }) => {
   const [isOpenTierId, setIsOpenTierId] = useState<string | null>();
+  const rowsData = useAppSelector((state) => state.tierData.rows);
+  const dispatch = useAppDispatch();
+  const changeIndex = (index: number, direction: "up" | "down") => {
+    const newTierData = [...rowsData];
+
+    if (direction === "up" && index > 0) {
+      [newTierData[index - 1], newTierData[index]] = [
+        newTierData[index],
+        newTierData[index - 1],
+      ];
+    } else if (direction === "down" && index < rowsData.length - 1) {
+      [newTierData[index + 1], newTierData[index]] = [
+        newTierData[index],
+        newTierData[index + 1],
+      ];
+    }
+    dispatch(setRows(newTierData));
+  };
   return loading ? (
     <Flex justify="center">
       <Spin indicator={<LoadingOutlined spin />} size="large" />
     </Flex>
   ) : (
-    tierData.map((tier, index) => (
-      <Container key={tier.id}>
+    rowsData.map((tier, index) => (
+      <Container key={uuid4()}>
         <RowHeader style={{ backgroundColor:tier.color }}>
           <div
             style={{
@@ -106,7 +122,6 @@ export const TierTable: React.FC<{
                 <CardGame
                   key={game.id}
                   game={game}
-                  loading={false}
                   id={game.id}
                 />
               );
@@ -136,8 +151,6 @@ export const TierTable: React.FC<{
             isOpen={true}
             onClose={() => setIsOpenTierId(null)}
             tier={tier}
-            handleManipulatorTier={handleManipulatorTier}
-            updateTier={updateTier}
           />
         ) : null}
       </Container>

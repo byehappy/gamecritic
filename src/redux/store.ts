@@ -1,9 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-import themeReducer from "./slice/themeSlice"
+import tierDataReducer from './slice/tierDataSlice'
 
 export const store = configureStore({
     reducer:{
-        theme: themeReducer,
+        tierData:tierDataReducer
     }
 })
 

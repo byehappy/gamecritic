@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { gamesRequest } from "../axios";
 import { Button, Pagination, Popover } from "antd";
 import Search from "antd/es/input/Search";
@@ -16,14 +16,14 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { InitTierData, LocalTierData, TierData } from "../interfaces/tierData";
+import { LocalTierData } from "../interfaces/tierData";
 import { arrayMove } from "@dnd-kit/sortable";
 import { IGameDis } from "../interfaces/games";
 import { CardGame } from "../components/card/Card";
 import { FilterFlags } from "../interfaces/filters";
-import debounce from "debounce";
 import { gameRequest } from "../axios/requests/games.requests";
-import uuid4 from "uuid4";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { setDefault, setRows, setTrayGames } from "../redux/slice/tierDataSlice";
 import { useParams } from "react-router-dom";
 import getFiltersTierType from "../utils/getFilterOnName";
 const DefaultPage = 1;
@@ -32,26 +32,18 @@ const DefaultPageSize = 40;
 function TierPage() {
   const params = useParams();
   const filterFlags = getFiltersTierType(params.tierType as string);
-  const [loading, setLoading] = useState({ rows: true, tray: true });
+  const tierData = useAppSelector((state) => state.tierData);
+  const dispatch = useAppDispatch();
+  const [loadingRows, setLoadingRows] = useState(true);
+  const [loadingTray, setLoadingTray] = useState(true);
   const [totalCount, setTotalCount] = useState<number>(1);
   const [flagsParam, setFlagsParam] = useState<FilterFlags>({
     page: DefaultPage,
     page_size: DefaultPageSize,
-    ...filterFlags?.filters,
-  });
-  const [tierData, setTierData] = useState<InitTierData>({
-    rows: [
-      { id: "0", tier: "Идеально", games: [], color: "#1677FF" },
-      { id: "1", tier: "Супер", games: [], color: "#1677FF" },
-      { id: "2", tier: "Отлично", games: [], color: "#1677FF" },
-      { id: "3", tier: "Неинтересно", games: [], color: "#1677FF" },
-      { id: "4", tier: "Ужасно", games: [], color: "#1677FF" },
-    ],
-    tray: {
-      games: [],
-    },
+    ...filterFlags?.filters
   });
   const [activeGame, setActiveGame] = useState<IGameDis | null>(null);
+  const dataFetchedRef = useRef(false);
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -61,30 +53,32 @@ function TierPage() {
   );
   const loadGamesStorage = useCallback(async () => {
     const tiers = localStorage.getItem(params.tierType!.toString());
-    if (tiers) {
-      const parsedTiers: LocalTierData[] = JSON.parse(tiers);
-      const tierGamesMap: Record<string, IGameDis[]> = {};
-
-      await Promise.all(
-        parsedTiers.map(async (row) => {
-          const gamesData = await Promise.all(
-            row.games.map((id) => gameRequest(id).then((res) => res.data))
-          );
-          tierGamesMap[row.id] = gamesData;
-        })
-      );
-      setTierData((prev) => {
-        const updateRows: TierData[] = parsedTiers.map((row) => {
-          const games = tierGamesMap[row.id] || [];
-          return { ...row, games };
-        });
-        return { ...prev, rows: updateRows };
-      });
+    if (!tiers) {
+      dispatch(setDefault())
+      setLoadingRows(false);
+      return;
     }
-    setLoading((prev) => ({ ...prev, rows: false }));
-  }, [params.tierType]);
+    const parsedTiers: LocalTierData[] = JSON.parse(tiers);
+    const gameIds = parsedTiers.flatMap((tier) => tier.games);
+    const gameRequests = gameIds.map((id) =>
+      gameRequest(id).then((res) => res.data)
+    );
+    const gamesData = await Promise.all(gameRequests);
+    const gamesMap: Record<string, IGameDis> = gamesData.reduce((acc, game) => {
+      acc[game.id] = game;
+      return acc;
+    }, {} as Record<string, IGameDis>);
+    const updatedRows = parsedTiers.map((row) => {
+      const games = row.games.map((gameId) => gamesMap[gameId] || {});
+      return { ...row, games };
+    });
+    dispatch(setRows(updatedRows));
+    setLoadingRows(false);
+  }, [dispatch,params.tierType]);
 
   useEffect(() => {
+    if (dataFetchedRef.current) return;
+    dataFetchedRef.current = true;
     if(params.tierType){
       loadGamesStorage();
     }
@@ -100,105 +94,8 @@ function TierPage() {
     }));
   };
 
-  const handleChageIndexRow = (index: number, direction: "up" | "down") => {
-    const newTierData = [...tierData.rows];
-
-    if (direction === "up" && index > 0) {
-      [newTierData[index - 1], newTierData[index]] = [
-        newTierData[index],
-        newTierData[index - 1],
-      ];
-    } else if (direction === "down" && index < tierData.rows.length - 1) {
-      [newTierData[index + 1], newTierData[index]] = [
-        newTierData[index],
-        newTierData[index + 1],
-      ];
-    }
-    setTierData((prev) => {
-      return {
-        ...prev,
-        rows: newTierData,
-      };
-    });
-  };
-  function enabledGamesInTray(
-    tray: { games: IGameDis[] },
-    findedTier?: TierData
-  ): IGameDis[] {
-    return tray.games.map((game) =>
-      findedTier?.games.some((tierGame) => game.id === `disable-${tierGame.id}`)
-        ? {
-            ...game,
-            disabled: false,
-            id: Number((game.id as string).replace("disable-", "")),
-          }
-        : game
-    );
-  }
-
-  const handleManipulatorTier = (
-    index: number,
-    direction?: "up" | "down",
-    deleteTier?: boolean
-  ) => {
-    setTierData((prev) => {
-      const findedTier = prev.rows[index];
-      const newId = uuid4();
-      const newTier = {
-        id: newId,
-        tier: "Новое",
-        games: [],
-        color: "#1677FF",
-      };
-      const updateTiers = [...prev.rows];
-      if (deleteTier) {
-        updateTiers.splice(index, 1);
-      } else {
-        const insertIndex = direction === "up" ? index : index + 1;
-        updateTiers.splice(insertIndex, 0, newTier);
-      }
-      return {
-        ...prev,
-        rows: updateTiers,
-        tray: {
-          games: deleteTier
-            ? enabledGamesInTray(prev.tray, findedTier)
-            : prev.tray.games,
-        },
-      };
-    });
-  };
-  const updateTier = (
-    id: string,
-    tierName?: string,
-    color: string = "primary",
-    deleteGames: boolean = false
-  ) => {
-    setTierData((prev) => {
-      const findedTier = prev.rows.find((tier) => id === tier.id);
-
-      return {
-        rows: prev.rows.map((tier) =>
-          tier.id === id
-            ? {
-                ...tier,
-                tier: tierName ?? tier.tier,
-                color,
-                games: deleteGames ? [] : tier.games,
-              }
-            : tier
-        ),
-        tray: {
-          games: deleteGames
-            ? enabledGamesInTray(prev.tray, findedTier)
-            : prev.tray.games,
-        },
-      };
-    });
-  };
-
   const getGames = useCallback(async () => {
-    setLoading((prev) => ({ ...prev, tray: true }));
+    setLoadingTray(true);
     try {
       const response = await gamesRequest({
         ...flagsParam,
@@ -217,17 +114,16 @@ function TierPage() {
           ? `disable-${game.id}`
           : game.id,
       }));
-
-      setTierData((prev) => ({ ...prev, tray: { games: newGames } }));
+      dispatch(setTrayGames(newGames));
       setTotalCount(response.data.count);
-      setLoading((prev) => ({ ...prev, tray: false }));
+      setLoadingTray(false);
     } catch (error) {
-      setTierData((prev) => ({ ...prev, tray: { games: [] } }));
+      dispatch(setTrayGames([]));
       console.log((error as Error).message);
     } finally {
-      setLoading((prev) => ({ ...prev, tray: false }));
+      setLoadingTray(false);
     }
-  }, [flagsParam]);
+  }, [dispatch, flagsParam, params.tierType]);
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -238,7 +134,7 @@ function TierPage() {
   }, [getGames]);
 
   useEffect(() => {
-    if (!loading.rows && params.tierType) {
+    if (!loadingRows && params.tierType) {
       localStorage.setItem(
         params.tierType.toString(),
         JSON.stringify(
@@ -255,7 +151,7 @@ function TierPage() {
     if (id == "tray") {
       return "tray";
     }
-    if (tierData.tray.games.map((e) => e.id).includes(id)) {
+    if (tierData.games.map((e) => e.id).includes(id)) {
       return "tray";
     }
     for (const row of tierData.rows) {
@@ -272,7 +168,7 @@ function TierPage() {
         return foundGame;
       }
     }
-    return tierData.tray.games.find((game) => game.id === id);
+    return tierData.games.find((game) => game.id === id);
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -287,61 +183,59 @@ function TierPage() {
     if (!draggedGame) return;
 
     if (activeContainer && overContainer) {
-      setTierData((prevData) => {
-        const activeItems =
-          activeContainer === "tray"
-            ? prevData.tray.games
-            : prevData.rows.find((row) => row.id === activeContainer)!.games;
+      const activeItems =
+        activeContainer === "tray"
+          ? tierData.games
+          : tierData.rows.find((row) => row.id === activeContainer)!.games;
 
-        const overItems =
-          overContainer === "tray"
-            ? prevData.tray.games
-            : prevData.rows.find((row) => row.id.toString() === overContainer)!
-                .games;
-        const activeIndex = activeItems
-          .map((e) => e.id)
-          .indexOf(active.id as number);
-        const overIndex = overItems.map((e) => e.id).indexOf(over.id as number);
+      const overItems =
+        overContainer === "tray"
+          ? tierData.games
+          : tierData.rows.find((row) => row.id.toString() === overContainer)!
+              .games;
+      const activeIndex = activeItems
+        .map((e) => e.id)
+        .indexOf(active.id as number);
+      const overIndex = overItems.map((e) => e.id).indexOf(over.id as number);
 
-        let newActiveItems = [...activeItems];
-        const newOverItems = [...overItems];
+      let newActiveItems = [...activeItems];
+      const newOverItems = [...overItems];
 
-        if (activeContainer === overContainer) {
-          newActiveItems = arrayMove(activeItems, activeIndex, overIndex);
+      if (activeContainer === overContainer) {
+        newActiveItems = arrayMove(activeItems, activeIndex, overIndex);
+      } else {
+        newActiveItems.splice(activeIndex, 1);
+        if (overIndex === -1) {
+          newOverItems.push(draggedGame);
         } else {
-          newActiveItems.splice(activeIndex, 1);
-          if (overIndex === -1) {
-            newOverItems.push(draggedGame);
-          } else {
-            newOverItems.splice(overIndex, 0, draggedGame);
-          }
+          newOverItems.splice(overIndex, 0, draggedGame);
         }
-        let trayItems = prevData.tray.games;
+      }
+      let trayItems = tierData.games;
 
-        if (activeContainer == "tray") {
-          if (overContainer === "tray") {
-            trayItems = newActiveItems;
-          } else {
-            trayItems = activeItems.map((game) =>
-              game.id === draggedGame.id
-                ? { ...game, disabled: true, id: `disable-${game.id}` }
-                : game
-            );
-          }
-        } else if (overContainer == "tray") {
-          trayItems = overItems.map((game) => {
-            if (game.id === `disable-${draggedGame.id}`) {
-              return { ...game, disabled: false };
-            } else {
-              return game;
-            }
-          });
+      if (activeContainer == "tray") {
+        if (overContainer === "tray") {
+          trayItems = newActiveItems;
+        } else {
+          trayItems = activeItems.map((game) =>
+            game.id === draggedGame.id
+              ? { ...game, disabled: true, id: `disable-${game.id}` }
+              : game
+          );
         }
-
-        return {
-          ...prevData,
-          tray: { games: trayItems },
-          rows: prevData.rows.map((row) => {
+      } else if (overContainer == "tray") {
+        trayItems = overItems.map((game) => {
+          if (game.id === `disable-${draggedGame.id}`) {
+            return { ...game, disabled: false };
+          } else {
+            return game;
+          }
+        });
+      }
+      dispatch(setTrayGames(trayItems));
+      dispatch(
+        setRows(
+          tierData.rows.map((row) => {
             if (row.id === activeContainer) {
               return { ...row, games: newActiveItems };
             }
@@ -350,9 +244,9 @@ function TierPage() {
             }
 
             return row;
-          }),
-        };
-      });
+          })
+        )
+      );
     }
     setActiveGame(null);
   };
@@ -371,52 +265,49 @@ function TierPage() {
     if (!activeContainer || !overContainer || activeContainer === overContainer)
       return;
 
-    setTierData((prevData) => {
-      const overItems =
-        overContainer === "tray"
-          ? prevData.tray.games
-          : prevData.rows.find((row) => row.id.toString() === overContainer)!
-              .games;
+    const overItems =
+      overContainer === "tray"
+        ? tierData.games
+        : tierData.rows.find((row) => row.id.toString() === overContainer)!
+            .games;
 
-      let newIndex;
-      if (activeContainer === overContainer) {
-        newIndex = overItems.length;
-      } else {
-        const overIndex = overItems.findIndex((game) => game.id === overId);
-        const isBelowLastItem = overIndex === overItems.length - 1 ? 1 : 0;
+    let newIndex;
+    if (activeContainer === overContainer) {
+      newIndex = overItems.length;
+    } else {
+      const overIndex = overItems.findIndex((game) => game.id === overId);
+      const isBelowLastItem = overIndex === overItems.length - 1 ? 1 : 0;
 
-        newIndex =
-          overIndex >= 0 ? overIndex + isBelowLastItem : overItems.length;
-      }
+      newIndex =
+        overIndex >= 0 ? overIndex + isBelowLastItem : overItems.length;
+    }
 
-      let trayItems;
-      const gameInTray = prevData.tray.games.some(
-        (item) => item.id === `disable-${draggedGame.id}`
+    let trayItems;
+    const gameInTray = tierData.games.some(
+      (item) => item.id === `disable-${draggedGame.id}`
+    );
+    if (activeContainer === "tray") {
+      trayItems = tierData.games.map((item) =>
+        item.id === activeId
+          ? { ...item, disabled: true, id: `disable-${item.id}` }
+          : item
       );
-      if (activeContainer === "tray") {
-        trayItems = prevData.tray.games.map((item) =>
-          item.id === activeId
-            ? { ...item, disabled: true, id: `disable-${item.id}` }
-            : item
-        );
-      } else if (overContainer === "tray") {
-        trayItems = gameInTray
-          ? [
-              ...prevData.tray.games.filter(
-                (item) => item.id !== `disable-${draggedGame.id}`
-              ),
-              { ...draggedGame, disabled: false },
-            ]
-          : prevData.tray.games;
-      } else {
-        trayItems = prevData.tray.games;
-      }
-      return {
-        ...prevData,
-        tray: {
-          games: trayItems,
-        },
-        rows: prevData.rows.map((row) => {
+    } else if (overContainer === "tray") {
+      trayItems = gameInTray
+        ? [
+            ...tierData.games.filter(
+              (item) => item.id !== `disable-${draggedGame.id}`
+            ),
+            { ...draggedGame, disabled: false },
+          ]
+        : tierData.games;
+    } else {
+      trayItems = tierData.games;
+    }
+    dispatch(setTrayGames(trayItems));
+    dispatch(
+      setRows(
+        tierData.rows.map((row) => {
           if (row.id === activeContainer) {
             return {
               ...row,
@@ -434,14 +325,14 @@ function TierPage() {
             };
           }
           return row;
-        }),
-      };
-    });
+        })
+      )
+    );
   };
   const handleDragStart = (event: DragStartEvent) => {
     const activeId = event.active.id;
 
-    let activeGame = tierData.tray.games.find((item) => item.id === activeId);
+    let activeGame = tierData.games.find((item) => item.id === activeId);
 
     if (!activeGame) {
       for (const row of tierData.rows) {
@@ -457,18 +348,12 @@ function TierPage() {
   return (
     <DndContext
       onDragEnd={handleDragEnd}
-      onDragOver={debounce(handleDragOver, 10)}
+      onDragOver={handleDragOver}
       onDragStart={handleDragStart}
       sensors={sensors}
     >
       <h1 style={{margin:"1vw 0",width:"100%",textAlign:"center"}}>{filterFlags?.name}</h1>
-      <TierTable
-        loading={loading.rows}
-        tierData={tierData.rows}
-        changeIndex={handleChageIndexRow}
-        handleManipulatorTier={handleManipulatorTier}
-        updateTier={updateTier}
-      />
+      <TierTable loading={loadingRows} />
       <div
         style={{
           display: "flex",
@@ -489,7 +374,7 @@ function TierPage() {
             handleChangeFiters("page", 1);
             handleChangeFiters("search", value);
           }}
-          loading={loading.tray}
+          loading={loadingTray}
         />
         <Popover
           content={
@@ -505,12 +390,11 @@ function TierPage() {
           <Button size="large" type="primary" icon={<FilterOutlined />} />
         </Popover>
       </div>
-      {!loading.tray && tierData.tray.games.length === 0 ? (
+      {!loadingTray && tierData.games.length === 0 ? (
         <p style={{ textAlign: "center" }}>Ничего не найдено</p>
       ) : (
         <CardList
-          games={tierData.tray.games}
-          loading={loading.tray}
+          loading={loadingTray}
           pageSize={flagsParam.page_size}
         />
       )}
@@ -529,13 +413,7 @@ function TierPage() {
         </div>
       </div>
       <DragOverlay>
-        {activeGame ? (
-          <CardGame
-            loading={loading.tray}
-            id={activeGame.id}
-            game={activeGame}
-          />
-        ) : null}
+        {activeGame ? <CardGame id={activeGame.id} game={activeGame} /> : null}
       </DragOverlay>
     </DndContext>
   );

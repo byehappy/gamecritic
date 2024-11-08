@@ -1,24 +1,18 @@
 import { Row } from "antd";
-import { IGameDis } from "../../interfaces/games";
 import React from "react";
 import { CardGame } from "../card/Card";
 import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
+import { SkeletonFactory } from "../../utils/skeleton/skeleton-factory";
+import { useAppSelector } from "../../redux/hooks";
 
 interface CardListPorps {
-  games?: IGameDis[];
   loading: boolean;
-  pageSize?: number
+  pageSize: number
 }
 
-function generateArrayPlaceholderitems(count : number){
-  return Array.from({length:count}, (_,index) => ({
-    id: Date.now() + index
-  }))
-}
-
-export const CardList: React.FC<CardListPorps> = ({ games, loading,pageSize = 40 }) => {
-  const placeholderCards = generateArrayPlaceholderitems(pageSize)
+export const CardList: React.FC<CardListPorps> = ({  loading,pageSize = 40 }) => {
+  const games = useAppSelector((state) => state.tierData.games)
   const { setNodeRef } = useDroppable({
     id: "tray",
   });
@@ -31,13 +25,11 @@ export const CardList: React.FC<CardListPorps> = ({ games, loading,pageSize = 40
       }} ref={setNodeRef}
     >
       {!games || loading
-        ? placeholderCards.map((item) => (
-              <CardGame key={item.id} loading={loading} id={item.id}/>
-          ))
+        ? SkeletonFactory(pageSize,"Card")
         : 
-        <SortableContext strategy={rectSortingStrategy} items={!games ? placeholderCards : games}>
+        <SortableContext strategy={rectSortingStrategy} items={!games ? [] : games}>
         {games.map((game) => (
-              <CardGame key={game.id} game={game} loading={loading} id={game.id}/>
+              <CardGame key={game.id} game={game} id={game.id}/>
           ))}
     </SortableContext>
     }
