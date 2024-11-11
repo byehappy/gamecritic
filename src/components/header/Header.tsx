@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { useEffect } from "react";
-import { resetAuthState, switchLoading } from "../../redux/slice/userSlice";
 import { Button } from "antd";
+import { useCallback, useEffect, useState } from "react";
+import { logout } from "../../redux/slice/authSlice";
 
 const StyledHeader = styled.header`
   background-color: ${({ theme }) => theme.base.colors.bg};
@@ -13,37 +13,52 @@ const StyledHeader = styled.header`
   align-items: center;
   padding: 0 10vw;
   justify-content: space-between;
-  a {
+  .logo {
     color: ${({ theme }) => theme.base.colors.font};
     font-family: "Silkscreen";
   }
+  .profile {
+    color: ${({ theme }) => theme.base.colors.font};
+  }
 `;
 export const Header = () => {
-  const { username, loading } = useAppSelector((state) => state.user);
+  const [currentUser, setCurrentUser] = useState<{
+    username: string;
+    id: string;
+  } | null>();
+  const { user } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
-  useEffect(() => {
-    const timeOut = setTimeout(() => {
-      dispatch(switchLoading());
-    }, 3000);
-    return () => clearTimeout(timeOut);
+  const logOut = useCallback(() => {
+    dispatch(logout());
   }, [dispatch]);
+  useEffect(() => {
+    setCurrentUser(user);
+  }, [user]);
+
   return (
     <StyledHeader>
-      <Link to={""} style={{fontSize:"2rem"}}> GameCritic </Link>
-      {loading || !username ? (
+      <Link className="logo" to={""} style={{ fontSize: "2rem" }}>
+        GameCritic
+      </Link>
+      {!currentUser ? (
         <div style={{ display: "flex", gap: "1vw" }}>
-          <Link to="/sign-up">
+          <Link to="/auth/sign-up">
             <Button>Регистрация</Button>
           </Link>
-          <Link to="/sign-in">
+          <Link to="/auth/sign-in">
             <Button>Авторизация</Button>
           </Link>
         </div>
       ) : (
-        username && (
+        currentUser.username && (
           <div style={{ display: "flex", gap: "1vw", alignItems: "center" }}>
-            Привет, {username}!
-            <Button danger onClick={() => dispatch(resetAuthState())}>
+            <div>
+              Привет,
+              <Link className="profile" to={`/profile/${currentUser.id}`}>
+                {currentUser.username}!
+              </Link>
+            </div>
+            <Button danger onClick={logOut}>
               Выйти
             </Button>
           </div>

@@ -1,10 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 import tierDataReducer from './slice/tierDataSlice'
-import userReducer from './slice/userSlice'
+import authReducer from './slice/authSlice'
 export const store = configureStore({
     reducer:{
         tierData:tierDataReducer,
-        user:userReducer
+        auth:authReducer
     }
 })
 
