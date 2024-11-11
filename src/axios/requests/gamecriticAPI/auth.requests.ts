@@ -1,8 +1,5 @@
-import axios from "axios";
-axios.defaults.withCredentials = true;
-const instanceAPI = axios.create({
-  baseURL: import.meta.env.VITE_URL_BACKEND,
-});
+import { instanceAPI } from ".";
+
 export const signUp = (username: string, email: string, password: string) => {
   return instanceAPI.post("registration", {
     username,
