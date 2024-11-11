@@ -6,6 +6,7 @@ import { HomePage } from "../pages/HomePage";
 import { TemplatesPage } from "../pages/TemplatesPage";
 import { SignInPage } from "../pages/auth/SignIn";
 import { SignUpPage } from "../pages/auth/SignUp";
+import { ProfilePage } from "../pages/Profile";
 
 export const router = createBrowserRouter([
   {
@@ -28,13 +29,17 @@ export const router = createBrowserRouter([
         element:<TemplatesPage/>
       },
       {
-        path: "/sign-in",
+        path: "/auth/sign-in",
         element: <SignInPage />,
       },
       {
-        path: "/sign-up",
+        path: "/auth/sign-up",
         element: <SignUpPage />,
       },
+      {
+        path:"/profile/:id",
+        element:<ProfilePage/>
+      }
     ]
   },
 ]);
