@@ -104,6 +104,7 @@ function TierPage() {
   };
 
   const getGames = useCallback(async () => {
+    if(loadingRows) return;
     setLoadingTray(true);
     try {
       const response = await gamesRequest({
@@ -130,7 +131,7 @@ function TierPage() {
     } finally {
       setLoadingTray(false);
     }
-  }, [dispatch, flagsParam]);
+  }, [dispatch, flagsParam, loadingRows]);
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -154,7 +155,7 @@ function TierPage() {
         localStorage.getItem("accessToken")!
       );
     }
-  }, [tierData.rows, params.tierType, currentUser]);
+  }, [tierData.rows, params.tierType, currentUser, loadingRows]);
 
   const findContainer = (id: string | number) => {
     if (id == "tray") {
