@@ -30,12 +30,12 @@ export const getUserTiers = async (userId: number): Promise<UserTier[]> => {
   return response.data;
 };
 
-export const getUserRows = async (userId: number, tierId: number) => {
+export const getUserRows = async (userId: string, tierId: string) => {
   const response = await instanceAPI.get(`/user/rows/${userId}/${tierId}`);
   return response.data;
 };
 
-export const updateUserRows = async (userId: number, tierId: number, rows: any, token: string) => {
+export const updateUserRows = async (userId: string, tierId: string, rows: any, token: string) => {
   const response = await instanceAPI.post(
     `/user/rows/${userId}/${tierId}`,
     { rows },

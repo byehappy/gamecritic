@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { gamesRequest } from "../axios";
+import { gamesRequest, getUserRows, updateUserRows } from "../axios";
 import { Button, Pagination, Popover } from "antd";
 import Search from "antd/es/input/Search";
 import { CardList } from "../components/cardList/CardList";
@@ -16,20 +16,26 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { LocalTierData } from "../interfaces/tierData";
+import { SaveTierData } from "../interfaces/tierData";
 import { arrayMove } from "@dnd-kit/sortable";
 import { IGameDis } from "../interfaces/games";
 import { CardGame } from "../components/card/Card";
 import { FilterFlags } from "../interfaces/filters";
 import { gameRequest } from "../axios/requests/games.requests";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { setDefault, setRows, setTrayGames } from "../redux/slice/tierDataSlice";
+import {
+  setDefault,
+  setRows,
+  setTrayGames,
+} from "../redux/slice/tierDataSlice";
 import { useParams } from "react-router-dom";
 import getFiltersTierType from "../utils/getFilterOnName";
 const DefaultPage = 1;
 const DefaultPageSize = 40;
 
 function TierPage() {
+  const { user: currentUser } = useAppSelector((state) => state.auth);
+  const { rows: loadRows } = useAppSelector((state) => state.tierData);
   const params = useParams();
   const filterFlags = getFiltersTierType(params.tierType as string);
   const tierData = useAppSelector((state) => state.tierData);
@@ -40,7 +46,7 @@ function TierPage() {
   const [flagsParam, setFlagsParam] = useState<FilterFlags>({
     page: DefaultPage,
     page_size: DefaultPageSize,
-    ...filterFlags?.filters
+    ...filterFlags?.filters,
   });
   const [activeGame, setActiveGame] = useState<IGameDis | null>(null);
   const dataFetchedRef = useRef(false);
@@ -52,13 +58,16 @@ function TierPage() {
     })
   );
   const loadGamesStorage = useCallback(async () => {
-    const tiers = localStorage.getItem(params.tierType!.toString());
+    if (!currentUser) return;
+    const tiers = await getUserRows(currentUser?.id, params.tierType!).then(
+      (data) => data.rows
+    );
     if (!tiers) {
-      dispatch(setDefault())
+      dispatch(setDefault());
       setLoadingRows(false);
       return;
     }
-    const parsedTiers: LocalTierData[] = JSON.parse(tiers);
+    const parsedTiers: SaveTierData[] = JSON.parse(tiers);
     const gameIds = parsedTiers.flatMap((tier) => tier.games);
     const gameRequests = gameIds.map((id) =>
       gameRequest(id).then((res) => res.data)
@@ -74,12 +83,12 @@ function TierPage() {
     });
     dispatch(setRows(updatedRows));
     setLoadingRows(false);
-  }, [dispatch,params.tierType]);
+  }, [currentUser, dispatch, params.tierType]);
 
   useEffect(() => {
     if (dataFetchedRef.current) return;
     dataFetchedRef.current = true;
-    if(params.tierType){
+    if (params.tierType) {
       loadGamesStorage();
     }
   }, [loadGamesStorage, params]);
@@ -100,17 +109,15 @@ function TierPage() {
       const response = await gamesRequest({
         ...flagsParam,
       });
-      const localStorageGames = localStorage.getItem(params.tierType as string);
-      const parsedLocalRows: LocalTierData[] = localStorageGames
-        ? JSON.parse(localStorageGames)
-        : [];
-      const existingGamesInRows = parsedLocalRows.flatMap((row) => row.games);
+      const existingGamesInRows = loadRows.flatMap((row) => row.games);
       const newGames: IGameDis[] = response.data.results.map((game) => ({
         ...game,
         disabled: existingGamesInRows.some(
-          (existingGame) => existingGame === game.id
+          (existingGame) => existingGame.id === game.id
         ),
-        id: existingGamesInRows.some((existingGame) => existingGame === game.id)
+        id: existingGamesInRows.some(
+          (existingGame) => existingGame.id === game.id
+        )
           ? `disable-${game.id}`
           : game.id,
       }));
@@ -123,7 +130,7 @@ function TierPage() {
     } finally {
       setLoadingTray(false);
     }
-  }, [dispatch, flagsParam, params.tierType]);
+  }, [dispatch, flagsParam]);
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -134,18 +141,20 @@ function TierPage() {
   }, [getGames]);
 
   useEffect(() => {
-    if (!loadingRows && params.tierType) {
-      localStorage.setItem(
-        params.tierType.toString(),
+    if (!loadingRows && params.tierType && currentUser) {
+      updateUserRows(
+        currentUser?.id,
+        params.tierType,
         JSON.stringify(
           tierData.rows.map((row) => ({
             ...row,
             games: row.games.map((game) => game.id),
           }))
-        )
+        ),
+        localStorage.getItem("accessToken")!
       );
     }
-  }, [tierData.rows]);
+  }, [tierData.rows, params.tierType, currentUser]);
 
   const findContainer = (id: string | number) => {
     if (id == "tray") {
@@ -352,7 +361,9 @@ function TierPage() {
       onDragStart={handleDragStart}
       sensors={sensors}
     >
-      <h1 style={{margin:"1vw 0",width:"100%",textAlign:"center"}}>{filterFlags?.name}</h1>
+      <h1 style={{ margin: "1vw 0", width: "100%", textAlign: "center" }}>
+        {filterFlags?.name}
+      </h1>
       <TierTable loading={loadingRows} />
       <div
         style={{
@@ -393,10 +404,7 @@ function TierPage() {
       {!loadingTray && tierData.games.length === 0 ? (
         <p style={{ textAlign: "center" }}>Ничего не найдено</p>
       ) : (
-        <CardList
-          loading={loadingTray}
-          pageSize={flagsParam.page_size}
-        />
+        <CardList loading={loadingTray} pageSize={flagsParam.page_size} />
       )}
       <div style={{ margin: "4vh 0" }}>
         <div style={{ display: "flex", justifyContent: "center" }}>

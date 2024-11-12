@@ -7,7 +7,7 @@ export interface TierData {
     color:string;
 }
 
-export interface LocalTierData {
+export interface SaveTierData {
     id:string;
     tier:string;
     games:number[];
