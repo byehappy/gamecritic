@@ -3,7 +3,7 @@ import { gamesRequest, getUserRows, updateUserRows } from "../axios";
 import { Button, Pagination, Popover } from "antd";
 import Search from "antd/es/input/Search";
 import { CardList } from "../components/cardList/CardList";
-import { FilterOutlined } from "@ant-design/icons";
+import { FilterOutlined,SaveOutlined } from "@ant-design/icons";
 import { Filter } from "../components/filter/Filter";
 import { TierTable } from "../components/tierTable/TierTable";
 import {
@@ -43,6 +43,7 @@ function TierPage() {
   const [loadingRows, setLoadingRows] = useState(true);
   const [loadingTray, setLoadingTray] = useState(true);
   const [totalCount, setTotalCount] = useState<number>(1);
+  const [dirty, setDirty] = useState(false);
   const [flagsParam, setFlagsParam] = useState<FilterFlags>({
     page: DefaultPage,
     page_size: DefaultPageSize,
@@ -92,7 +93,6 @@ function TierPage() {
       loadGamesStorage();
     }
   }, [loadGamesStorage, params]);
-
   const handleChangeFiters = (
     param: keyof FilterFlags,
     value: string | string[] | number | null
@@ -104,7 +104,7 @@ function TierPage() {
   };
 
   const getGames = useCallback(async () => {
-    if(loadingRows) return;
+    if (loadingRows) return;
     setLoadingTray(true);
     try {
       const response = await gamesRequest({
@@ -140,8 +140,7 @@ function TierPage() {
 
     return () => clearTimeout(delayDebounce);
   }, [getGames]);
-
-  useEffect(() => {
+  const handleSaveRows = () => {
     if (!loadingRows && params.tierType && currentUser) {
       updateUserRows(
         currentUser?.id,
@@ -155,8 +154,8 @@ function TierPage() {
         localStorage.getItem("accessToken")!
       );
     }
-  }, [tierData.rows, params.tierType, currentUser, loadingRows]);
-
+  };
+  //добавить кнопку сохранить и добавить форму есть несохраненые данные(dirty)
   const findContainer = (id: string | number) => {
     if (id == "tray") {
       return "tray";
@@ -261,6 +260,7 @@ function TierPage() {
     setActiveGame(null);
   };
   const handleDragOver = (event: DragOverEvent) => {
+    setDirty(true)
     const { active, over } = event;
     if (!over) return;
 
@@ -401,6 +401,7 @@ function TierPage() {
         >
           <Button size="large" type="primary" icon={<FilterOutlined />} />
         </Popover>
+        <Button size="large" type="primary" onClick={handleSaveRows} icon={<SaveOutlined />} />
       </div>
       {!loadingTray && tierData.games.length === 0 ? (
         <p style={{ textAlign: "center" }}>Ничего не найдено</p>

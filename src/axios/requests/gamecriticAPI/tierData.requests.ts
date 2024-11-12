@@ -8,24 +8,24 @@ interface Tier {
   platforms?:string,
   tags?:string,
 }
-
-interface UserTier {
-  user_id: number;
-  tier_id: number;
-  rows: string;
-}
+let currentAbortController: AbortController | null = null;
 
 export const getAllTiers = async (): Promise<Tier[]> => {
-  const response = await instanceAPI.get("/tierlist");
+  if (currentAbortController) {
+    currentAbortController.abort();
+  }
+  currentAbortController = new AbortController();
+  const response = await instanceAPI.get("/tierlist",{signal:currentAbortController.signal});
+  currentAbortController = null
   return response.data;
 };
 
-export const getTierById = async (id: number): Promise<Tier> => {
+export const getTierById = async (id: string) => {
   const response = await instanceAPI.get(`/tierlist/${id}`);
   return response.data;
 };
 
-export const getUserTiers = async (userId: number): Promise<UserTier[]> => {
+export const getUserTiers = async (userId: string): Promise<{tier_id:string}[]> => {
   const response = await instanceAPI.get(`/user/tierlists/${userId}`);
   return response.data;
 };

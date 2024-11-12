@@ -1,3 +1,4 @@
+import { redirect } from "react-router-dom";
 import { instanceAPI } from ".";
 
 export const signUp = (username: string, email: string, password: string) => {
@@ -14,9 +15,6 @@ export const signIn = (login: string, password: string) => {
       password,
     })
     .then((response) => {
-      if (response.data.user) {
-        localStorage.setItem("user", JSON.stringify(response.data.user));
-      }
       localStorage.setItem("accessToken", response.data.accessToken);
       localStorage.setItem("refreshToken", response.data.refreshToken);
       return response.data;
@@ -32,7 +30,6 @@ export const getCurrentUser = () => {
   const user = localStorage.getItem("user");
   if (user) return JSON.parse(user);
 };
-
 instanceAPI.interceptors.response.use(
   (res) => {
     return res;
@@ -59,15 +56,22 @@ instanceAPI.interceptors.response.use(
 
       if (err.response.status === 403 && err.response.data) {
         return Promise.reject(err.response.data);
-      }
+      } 
     }
 
     return Promise.reject(err);
   }
 );
 
-const refreshToken = () => {
-  return instanceAPI.post("/refresh", {
-    refreshToken: localStorage.getItem("refreshToken"),
-  });
+export const refreshToken = async () => {
+  try {
+        return await instanceAPI.post("/refresh", {
+            refreshToken: localStorage.getItem("refreshToken"),
+        });
+    } catch {
+         window.location.href = '/auth/sign-in'
+    }
 };
+
+
+// отображение для гостя или пользователя дать редактировать

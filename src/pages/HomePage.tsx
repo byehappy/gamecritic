@@ -2,7 +2,7 @@ import { Carousel } from "antd";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { TemplateCard } from "../components/templateCard/TemplateCard";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getAllTiers } from "../axios";
 import uuid4 from "uuid4";
 
@@ -16,7 +16,7 @@ const CarouselWrapper = styled(Carousel)`
 const ContainerItems = styled.div`
   display: flex;
   gap: 1vw;
-  height:20vh;
+  height: 20vh;
   padding: 0 1vw;
 `;
 
@@ -51,9 +51,13 @@ interface Tier {
 
 export const HomePage = () => {
   const [tiers, setTiers] = useState<Tier[] | null>();
-  useEffect(() => {
+  const getTiers = useCallback(() => {
     getAllTiers().then((data) => setTiers(data));
   }, []);
+
+  useEffect(()=>{
+    getTiers()
+  },[getTiers])
 
   return (
     <>
@@ -72,18 +76,17 @@ export const HomePage = () => {
         <CarouselWrapper arrows infinite={false} dots={false}>
           <div>
             <ContainerItems>
-              {
-                tiers?.map((tier) => {
-                  const id = uuid4();
-                  return (
-                    <TemplateCard
-                      key={id}
-                      img={tier.imageSrc ?? ""}
-                      name={tier.title}
-                      id={tier.id}
-                    />
-                  );
-                })}
+              {tiers?.map((tier) => {
+                const id = uuid4();
+                return (
+                  <TemplateCard
+                    key={id}
+                    img={tier.imageSrc ?? ""}
+                    name={tier.title}
+                    id={tier.id}
+                  />
+                );
+              })}
             </ContainerItems>
           </div>
           <div>

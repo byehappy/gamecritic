@@ -1,8 +1,13 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { signIn, signUp, logout as logoutUser } from "../../axios";
+import {
+  signIn,
+  signUp,
+  logout as logoutUser,
+  refreshToken,
+} from "../../axios";
+import { AxiosError } from "axios";
+import { setMessage } from "./messageSlice";
 
-const local = localStorage.getItem("user");
-const user = local && JSON.parse(local);
 type RegisterType = {
   username: string;
   email: string;
@@ -14,24 +19,32 @@ type LoginType = {
 };
 export const register = createAsyncThunk(
   "auth/sign-up",
-  async ({ username, email, password }: RegisterType) => {
+  async ({ username, email, password }: RegisterType, thunkAPI) => {
     try {
       const response = await signUp(username, email, password);
       return response.data;
-    } catch (error) {
-      console.error(error);
+    } catch (e) {
+      const error = e as AxiosError;
+      console.log(error);
+      const message = error.response?.data;
+      thunkAPI.dispatch(setMessage(message));
+      return thunkAPI.rejectWithValue(error.response?.data);
     }
   }
 );
 
 export const login = createAsyncThunk(
   "auth/sign-in",
-  async ({ username, password }: LoginType) => {
+  async ({ username, password }: LoginType, thunkAPI) => {
     try {
       const data = await signIn(username, password);
       return { user: data.user };
-    } catch (error) {
-      console.error(error);
+    } catch (e) {
+      const error = e as AxiosError;
+      console.log(error);
+      const message = error.response?.data;
+      thunkAPI.dispatch(setMessage(message));
+      return thunkAPI.rejectWithValue(error.response?.data);
     }
   }
 );
@@ -47,6 +60,13 @@ type InitialType = {
     id: string;
   } | null;
 };
+let user
+if (localStorage.getItem("refreshToken")) {
+  const rs = await refreshToken();
+  const { accessToken } = rs!.data;
+  localStorage.setItem("accessToken", accessToken);
+  user  = rs!.data.user;
+}
 
 const initialState: InitialType = user
   ? { isLoggedIn: true, user }

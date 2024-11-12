@@ -34,7 +34,6 @@ export const Header = () => {
   useEffect(() => {
     setCurrentUser(user);
   }, [user]);
-
   return (
     <StyledHeader>
       <Link className="logo" to={""} style={{ fontSize: "2rem" }}>
@@ -42,9 +41,6 @@ export const Header = () => {
       </Link>
       {!currentUser ? (
         <div style={{ display: "flex", gap: "1vw" }}>
-          <Link to="/auth/sign-up">
-            <Button>Регистрация</Button>
-          </Link>
           <Link to="/auth/sign-in">
             <Button>Авторизация</Button>
           </Link>

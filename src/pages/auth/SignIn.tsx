@@ -1,27 +1,18 @@
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
-import * as Yup from "yup";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { login } from "../../redux/slice/authSlice";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import { FieldInput, FieldContainer, Submit } from "./Auth.style";
+import { Input, Button, Form } from "antd";
 
 export const SignInPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { isLoggedIn } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
-  const initialValues = {
-    username: "",
-    password: "",
+  type FieldType = {
+    username: string;
+    password: string;
   };
-  const validationSchema = Yup.object().shape({
-    username: Yup.string().required("Введите свой логин"),
-    password: Yup.string()
-      .required("Это поле обязательно для заполнения")
-      .min(6, "Пароль слишком короткий")
-      .matches(/[a-zA-Z]/, "Используйте только латинские буквы a-z"),
-  });
 
   const handleLogin = (formValue: { username: string; password: string }) => {
     const { username, password } = formValue;
@@ -40,67 +31,66 @@ export const SignInPage = () => {
   if (isLoggedIn) {
     return <Navigate to="/" />;
   }
-
   return (
     <div
       style={{
         display: "flex",
         flexDirection: "column",
         gap: "2vh 0",
-        textAlign: "center",
         width: "25vw",
         margin: "25vh auto",
       }}
     >
-      <h1 style={{ fontSize: "2rem" }}>Авторизация</h1>
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleLogin}
+      <h1 style={{ fontSize: "2rem", margin: "0 auto" }}>Авторизация</h1>
+      <Form
+        labelCol={{ xs: { span: 24 }, sm: { span: 4 } }}
+        wrapperCol={{ xs: { span: 24 }, sm: { span: 24 } }}
+        initialValues={{ remember: true }}
+        onFinish={handleLogin}
+        autoComplete="off"
       >
-        {({ isValid, dirty }) => (
-          <Form
-            id="sign-in-form"
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: "1vh 0",
-            }}
-          >
-            <FieldContainer>
-              Имя пользователя
-              <Field
-                type="username"
-                name="username"
-                placeholder="Имя пользователя"
-                as={FieldInput}
-              />
-              <ErrorMessage
-                name="username"
-                component="div"
-                className="ErrorMessages"
-              />
-            </FieldContainer>
-            <FieldContainer>
-              Пароль
-              <Field type="password" name="password" as={FieldInput} />
-              <ErrorMessage
-                name="password"
-                component="div"
-                className="ErrorMessages"
-              />
-            </FieldContainer>
-            <Submit
-              color="primary"
-              htmlType="submit"
-              disabled={!(isValid && dirty) || loading}
-            >
-              {loading ? "Загрузка..." : "Войти"}
-            </Submit>
-          </Form>
-        )}
-      </Formik>
+        <Form.Item<FieldType>
+          hasFeedback
+          label="Логин"
+          name="username"
+          validateDebounce={1000}
+          rules={[
+            { required: true, message: "Введите свой логин" },
+            { min: 4, message: "Логин от 4 символов" },
+          ]}
+        >
+          <Input placeholder="Логин" />
+        </Form.Item>
+
+        <Form.Item<FieldType>
+          hasFeedback
+          label="Пароль"
+          name="password"
+          validateDebounce={1000}
+          rules={[
+            { required: true, message: "Это поле обязательно для заполнения" },
+            { min: 6, message: "Пароль от 6 символов" },
+          ]}
+        >
+          <Input.Password placeholder="Пароль" />
+        </Form.Item>
+
+        <Form.Item
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "2vw",
+          }}
+        >
+          <Button type="primary" htmlType="submit" loading={loading}>
+            Войти
+          </Button>
+        </Form.Item>
+      </Form>
+      <div style={{textAlign:"center"}}>
+        Еще не зарегистрировались?{" "}
+        <Link to="/auth/sign-up">Зарегистрироваться</Link>
+      </div>
     </div>
   );
 };

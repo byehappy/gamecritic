@@ -41,6 +41,7 @@ interface Tier {
 export const ProfilePage = () => {
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const [tiers, setTiers] = useState<Tier[]>([]);
+  const [favoriteGames, setFavoriteGames] = useState<[]>([]);
   const getTiers = useCallback(async () => {
     if (!currentUser) return;
     const tierIds = await getUserTiers(currentUser.id);
@@ -55,35 +56,60 @@ export const ProfilePage = () => {
   if (!currentUser) {
     return <Navigate to="/auth/sign-in" />;
   }
-
   return (
     <div>
       <HeaderTemplate>
         <h1>Ваши шаблоны</h1>
-        <Link to={"/all"}>Увидеть все шаблоны</Link>
+        {tiers.length !== 0 && <Link to={"/all"}>Увидеть все шаблоны</Link>}
       </HeaderTemplate>
       <CarouselWrapper arrows infinite={false} dots={false}>
-      <div>
-            <ContainerItems>
-              {
-                tiers?.map((tier) => {
-                  const id = uuid4();
-                  return (
-                    <TemplateCard
-                      key={id}
-                      img={tier.imageSrc ?? ""}
-                      name={tier.title}
-                      id={tier.id}
-                    />
-                  );
-                })}
-            </ContainerItems>
-          </div>
+        <div>
+          <ContainerItems>
+            {tiers.map((tier) => {
+              const id = uuid4();
+              return (
+                <TemplateCard
+                  key={id}
+                  img={tier.imageSrc ?? ""}
+                  name={tier.title}
+                  id={tier.id}
+                />
+              );
+            })}
+            {tiers.length === 0 && (
+              <div style={{ fontSize: "1.2rem" }}>
+                Вы еще не состовляли списки по шаблонам
+              </div>
+            )}
+          </ContainerItems>
+        </div>
       </CarouselWrapper>
       <HeaderTemplate>
         <h1>Избранные игры</h1>
-        <Link to={"/"}>Увидеть все избранные игры</Link>
+        {favoriteGames.length !== 0 && <Link to={"/"}>Увидеть все избранные игры</Link>}
       </HeaderTemplate>
+      <CarouselWrapper arrows infinite={false} dots={false}>
+        <div>
+          <ContainerItems>
+            {/* {favoriteGames.map((game) => {
+              const id = uuid4();
+              return (
+                <TemplateCard
+                  key={id}
+                  img={game.imageSrc ?? ""}
+                  name={game.title}
+                  id={game.id}
+                />
+              );
+            })} */}
+            {favoriteGames.length === 0 && (
+              <div style={{ fontSize: "1.2rem" }}>
+                Вы не добавили игры в избранное
+              </div>
+            )}
+          </ContainerItems>
+        </div>
+      </CarouselWrapper>
     </div>
   );
 };
