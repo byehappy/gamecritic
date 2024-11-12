@@ -1,8 +1,11 @@
 import { Link, Navigate } from "react-router-dom";
 import { useAppSelector } from "../redux/hooks";
 import styled from "styled-components";
-import { TemplateCard } from "../components/templateCard/TemplateCard";
 import { Carousel } from "antd";
+import { useCallback, useEffect, useState } from "react";
+import { getTierById, getUserTiers } from "../axios";
+import uuid4 from "uuid4";
+import { TemplateCard } from "../components/templateCard/TemplateCard";
 const CarouselWrapper = styled(Carousel)`
   margin-top: 2vh;
   padding: 0.3em;
@@ -21,16 +24,38 @@ const HeaderTemplate = styled.div`
   justify-content: space-between;
   align-items: center;
   font-size: 0.8rem;
-  margin-top:1vw;
+  margin-top: 1vw;
   a {
     font-size: 1.5em;
   }
 `;
+
+interface Tier {
+  id: string;
+  title: string;
+  imageSrc?: string;
+  genres?: string;
+  platforms?: string;
+  tags?: string;
+}
 export const ProfilePage = () => {
   const { user: currentUser } = useAppSelector((state) => state.auth);
+  const [tiers, setTiers] = useState<Tier[]>([]);
+  const getTiers = useCallback(async () => {
+    if (!currentUser) return;
+    const tierIds = await getUserTiers(currentUser.id);
+    const tiers = tierIds.map((tier) => getTierById(tier.tier_id));
+    setTiers(await Promise.all(tiers));
+  }, [currentUser]);
+
+  useEffect(() => {
+    getTiers();
+  }, [getTiers]);
+
   if (!currentUser) {
     return <Navigate to="/auth/sign-in" />;
   }
+
   return (
     <div>
       <HeaderTemplate>
@@ -38,112 +63,22 @@ export const ProfilePage = () => {
         <Link to={"/all"}>Увидеть все шаблоны</Link>
       </HeaderTemplate>
       <CarouselWrapper arrows infinite={false} dots={false}>
-        <div>
-          <ContainerItems>
-            <TemplateCard
-              img={
-                "https://tiermaker.com/images/templates/1000-video-games-15303565/153035651681682831.png"
-              }
-              name={"Все игры"}
-              slug={"main"}
-            />
-            <TemplateCard
-              img={
-                "https://tiermaker.com/images/templates/best-rpg-games-of-all-time-1366519/13665191650477068.jpg"
-              }
-              name={"Лучшее РПГ"}
-              slug={"RPG"}
-            />
-            <TemplateCard
-              img={
-                "https://tiermaker.com/images/templates/single-player-games-1081443/10814431624177063.jpg"
-              }
-              name={"Лучшие одиночные игры"}
-              slug={"Singleplayer"}
-            />
-            <TemplateCard
-              img={
-                "https://tiermaker.com/images/templates/1000-video-games-15303565/153035651681682831.png"
-              }
-              name={"Все игры"}
-              slug={"main"}
-            />
-            <TemplateCard
-              img={
-                "https://tiermaker.com/images/templates/best-rpg-games-of-all-time-1366519/13665191650477068.jpg"
-              }
-              name={"Лучшее РПГ"}
-              slug={"RPG"}
-            />
-            <TemplateCard
-              img={
-                "https://tiermaker.com/images/templates/single-player-games-1081443/10814431624177063.jpg"
-              }
-              name={"Лучшие одиночные игры"}
-              slug={"Singleplayer"}
-            />
-            <TemplateCard
-              img={
-                "https://tiermaker.com/images/templates/single-player-games-1081443/10814431624177063.jpg"
-              }
-              name={"Лучшие одиночные игры"}
-              slug={"Singleplayer"}
-            />
-          </ContainerItems>
-        </div>
-        <div>
-          <ContainerItems>
-            <TemplateCard
-              img={
-                "https://tiermaker.com/images/templates/1000-video-games-15303565/153035651681682831.png"
-              }
-              name={"Все игры"}
-              slug={"main"}
-            />
-            <TemplateCard
-              img={
-                "https://tiermaker.com/images/templates/best-rpg-games-of-all-time-1366519/13665191650477068.jpg"
-              }
-              name={"Лучшее РПГ"}
-              slug={"RPG"}
-            />
-            <TemplateCard
-              img={
-                "https://tiermaker.com/images/templates/single-player-games-1081443/10814431624177063.jpg"
-              }
-              name={"Лучшие одиночные игры"}
-              slug={"Singleplayer"}
-            />
-            <TemplateCard
-              img={
-                "https://tiermaker.com/images/templates/1000-video-games-15303565/153035651681682831.png"
-              }
-              name={"Все игры"}
-              slug={"main"}
-            />
-            <TemplateCard
-              img={
-                "https://tiermaker.com/images/templates/best-rpg-games-of-all-time-1366519/13665191650477068.jpg"
-              }
-              name={"Лучшее РПГ"}
-              slug={"RPG"}
-            />
-            <TemplateCard
-              img={
-                "https://tiermaker.com/images/templates/single-player-games-1081443/10814431624177063.jpg"
-              }
-              name={"Лучшие одиночные игры"}
-              slug={"Singleplayer"}
-            />
-            <TemplateCard
-              img={
-                "https://tiermaker.com/images/templates/1000-video-games-15303565/153035651681682831.png"
-              }
-              name={"Все игры"}
-              slug={"main"}
-            />
-          </ContainerItems>
-        </div>
+      <div>
+            <ContainerItems>
+              {
+                tiers?.map((tier) => {
+                  const id = uuid4();
+                  return (
+                    <TemplateCard
+                      key={id}
+                      img={tier.imageSrc ?? ""}
+                      name={tier.title}
+                      id={tier.id}
+                    />
+                  );
+                })}
+            </ContainerItems>
+          </div>
       </CarouselWrapper>
       <HeaderTemplate>
         <h1>Избранные игры</h1>
