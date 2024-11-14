@@ -1,11 +1,13 @@
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { login } from "../../redux/slice/authSlice";
 import { Input, Button, Form } from "antd";
 
 export const SignInPage = () => {
-  const navigate = useNavigate();
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const redirectTo = params.get("from") ?? "/";
   const [loading, setLoading] = useState(false);
   const { isLoggedIn } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
@@ -13,24 +15,19 @@ export const SignInPage = () => {
     username: string;
     password: string;
   };
-
+  const navigation = useNavigate();
   const handleLogin = (formValue: { username: string; password: string }) => {
     const { username, password } = formValue;
     setLoading(true);
 
-    dispatch(login({ username, password }))
-      .unwrap()
-      .then(() => {
-        navigate("/");
-      })
-      .catch(() => {
-        setLoading(false);
-      });
+    dispatch(login({ username, password })).finally(() => setLoading(false));
   };
+  useEffect(()=>{
+    if (isLoggedIn) {
+      navigation(redirectTo || "/");
+    }
+  },[isLoggedIn, navigation, redirectTo])
 
-  if (isLoggedIn) {
-    return <Navigate to="/" />;
-  }
   return (
     <div
       style={{
@@ -50,26 +47,18 @@ export const SignInPage = () => {
         autoComplete="off"
       >
         <Form.Item<FieldType>
-          hasFeedback
           label="Логин"
           name="username"
-          validateDebounce={1000}
-          rules={[
-            { required: true, message: "Введите свой логин" },
-            { min: 4, message: "Логин от 4 символов" },
-          ]}
+          rules={[{ required: true, message: "Введите свой логин" }]}
         >
           <Input placeholder="Логин" />
         </Form.Item>
 
         <Form.Item<FieldType>
-          hasFeedback
           label="Пароль"
           name="password"
-          validateDebounce={1000}
           rules={[
             { required: true, message: "Это поле обязательно для заполнения" },
-            { min: 6, message: "Пароль от 6 символов" },
           ]}
         >
           <Input.Password placeholder="Пароль" />
@@ -87,7 +76,7 @@ export const SignInPage = () => {
           </Button>
         </Form.Item>
       </Form>
-      <div style={{textAlign:"center"}}>
+      <div style={{ textAlign: "center" }}>
         Еще не зарегистрировались?{" "}
         <Link to="/auth/sign-up">Зарегистрироваться</Link>
       </div>

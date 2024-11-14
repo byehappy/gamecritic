@@ -2,9 +2,10 @@ import { Carousel } from "antd";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { TemplateCard } from "../components/templateCard/TemplateCard";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getAllTiers } from "../axios";
 import uuid4 from "uuid4";
+import { SkeletonFactory } from "../utils/skeleton/skeleton-factory";
 
 const CarouselWrapper = styled(Carousel)`
   margin-top: 2vh;
@@ -51,13 +52,17 @@ interface Tier {
 
 export const HomePage = () => {
   const [tiers, setTiers] = useState<Tier[] | null>();
+  const getTiersRef = useRef(false)
   const getTiers = useCallback(() => {
-    getAllTiers().then((data) => setTiers(data));
+    getAllTiers()
+      .then((res) => setTiers(res))
   }, []);
 
-  useEffect(()=>{
-    getTiers()
-  },[getTiers])
+  useEffect(() => {
+    if(getTiersRef.current) return;
+    getTiersRef.current = true
+    getTiers();
+  }, [getTiers]);
 
   return (
     <>
@@ -76,70 +81,20 @@ export const HomePage = () => {
         <CarouselWrapper arrows infinite={false} dots={false}>
           <div>
             <ContainerItems>
-              {tiers?.map((tier) => {
-                const id = uuid4();
-                return (
-                  <TemplateCard
-                    key={id}
-                    img={tier.imageSrc ?? ""}
-                    name={tier.title}
-                    id={tier.id}
-                  />
-                );
-              })}
+            {!tiers && SkeletonFactory(12,"Card")}
+              {tiers?.map((tier) => (
+                <TemplateCard
+                  key={uuid4()}
+                  img={tier.imageSrc ?? ""}
+                  name={tier.title}
+                  id={tier.id}
+                />
+              ))}
             </ContainerItems>
           </div>
           <div>
             <ContainerItems>
-              <TemplateCard
-                img={
-                  "https://tiermaker.com/images/templates/1000-video-games-15303565/153035651681682831.png"
-                }
-                name={"Все игры"}
-                slug={"main"}
-              />
-              <TemplateCard
-                img={
-                  "https://tiermaker.com/images/templates/best-rpg-games-of-all-time-1366519/13665191650477068.jpg"
-                }
-                name={"Лучшее РПГ"}
-                slug={"RPG"}
-              />
-              <TemplateCard
-                img={
-                  "https://tiermaker.com/images/templates/single-player-games-1081443/10814431624177063.jpg"
-                }
-                name={"Лучшие одиночные игры"}
-                slug={"Singleplayer"}
-              />
-              <TemplateCard
-                img={
-                  "https://tiermaker.com/images/templates/1000-video-games-15303565/153035651681682831.png"
-                }
-                name={"Все игры"}
-                slug={"main"}
-              />
-              <TemplateCard
-                img={
-                  "https://tiermaker.com/images/templates/best-rpg-games-of-all-time-1366519/13665191650477068.jpg"
-                }
-                name={"Лучшее РПГ"}
-                slug={"RPG"}
-              />
-              <TemplateCard
-                img={
-                  "https://tiermaker.com/images/templates/single-player-games-1081443/10814431624177063.jpg"
-                }
-                name={"Лучшие одиночные игры"}
-                slug={"Singleplayer"}
-              />
-              <TemplateCard
-                img={
-                  "https://tiermaker.com/images/templates/1000-video-games-15303565/153035651681682831.png"
-                }
-                name={"Все игры"}
-                slug={"main"}
-              />
+              
             </ContainerItems>
           </div>
         </CarouselWrapper>

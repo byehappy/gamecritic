@@ -1,6 +1,6 @@
 import { Flex, Spin } from "antd";
 import { Modal } from "../../modal/Modal";
-import { LoadingOutlined } from "@ant-design/icons";
+import { LoadingOutlined, StarFilled, StarOutlined } from "@ant-design/icons";
 import { gameRequest } from "../../../axios/requests/games.requests";
 import { useEffect, useState } from "react";
 import { IGameOnly } from "../../../interfaces/games";
@@ -13,6 +13,7 @@ export const CardModal: React.FC<{
 }> = ({ id, setOpenModalGameId }) => {
   const [loading, setLoading] = useState(true);
   const [game, setGame] = useState<IGameOnly | null>(null);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
     const fetchGame = async () => {
@@ -32,7 +33,23 @@ export const CardModal: React.FC<{
 
   const gameInfo = game ? (
     <div style={{ display: "flex", flexDirection: "column", gap: "1vh 0" }}>
-      <h2>{game.name}</h2>
+      <div style={{ display: "flex", gap: ".5vw" }}>
+        {isFavorite ? (
+          <StarFilled
+            style={{ color: "#ffc400", fontSize: "1.5rem" }}
+            onClick={() => setIsFavorite(false)}
+          />
+        ) : (
+          <StarOutlined
+            style={{ fontSize: "1.5rem" }}
+            onClick={() => {
+              setIsFavorite(true);
+            }}
+          />
+        )}
+
+        <h2>{game.name}</h2>
+      </div>
       <p>
         <strong>Оценка на Metacritic:</strong> {game.metacritic}
       </p>
@@ -71,11 +88,7 @@ export const CardModal: React.FC<{
   );
 
   return (
-    <Modal
-      key={uuid4()}
-      isOpen={true}
-      onClose={() => setOpenModalGameId(null)}
-    >
+    <Modal key={uuid4()} isOpen={true} onClose={() => setOpenModalGameId(null)}>
       {loading ? (
         <Flex justify="center">
           <Spin indicator={<LoadingOutlined spin />} size="large" />

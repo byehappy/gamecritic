@@ -1,9 +1,9 @@
-import { IGameDis } from "./games";
+import { IGame, IGameDis } from "./games";
 
 export interface TierData {
     id:string;
     tier:string;
-    games:IGameDis[];
+    games:IGame[];
     color:string;
 }
 

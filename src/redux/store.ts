@@ -4,9 +4,9 @@ import authReducer from './slice/authSlice'
 import messageReducer  from "./slice/messageSlice"
 export const store = configureStore({
     reducer:{
+        message:messageReducer,
         tierData:tierDataReducer,
         auth:authReducer,
-        message:messageReducer
     }
 })
 

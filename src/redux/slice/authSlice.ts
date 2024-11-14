@@ -25,7 +25,6 @@ export const register = createAsyncThunk(
       return response.data;
     } catch (e) {
       const error = e as AxiosError;
-      console.log(error);
       const message = error.response?.data;
       thunkAPI.dispatch(setMessage(message));
       return thunkAPI.rejectWithValue(error.response?.data);
@@ -37,11 +36,12 @@ export const login = createAsyncThunk(
   "auth/sign-in",
   async ({ username, password }: LoginType, thunkAPI) => {
     try {
-      const data = await signIn(username, password);
-      return { user: data.user };
+      const response = await signIn(username, password);
+      localStorage.setItem("accessToken", response.data.accessToken);
+      localStorage.setItem("refreshToken", response.data.refreshToken);
+      return { user: response.data.user };
     } catch (e) {
       const error = e as AxiosError;
-      console.log(error);
       const message = error.response?.data;
       thunkAPI.dispatch(setMessage(message));
       return thunkAPI.rejectWithValue(error.response?.data);
@@ -51,6 +51,7 @@ export const login = createAsyncThunk(
 
 export const logout = createAsyncThunk("auth/logout", () => {
   logoutUser();
+  
 });
 
 type InitialType = {
@@ -60,12 +61,12 @@ type InitialType = {
     id: string;
   } | null;
 };
-let user
+let user;
 if (localStorage.getItem("refreshToken")) {
   const rs = await refreshToken();
-  const { accessToken } = rs!.data;
+  const { accessToken } = rs.data;
   localStorage.setItem("accessToken", accessToken);
-  user  = rs!.data.user;
+  user = rs.data.user;
 }
 
 const initialState: InitialType = user

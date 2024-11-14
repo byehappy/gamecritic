@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { gamesRequest, getUserRows, updateUserRows } from "../axios";
+import { gamesRequest, getUserRows } from "../axios";
 import { Button, Pagination, Popover } from "antd";
 import Search from "antd/es/input/Search";
 import { CardList } from "../components/cardList/CardList";
-import { FilterOutlined,SaveOutlined } from "@ant-design/icons";
+import { FilterOutlined } from "@ant-design/icons";
 import { Filter } from "../components/filter/Filter";
 import { TierTable } from "../components/tierTable/TierTable";
 import {
@@ -18,7 +18,7 @@ import {
 } from "@dnd-kit/core";
 import { SaveTierData } from "../interfaces/tierData";
 import { arrayMove } from "@dnd-kit/sortable";
-import { IGameDis } from "../interfaces/games";
+import { IGame, IGameDis } from "../interfaces/games";
 import { CardGame } from "../components/card/Card";
 import { FilterFlags } from "../interfaces/filters";
 import { gameRequest } from "../axios/requests/games.requests";
@@ -30,20 +30,24 @@ import {
 } from "../redux/slice/tierDataSlice";
 import { useParams } from "react-router-dom";
 import getFiltersTierType from "../utils/getFilterOnName";
+import { useBeforeUnloadSave } from "../utils/beforeUnload";
 const DefaultPage = 1;
 const DefaultPageSize = 40;
 
 function TierPage() {
   const { user: currentUser } = useAppSelector((state) => state.auth);
-  const { rows: loadRows } = useAppSelector((state) => state.tierData);
-  const params = useParams();
-  const filterFlags = getFiltersTierType(params.tierType as string);
+  const { rows } = useAppSelector((state) => state.tierData);
+  const rowsRef = useRef(rows);
+  const [dirty, setDirty] = useState(false);
+  const { tierType } = useParams<{ tierType: string }>() as {
+    tierType: string;
+  };
+  const filterFlags = getFiltersTierType(tierType);
   const tierData = useAppSelector((state) => state.tierData);
   const dispatch = useAppDispatch();
   const [loadingRows, setLoadingRows] = useState(true);
   const [loadingTray, setLoadingTray] = useState(true);
   const [totalCount, setTotalCount] = useState<number>(1);
-  const [dirty, setDirty] = useState(false);
   const [flagsParam, setFlagsParam] = useState<FilterFlags>({
     page: DefaultPage,
     page_size: DefaultPageSize,
@@ -58,11 +62,29 @@ function TierPage() {
       },
     })
   );
+  useBeforeUnloadSave(
+    tierData.rows.map((row) => ({
+      ...row,
+      games: row.games.map((game) => game.id),
+    })),
+    tierType,
+    dirty
+  );
+
+  useEffect(() => {
+    if (!dirty) {
+      setDirty(JSON.stringify(rows) !== JSON.stringify(rowsRef.current));
+    } 
+  }, [dirty, rows, setDirty]);
   const loadGamesStorage = useCallback(async () => {
-    if (!currentUser) return;
-    const tiers = await getUserRows(currentUser?.id, params.tierType!).then(
-      (data) => data.rows
-    );
+    let tiers;
+    if (currentUser) {
+      tiers = await getUserRows(currentUser.id, tierType).then(
+        (res) => res.data.rows
+      );
+    } else {
+      tiers = sessionStorage.getItem(tierType);
+    }
     if (!tiers) {
       dispatch(setDefault());
       setLoadingRows(false);
@@ -74,25 +96,24 @@ function TierPage() {
       gameRequest(id).then((res) => res.data)
     );
     const gamesData = await Promise.all(gameRequests);
-    const gamesMap: Record<string, IGameDis> = gamesData.reduce((acc, game) => {
+    const gamesMap: Record<string, IGame> = gamesData.reduce((acc, game) => {
       acc[game.id] = game;
       return acc;
-    }, {} as Record<string, IGameDis>);
+    }, {} as Record<string, IGame>);
     const updatedRows = parsedTiers.map((row) => {
       const games = row.games.map((gameId) => gamesMap[gameId] || {});
       return { ...row, games };
     });
     dispatch(setRows(updatedRows));
     setLoadingRows(false);
-  }, [currentUser, dispatch, params.tierType]);
-
+  }, [currentUser, dispatch, tierType]);
   useEffect(() => {
     if (dataFetchedRef.current) return;
     dataFetchedRef.current = true;
-    if (params.tierType) {
+    if (tierType) {
       loadGamesStorage();
     }
-  }, [loadGamesStorage, params]);
+  }, [loadGamesStorage, tierType]);
   const handleChangeFiters = (
     param: keyof FilterFlags,
     value: string | string[] | number | null
@@ -110,7 +131,7 @@ function TierPage() {
       const response = await gamesRequest({
         ...flagsParam,
       });
-      const existingGamesInRows = loadRows.flatMap((row) => row.games);
+      const existingGamesInRows = rows.flatMap((row) => row.games);
       const newGames: IGameDis[] = response.data.results.map((game) => ({
         ...game,
         disabled: existingGamesInRows.some(
@@ -127,7 +148,6 @@ function TierPage() {
       setLoadingTray(false);
     } catch (error) {
       dispatch(setTrayGames([]));
-      console.log((error as Error).message);
     } finally {
       setLoadingTray(false);
     }
@@ -140,22 +160,6 @@ function TierPage() {
 
     return () => clearTimeout(delayDebounce);
   }, [getGames]);
-  const handleSaveRows = () => {
-    if (!loadingRows && params.tierType && currentUser) {
-      updateUserRows(
-        currentUser?.id,
-        params.tierType,
-        JSON.stringify(
-          tierData.rows.map((row) => ({
-            ...row,
-            games: row.games.map((game) => game.id),
-          }))
-        ),
-        localStorage.getItem("accessToken")!
-      );
-    }
-  };
-  //добавить кнопку сохранить и добавить форму есть несохраненые данные(dirty)
   const findContainer = (id: string | number) => {
     if (id == "tray") {
       return "tray";
@@ -164,13 +168,13 @@ function TierPage() {
       return "tray";
     }
     for (const row of tierData.rows) {
-      if (row.games.map((e) => e.id).includes(id)) {
+      if (row.games.map((e) => e.id).includes(id as number)) {
         return row.id;
       }
     }
     return id;
   };
-  const findGame = (id: number): IGameDis | undefined => {
+  const findGame = (id: number): IGameDis | IGame | undefined => {
     for (const tier of tierData.rows) {
       const foundGame = tier.games.find((game) => game.id === id);
       if (foundGame) {
@@ -202,9 +206,7 @@ function TierPage() {
           ? tierData.games
           : tierData.rows.find((row) => row.id.toString() === overContainer)!
               .games;
-      const activeIndex = activeItems
-        .map((e) => e.id)
-        .indexOf(active.id as number);
+      const activeIndex = activeItems.map((e) => e.id).indexOf(active.id);
       const overIndex = overItems.map((e) => e.id).indexOf(over.id as number);
 
       let newActiveItems = [...activeItems];
@@ -246,10 +248,10 @@ function TierPage() {
         setRows(
           tierData.rows.map((row) => {
             if (row.id === activeContainer) {
-              return { ...row, games: newActiveItems };
+              return { ...row, games: newActiveItems as IGame[] };
             }
             if (row.id === overContainer) {
-              return { ...row, games: newOverItems };
+              return { ...row, games: newOverItems as IGame[] };
             }
 
             return row;
@@ -260,7 +262,6 @@ function TierPage() {
     setActiveGame(null);
   };
   const handleDragOver = (event: DragOverEvent) => {
-    setDirty(true)
     const { active, over } = event;
     if (!over) return;
 
@@ -329,7 +330,7 @@ function TierPage() {
               ...row,
               games: [
                 ...row.games.slice(0, newIndex),
-                draggedGame,
+                draggedGame as IGame,
                 ...row.games.slice(newIndex),
               ],
             };
@@ -401,7 +402,6 @@ function TierPage() {
         >
           <Button size="large" type="primary" icon={<FilterOutlined />} />
         </Popover>
-        <Button size="large" type="primary" onClick={handleSaveRows} icon={<SaveOutlined />} />
       </div>
       {!loadingTray && tierData.games.length === 0 ? (
         <p style={{ textAlign: "center" }}>Ничего не найдено</p>

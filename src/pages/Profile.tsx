@@ -1,11 +1,12 @@
-import { Link, Navigate } from "react-router-dom";
-import { useAppSelector } from "../redux/hooks";
+import { Link, useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import styled from "styled-components";
 import { Carousel } from "antd";
 import { useCallback, useEffect, useState } from "react";
-import { getTierById, getUserTiers } from "../axios";
+import {  getUserTiers } from "../axios";
 import uuid4 from "uuid4";
 import { TemplateCard } from "../components/templateCard/TemplateCard";
+import { setMessage } from "../redux/slice/messageSlice";
 const CarouselWrapper = styled(Carousel)`
   margin-top: 2vh;
   padding: 0.3em;
@@ -40,22 +41,23 @@ interface Tier {
 }
 export const ProfilePage = () => {
   const { user: currentUser } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch()
+  const navigation = useNavigate();
   const [tiers, setTiers] = useState<Tier[]>([]);
   const [favoriteGames, setFavoriteGames] = useState<[]>([]);
   const getTiers = useCallback(async () => {
-    if (!currentUser) return;
-    const tierIds = await getUserTiers(currentUser.id);
-    const tiers = tierIds.map((tier) => getTierById(tier.tier_id));
-    setTiers(await Promise.all(tiers));
-  }, [currentUser]);
+    if (!currentUser) {
+      dispatch(setMessage({error:"Вы не авторизованны"}))
+      navigation("/")
+      return
+    };
+    const tiers = await getUserTiers(currentUser.id).then(res => res.data);
+    setTiers(tiers);
+  }, [currentUser, dispatch, navigation]);
 
   useEffect(() => {
     getTiers();
   }, [getTiers]);
-
-  if (!currentUser) {
-    return <Navigate to="/auth/sign-in" />;
-  }
   return (
     <div>
       <HeaderTemplate>

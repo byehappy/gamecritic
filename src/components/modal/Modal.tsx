@@ -13,7 +13,7 @@ export const Modal: React.FC<{
   const checkKeyEscape = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-          onClose();
+        onClose();
       }
     },
     [onClose]
@@ -24,7 +24,7 @@ export const Modal: React.FC<{
         (event.target as HTMLElement).contains(ref.current) &&
         event.target !== ref.current
       ) {
-          onClose();
+        onClose();
       }
     },
     [onClose]
@@ -43,14 +43,16 @@ export const Modal: React.FC<{
       document.removeEventListener("mousedown", checkOutside);
     };
   }, [checkKeyEscape, checkOutside, isOpen]);
-  
+
   return createPortal(
     isOpen ? (
       <ModalOverlay>
         <ModalWindow ref={ref}>
-          <ModalHeader><CloseOutlined onClick={onClose}/></ModalHeader>
+          <ModalHeader>
+              <CloseOutlined onClick={onClose} />
+          </ModalHeader>
           {children}
-          </ModalWindow>
+        </ModalWindow>
       </ModalOverlay>
     ) : null,
     modalRootElement

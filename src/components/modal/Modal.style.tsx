@@ -26,4 +26,5 @@ export const ModalHeader = styled.div`
   display:flex;
   justify-content:right;
   margin-bottom:1vw;
+  font-size:1.5rem;
 `

@@ -50,7 +50,7 @@ export const Header = () => {
           <div style={{ display: "flex", gap: "1vw", alignItems: "center" }}>
             <div>
               Привет,
-              <Link className="profile" to={`/profile/${currentUser.id}`}>
+              <Link className="profile" to={`/my-profile`}>
                 {currentUser.username}!
               </Link>
             </div>

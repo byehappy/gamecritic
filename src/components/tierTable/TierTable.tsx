@@ -2,11 +2,10 @@ import { useDroppable } from "@dnd-kit/core";
 import { CardGame } from "../card/Card";
 import { rectSortingStrategy, SortableContext } from "@dnd-kit/sortable";
 import styled from "styled-components";
-import { Col, Flex, Spin } from "antd";
+import { Col } from "antd";
 import {
   UpOutlined,
   DownOutlined,
-  LoadingOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
 import { useState } from "react";
@@ -14,6 +13,7 @@ import { RowSettings } from "./rowSettings/RowSettings";
 import uuid4 from "uuid4";
 import { useAppSelector, useAppDispatch } from "../../redux/hooks";
 import { setRows } from "../../redux/slice/tierDataSlice";
+import { SkeletonFactory } from "../../utils/skeleton/skeleton-factory";
 
 const DroppableWrapper = styled.div<{ $isOver: boolean }>`
   background-color: ${(props) =>
@@ -74,7 +74,7 @@ const RowHeader = styled(Col)`
 `;
 export const TierTable: React.FC<{
   loading: boolean;
-}> = ({   loading }) => {
+}> = ({ loading }) => {
   const [isOpenTierId, setIsOpenTierId] = useState<string | null>();
   const rowsData = useAppSelector((state) => state.tierData.rows);
   const dispatch = useAppDispatch();
@@ -94,66 +94,56 @@ export const TierTable: React.FC<{
     }
     dispatch(setRows(newTierData));
   };
-  return loading ? (
-    <Flex justify="center">
-      <Spin indicator={<LoadingOutlined spin />} size="large" />
-    </Flex>
-  ) : (
-    rowsData.map((tier, index) => (
-      <Container key={uuid4()}>
-        <RowHeader style={{ backgroundColor:tier.color }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              wordBreak: "break-all",
-            }}
-          >
-            <span style={{ textAlign: "center", display: "inline-block" }}>
-              {tier.tier}
-            </span>
-          </div>
-        </RowHeader>
-        <SortableContext items={tier.games} strategy={rectSortingStrategy}>
-          <DroppableCell id={tier.id}>
-            {tier.games.map((game) => {
-              return (
-                <CardGame
-                  key={game.id}
-                  game={game}
-                  id={game.id}
-                />
-              );
-            })}
-          </DroppableCell>
-        </SortableContext>
-        <FilterRow>
-          <SettingOutlined
-            style={{ fontSize: "3rem" }}
-            onClick={() => setIsOpenTierId(tier.id)}
-          />
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <UpOutlined
-              style={{ fontSize: "2rem" }}
-              onClick={() => changeIndex(index, "up")}
+  return loading
+    ? SkeletonFactory(5, "Table")
+    : rowsData.map((tier, index) => (
+        <Container key={uuid4()}>
+          <RowHeader style={{ backgroundColor: tier.color }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                wordBreak: "break-all",
+              }}
+            >
+              <span style={{ textAlign: "center", display: "inline-block" }}>
+                {tier.tier}
+              </span>
+            </div>
+          </RowHeader>
+          <SortableContext items={tier.games} strategy={rectSortingStrategy}>
+            <DroppableCell id={tier.id}>
+              {tier.games.map((game) => {
+                return <CardGame key={game.id} game={game} id={game.id} />;
+              })}
+            </DroppableCell>
+          </SortableContext>
+          <FilterRow>
+            <SettingOutlined
+              style={{ fontSize: "3rem" }}
+              onClick={() => setIsOpenTierId(tier.id)}
             />
-            <DownOutlined
-              style={{ fontSize: "2rem" }}
-              onClick={() => changeIndex(index, "down")}
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <UpOutlined
+                style={{ fontSize: "2rem" }}
+                onClick={() => changeIndex(index, "up")}
+              />
+              <DownOutlined
+                style={{ fontSize: "2rem" }}
+                onClick={() => changeIndex(index, "down")}
+              />
+            </div>
+          </FilterRow>
+          {isOpenTierId === tier.id ? (
+            <RowSettings
+              id={tier.id}
+              index={index}
+              isOpen={true}
+              onClose={() => setIsOpenTierId(null)}
+              tier={tier}
             />
-          </div>
-        </FilterRow>
-        {isOpenTierId === tier.id ? (
-          <RowSettings
-            id={tier.id}
-            index={index}
-            isOpen={true}
-            onClose={() => setIsOpenTierId(null)}
-            tier={tier}
-          />
-        ) : null}
-      </Container>
-    ))
-  );
+          ) : null}
+        </Container>
+      ));
 };

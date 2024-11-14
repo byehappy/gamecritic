@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import * as Yup from "yup";
 import { register } from "../../redux/slice/authSlice";
 import { Link, Navigate } from "react-router-dom";
 import { Input, Button, Form } from "antd";
+import { setMessage } from "../../redux/slice/messageSlice";
 
 export const SignUpPage = () => {
   const { isLoggedIn } = useAppSelector((state) => state.auth);
@@ -16,22 +16,6 @@ export const SignUpPage = () => {
     confirmPassword: string;
     username: string;
   };
-  const validationSchema = Yup.object().shape({
-    email: Yup.string()
-      .email("Неверный формат email")
-      .required("Это поле обязательно для заполнения"),
-    password: Yup.string()
-      .required("Это поле обязательно для заполнения")
-      .min(6, "Пароль слишком короткий")
-      .matches(/[a-zA-Z]/, "Используйте только латинские буквы a-z"),
-    confirmPassword: Yup.string()
-      .required("Это поле обязательно для заполнения")
-      .oneOf([Yup.ref("password")], "Пароли не совпадают"),
-    username: Yup.string()
-      .required("Это поле обязательно для заполнения")
-      .min(4, "Имя слишком короткое")
-      .matches(/[a-zA-Z]/, "Используйте только латинские буквы a-z"),
-  });
 
   const handleRegister = (formValue: {
     username: string;
@@ -57,7 +41,11 @@ export const SignUpPage = () => {
   if (isLoggedIn) {
     return <Navigate to="/" />;
   }
-  //переделать под antd
+  if(successful){
+    dispatch(setMessage({message:"Вы успешно зарегистрировались"}));
+    return <Navigate to='/auth/sign-in'/>
+  }
+
   return (
     <div
       style={{
@@ -70,7 +58,6 @@ export const SignUpPage = () => {
       }}
     >
       <h1 style={{ fontSize: "2rem" }}>Регистрация</h1>
-      {!successful ? (
         <Form
           labelCol={{ xs: { span: 24 }, sm: { span: 8 } }}
           wrapperCol={{ xs: { span: 24 }, sm: { span: 24 } }}
@@ -159,12 +146,6 @@ export const SignUpPage = () => {
             </Button>
           </Form.Item>
         </Form>
-      ) : (
-        <div>
-          Вы успешно зарегистрировались.
-          <Link to="/auth/sign-in">Войти</Link>
-        </div>
-      )}
       <div style={{ textAlign: "center" }}>
         Уже зарегистрировались?
         <Link to="/auth/sign-in"> Войти</Link>

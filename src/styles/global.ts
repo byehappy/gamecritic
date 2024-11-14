@@ -25,6 +25,10 @@ export default createGlobalStyle`
         margin: 0;
     }
     a{
-        text-decoration:none
+        text-decoration:none;
+        color:hsl(237,50%,45%);;
+        &:hover{
+            color:hsl(237,55%,57%);
+        }
     }
 `;
