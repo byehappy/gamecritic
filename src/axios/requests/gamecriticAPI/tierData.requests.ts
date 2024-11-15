@@ -23,13 +23,11 @@ export const getAllTiers = async (): Promise<Tier[]> => {
   return response;
 };
 
-export const getTierById = async (id: string) => {
-  return await instanceAPI.get(`/tierlist/${id}`).then(res => res.data);
+export const getTierById = (id: string):AxiosPromise<Tier> => {
+  return instanceAPI.get(`/tierlist/${id}`);
 };
 
-export const getUserTiers = async (
-  userId: string
-): AxiosPromise<Tier[]> => {
+export const getUserTiers = async (userId: string): AxiosPromise<Tier[]> => {
   return await instanceAPI.get(`/user/tierlists/${userId}`);
 };
 
@@ -40,10 +38,7 @@ export const getUserRows = async (userId: string, tierId: string) => {
 export const updateUserRows = async (
   userId: string,
   tierId: string,
-  rows: string,
+  rows: string
 ) => {
-  return await instanceAPI.post(
-    `/user/rows/${userId}/${tierId}`,
-    { rows }
-  );
+  return await instanceAPI.post(`/user/rows/${userId}/${tierId}`, { rows });
 };

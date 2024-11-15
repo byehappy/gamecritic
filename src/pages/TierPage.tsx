@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { gamesRequest, getUserRows } from "../axios";
+import { gamesRequest, getTierById, getUserRows } from "../axios";
 import { Button, Pagination, Popover } from "antd";
 import Search from "antd/es/input/Search";
 import { CardList } from "../components/cardList/CardList";
@@ -45,7 +45,8 @@ function TierPage() {
   const [loadingRows, setLoadingRows] = useState(true);
   const [loadingTray, setLoadingTray] = useState(true);
   const [totalCount, setTotalCount] = useState<number>(1);
-  const [flagsParam, setFlagsParam] = useState<FilterFlags>({
+  const [tier,setTier] = useState<{name:string,filter:{genres?:string,platforms?:string,tags?:string}}>();
+  const [filterFlags, setFilterFlags] = useState<FilterFlags>({
     page: DEFAULT_PAGE,
     page_size: DEFAULT_PAGE_SIZE,
   });
@@ -66,11 +67,30 @@ function TierPage() {
     tierType,
     dirty
   );
-
+  const setTierFliter = useCallback(async () => {
+    const res = await getTierById(tierType)
+    const axiosTier = res.data
+    const tierInfo = {
+      name:axiosTier.title,
+      filter:{
+        genres: axiosTier.genres,
+        platforms: axiosTier.platforms,
+        tags:axiosTier.tags
+      }
+    }
+    setTier(tierInfo)
+    setFilterFlags((prev)=>({
+      ...prev,
+      ...tierInfo.filter
+    }))
+  }, [tierType]);
+  useEffect(() => {
+    setTierFliter();
+  }, [setTierFliter]);
   useEffect(() => {
     if (!dirty) {
       setDirty(JSON.stringify(rows) !== JSON.stringify(rowsRef.current));
-    } 
+    }
   }, [dirty, rows, setDirty]);
   const loadGamesStorage = useCallback(async () => {
     let tiers;
@@ -114,7 +134,7 @@ function TierPage() {
     param: keyof FilterFlags,
     value: string | string[] | number | null
   ) => {
-    setFlagsParam((prevFlags) => ({
+    setFilterFlags((prevFlags) => ({
       ...prevFlags,
       [param]: value,
     }));
@@ -125,7 +145,7 @@ function TierPage() {
     setLoadingTray(true);
     try {
       const response = await gamesRequest({
-        ...flagsParam,
+        ...filterFlags,
       });
       const existingGamesInRows = rows.flatMap((row) => row.games);
       const newGames: IGameDis[] = response.data.results.map((game) => ({
@@ -147,7 +167,7 @@ function TierPage() {
     } finally {
       setLoadingTray(false);
     }
-  }, [dispatch, flagsParam, loadingRows]);
+  }, [dispatch, filterFlags, loadingRows]);
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -360,7 +380,7 @@ function TierPage() {
       sensors={sensors}
     >
       <h1 style={{ margin: "1vw 0", width: "100%", textAlign: "center" }}>
-
+        {tier?.name}
       </h1>
       <TierTable loading={loadingRows} />
       <div
@@ -386,11 +406,7 @@ function TierPage() {
           loading={loadingTray}
         />
         <Popover
-          content={
-            <Filter
-              handleChangeFiters={handleChangeFiters}
-            />
-          }
+          content={<Filter handleChangeFiters={handleChangeFiters} filters={tier?.filter}/>}
           placement="bottom"
           trigger="click"
           title={"Фильтры"}
@@ -401,7 +417,7 @@ function TierPage() {
       {!loadingTray && tierData.games.length === 0 ? (
         <p style={{ textAlign: "center" }}>Ничего не найдено</p>
       ) : (
-        <CardList loading={loadingTray} pageSize={flagsParam.page_size} />
+        <CardList loading={loadingTray} pageSize={filterFlags.page_size} />
       )}
       <div style={{ margin: "4vh 0" }}>
         <div style={{ display: "flex", justifyContent: "center" }}>
