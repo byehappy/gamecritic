@@ -29,29 +29,25 @@ import {
   setTrayGames,
 } from "../redux/slice/tierDataSlice";
 import { useParams } from "react-router-dom";
-import getFiltersTierType from "../utils/getFilterOnName";
 import { useBeforeUnloadSave } from "../utils/beforeUnload";
-const DefaultPage = 1;
-const DefaultPageSize = 40;
+import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "../utils/constans";
 
 function TierPage() {
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const { rows } = useAppSelector((state) => state.tierData);
   const rowsRef = useRef(rows);
   const [dirty, setDirty] = useState(false);
-  const { tierType } = useParams<{ tierType: string }>() as {
+  const { tierType } = useParams() as {
     tierType: string;
   };
-  const filterFlags = getFiltersTierType(tierType);
   const tierData = useAppSelector((state) => state.tierData);
   const dispatch = useAppDispatch();
   const [loadingRows, setLoadingRows] = useState(true);
   const [loadingTray, setLoadingTray] = useState(true);
   const [totalCount, setTotalCount] = useState<number>(1);
   const [flagsParam, setFlagsParam] = useState<FilterFlags>({
-    page: DefaultPage,
-    page_size: DefaultPageSize,
-    ...filterFlags?.filters,
+    page: DEFAULT_PAGE,
+    page_size: DEFAULT_PAGE_SIZE,
   });
   const [activeGame, setActiveGame] = useState<IGameDis | null>(null);
   const dataFetchedRef = useRef(false);
@@ -146,7 +142,7 @@ function TierPage() {
       dispatch(setTrayGames(newGames));
       setTotalCount(response.data.count);
       setLoadingTray(false);
-    } catch (error) {
+    } catch {
       dispatch(setTrayGames([]));
     } finally {
       setLoadingTray(false);
@@ -364,7 +360,7 @@ function TierPage() {
       sensors={sensors}
     >
       <h1 style={{ margin: "1vw 0", width: "100%", textAlign: "center" }}>
-        {filterFlags?.name}
+
       </h1>
       <TierTable loading={loadingRows} />
       <div
@@ -393,7 +389,6 @@ function TierPage() {
           content={
             <Filter
               handleChangeFiters={handleChangeFiters}
-              filterFlags={filterFlags}
             />
           }
           placement="bottom"

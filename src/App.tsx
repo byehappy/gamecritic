@@ -1,15 +1,17 @@
 import GlobalStyle from "./styles/global";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./routes";
-import { ConfigProvider, message } from "antd";
+import { ConfigProvider } from "antd";
 import ThemeProvider from "./utils/theme-provider";
 import { useAppDispatch, useAppSelector } from "./redux/hooks";
 import { useCallback, useEffect } from "react";
 import { updateUserRows } from "./axios";
 import { setMessage } from "./redux/slice/messageSlice";
+import { ToasterList, useToaster } from "./utils/Toaster";
+import { createPortal } from "react-dom";
 
 function App() {
-  const [messageApi, contextHolder] = message.useMessage();
+  const { addMessage, container, toasters } = useToaster();
   const messages = useAppSelector((state) => state.message);
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
@@ -32,18 +34,22 @@ function App() {
     saveSession();
   }, [saveSession]);
   useEffect(() => {
-    if (messages.error)
-      messageApi.open({ type: "error", content: messages.error });
-    if (messages.message)
-      messageApi.open({ type: "info", content: messages.message });
-  }, [messageApi, messages]);
+    if (messages.error) {
+      addMessage(messages.error, "error");
+    }
+    if (messages.message) addMessage(messages.message, "info");
+  }, [addMessage, messages]);
   localStorage.setItem("theme", "light");
   return (
     <ConfigProvider>
       <ThemeProvider>
-        {contextHolder}
         <RouterProvider router={router} fallbackElement={<p>Загрузка...</p>} />
         <GlobalStyle />
+        {container &&
+          createPortal(
+            <ToasterList toasters={toasters} />,
+            container
+          )}
       </ThemeProvider>
     </ConfigProvider>
   );
