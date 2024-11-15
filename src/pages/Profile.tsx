@@ -3,10 +3,14 @@ import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import styled from "styled-components";
 import { Carousel } from "antd";
 import { useCallback, useEffect, useState } from "react";
-import {  getUserTiers } from "../axios";
+import { getFavoriteGames, getUserTiers } from "../axios";
 import uuid4 from "uuid4";
 import { TemplateCard } from "../components/templateCard/TemplateCard";
 import { setMessage } from "../redux/slice/messageSlice";
+import { IGame } from "../interfaces/games";
+import { gameRequest } from "../axios/requests/games.requests";
+import { CardGame } from "../components/card/Card";
+import { SkeletonFactory } from "../utils/skeleton/skeleton-factory";
 const CarouselWrapper = styled(Carousel)`
   margin-top: 2vh;
   padding: 0.3em;
@@ -41,23 +45,45 @@ interface Tier {
 }
 export const ProfilePage = () => {
   const { user: currentUser } = useAppSelector((state) => state.auth);
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
   const navigation = useNavigate();
   const [tiers, setTiers] = useState<Tier[]>([]);
-  const [favoriteGames, setFavoriteGames] = useState<[]>([]);
+  const [favoriteGames, setFavoriteGames] = useState<IGame[]>([]);
   const getTiers = useCallback(async () => {
     if (!currentUser) {
-      dispatch(setMessage({error:"Вы не авторизованны"}))
-      navigation("/")
-      return
-    };
-    const tiers = await getUserTiers(currentUser.id).then(res => res.data);
+      dispatch(setMessage({ error: "Вы не авторизованны" }));
+      navigation("/");
+      return;
+    }
+    const tiers = await getUserTiers(currentUser.id).then((res) => res.data);
     setTiers(tiers);
   }, [currentUser, dispatch, navigation]);
 
   useEffect(() => {
     getTiers();
   }, [getTiers]);
+  const fillFavoriteGames = useCallback(async () => {
+    if (currentUser) {
+      try {
+        const jsonGameIds = await getFavoriteGames(currentUser.id).then(
+          (res) => res.data.game_ids
+        );
+        if(!jsonGameIds) return;
+        const gameIds = JSON.parse(jsonGameIds)
+        const gameRequests = gameIds.map((id) =>
+          gameRequest(Number(id)).then((res) => res.data)
+        );
+        const gamesData = await Promise.all(gameRequests);
+        setFavoriteGames(gamesData);
+      } catch (error){
+        dispatch(setMessage({error:`Не удалось получить игры из избранного:${error}`}))
+      }
+    }
+  }, [currentUser, dispatch]);
+  useEffect(() => {
+    fillFavoriteGames();
+  }, [fillFavoriteGames]);
+
   return (
     <div>
       <HeaderTemplate>
@@ -88,22 +114,18 @@ export const ProfilePage = () => {
       </CarouselWrapper>
       <HeaderTemplate>
         <h1>Избранные игры</h1>
-        {favoriteGames.length !== 0 && <Link to={"/"}>Увидеть все избранные игры</Link>}
+        {favoriteGames.length !== 0 && (
+          <Link to={"/"}>Увидеть все избранные игры</Link>
+        )}
       </HeaderTemplate>
       <CarouselWrapper arrows infinite={false} dots={false}>
         <div>
           <ContainerItems>
-            {/* {favoriteGames.map((game) => {
-              const id = uuid4();
+            {favoriteGames.map((game) => {
               return (
-                <TemplateCard
-                  key={id}
-                  img={game.imageSrc ?? ""}
-                  name={game.title}
-                  id={game.id}
-                />
+                <CardGame key={game.id} game={game} id={game.id}/>
               );
-            })} */}
+            })}
             {favoriteGames.length === 0 && (
               <div style={{ fontSize: "1.2rem" }}>
                 Вы не добавили игры в избранное
