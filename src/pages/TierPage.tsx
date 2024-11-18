@@ -1,9 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { gamesRequest, getTierById, getUserRows } from "../axios";
-import { Button, Pagination, Popover } from "antd";
+import {
+  gamesRequest,
+  getTierById,
+  getUserRows,
+  updateUserRows,
+} from "../axios";
+import { Button, FloatButton, Pagination, Popover } from "antd";
 import Search from "antd/es/input/Search";
 import { CardList } from "../components/cardList/CardList";
-import { FilterOutlined } from "@ant-design/icons";
+import { FilterOutlined, SaveOutlined } from "@ant-design/icons";
 import { Filter } from "../components/filter/Filter";
 import { TierTable } from "../components/tierTable/TierTable";
 import {
@@ -31,6 +36,8 @@ import {
 import { useParams } from "react-router-dom";
 import { useBeforeUnloadSave } from "../utils/beforeUnload";
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "../utils/constans";
+import { setMessage } from "../redux/slice/messageSlice";
+import { logout } from "../redux/slice/authSlice";
 
 function TierPage() {
   const { user: currentUser } = useAppSelector((state) => state.auth);
@@ -45,7 +52,10 @@ function TierPage() {
   const [loadingRows, setLoadingRows] = useState(true);
   const [loadingTray, setLoadingTray] = useState(true);
   const [totalCount, setTotalCount] = useState<number>(1);
-  const [tier,setTier] = useState<{name:string,filter:{genres?:string,platforms?:string,tags?:string}}>();
+  const [tier, setTier] = useState<{
+    name: string;
+    filter: { genres?: string; platforms?: string; tags?: string };
+  }>();
   const [filterFlags, setFilterFlags] = useState<FilterFlags>({
     page: DEFAULT_PAGE,
     page_size: DEFAULT_PAGE_SIZE,
@@ -68,21 +78,21 @@ function TierPage() {
     dirty
   );
   const setTierFliter = useCallback(async () => {
-    const res = await getTierById(tierType)
-    const axiosTier = res.data
+    const res = await getTierById(tierType);
+    const axiosTier = res.data;
     const tierInfo = {
-      name:axiosTier.title,
-      filter:{
+      name: axiosTier.title,
+      filter: {
         genres: axiosTier.genres,
         platforms: axiosTier.platforms,
-        tags:axiosTier.tags
-      }
-    }
-    setTier(tierInfo)
-    setFilterFlags((prev)=>({
+        tags: axiosTier.tags,
+      },
+    };
+    setTier(tierInfo);
+    setFilterFlags((prev) => ({
       ...prev,
-      ...tierInfo.filter
-    }))
+      ...tierInfo.filter,
+    }));
   }, [tierType]);
   useEffect(() => {
     setTierFliter();
@@ -372,6 +382,48 @@ function TierPage() {
     }
   };
 
+  const handleSaveRows = async () => {
+    sessionStorage.removeItem(tierType);
+    const rowsGamesIds = tierData.rows.map((row) => ({
+      ...row,
+      games: row.games.map((game) => game.id),
+    }));
+    if (currentUser) {
+      try {
+        await updateUserRows(
+          currentUser.id,
+          tierType,
+          JSON.stringify(rowsGamesIds)
+        );
+        dispatch(
+          setMessage({
+            success: "Успешно сохранено",
+          })
+        );
+      } catch {
+        sessionStorage.setItem(
+          `save-${tierType}`,
+          JSON.stringify(rowsGamesIds)
+        );
+        dispatch(
+          setMessage({
+            error: "Сохранение не удалось. Попробуйте авторизоваться",
+          })
+        );
+        dispatch(logout());
+      }
+    } else {
+      dispatch(
+        setMessage({
+          message:
+            "Результат сохраниться после авторизации",
+        })
+      );
+      sessionStorage.setItem(
+        `save-${tierType}`, JSON.stringify(rowsGamesIds));
+    }
+  };
+
   return (
     <DndContext
       onDragEnd={handleDragEnd}
@@ -382,7 +434,7 @@ function TierPage() {
       <h1 style={{ margin: "1vw 0", width: "100%", textAlign: "center" }}>
         {tier?.name}
       </h1>
-      <TierTable loading={loadingRows} />
+      <TierTable loading={loadingRows || loadingTray} />
       <div
         style={{
           display: "flex",
@@ -406,7 +458,12 @@ function TierPage() {
           loading={loadingTray}
         />
         <Popover
-          content={<Filter handleChangeFiters={handleChangeFiters} filters={tier?.filter}/>}
+          content={
+            <Filter
+              handleChangeFiters={handleChangeFiters}
+              filters={tier?.filter}
+            />
+          }
           placement="bottom"
           trigger="click"
           title={"Фильтры"}
@@ -436,6 +493,13 @@ function TierPage() {
       <DragOverlay>
         {activeGame ? <CardGame id={activeGame.id} game={activeGame} /> : null}
       </DragOverlay>
+      <FloatButton
+        style={{ zIndex: 1000 }}
+        icon={<SaveOutlined />}
+        tooltip={<div>Сохранить</div>}
+        onClick={handleSaveRows}
+      />
+      ;
     </DndContext>
   );
 }

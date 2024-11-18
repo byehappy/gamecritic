@@ -6,9 +6,9 @@ function Root() {
   return (
     <>
       <Header />
-      <main>
+      <div id="content">
         <Outlet />
-      </main>
+      </div>
       <Footer />
     </>
   );

@@ -1,37 +1,21 @@
 import { useCallback, useEffect } from "react";
-import { useAppSelector } from "../redux/hooks";
 import { SaveTierData } from "../interfaces/tierData";
-import { updateUserRows } from "../axios";
 import { useBlocker, useLocation } from "react-router-dom";
-import { store } from "../redux/store";
-import { setMessage } from "../redux/slice/messageSlice";
-
+import { useAppSelector } from "../redux/hooks";
 
 export const useBeforeUnloadSave = (
   rows: SaveTierData[],
   params: string,
   dirty: boolean
 ) => {
-  const user = useAppSelector((state) => state.auth.user);
+  const {user:currentUser } = useAppSelector(state => state.auth)
   const location = useLocation();
-  const blocker = useBlocker(
-    ({ currentLocation, nextLocation }) =>
-      currentLocation.pathname !== nextLocation.pathname
-  );
+  const blocker = useBlocker(dirty);
   const handleSaveData = useCallback(async () => {
-    if (dirty) {
-      if (user) {
-        try {
-          await updateUserRows(user.id, params, JSON.stringify(rows));
-        } catch  {
-          sessionStorage.setItem(params, JSON.stringify(rows));
-          store.dispatch(setMessage({message:"Для того чтобы сохранить результат необходимо авторизоваться"}));
-        }
-      } else {
-        sessionStorage.setItem(params, JSON.stringify(rows));
-      }
+    if (dirty && !currentUser) {
+      sessionStorage.setItem(params, JSON.stringify(rows));
     }
-  }, [dirty, params, rows, user]);
+  }, [currentUser, dirty, params, rows]);
   useEffect(() => {
     if (blocker.state === "blocked") {
       handleSaveData();

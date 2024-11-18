@@ -49,6 +49,8 @@ export const ProfilePage = () => {
   const navigation = useNavigate();
   const [tiers, setTiers] = useState<Tier[]>([]);
   const [favoriteGames, setFavoriteGames] = useState<IGame[]>([]);
+  const [loadingTiers, setLoadingTiers] = useState(true);
+  const [loadingFavorites, setLoadingFavorites] = useState(true);
   const getTiers = useCallback(async () => {
     if (!currentUser) {
       dispatch(setMessage({ error: "Вы не авторизованны" }));
@@ -57,6 +59,7 @@ export const ProfilePage = () => {
     }
     const tiers = await getUserTiers(currentUser.id).then((res) => res.data);
     setTiers(tiers);
+    setLoadingTiers(false);
   }, [currentUser, dispatch, navigation]);
 
   useEffect(() => {
@@ -68,15 +71,23 @@ export const ProfilePage = () => {
         const jsonGameIds = await getFavoriteGames(currentUser.id).then(
           (res) => res.data.game_ids
         );
-        if(!jsonGameIds) return;
-        const gameIds = JSON.parse(jsonGameIds)
+        if (!jsonGameIds) {
+          setLoadingFavorites(false);
+          return;
+        }
+        const gameIds:string[] = JSON.parse(jsonGameIds);
         const gameRequests = gameIds.map((id) =>
           gameRequest(Number(id)).then((res) => res.data)
         );
         const gamesData = await Promise.all(gameRequests);
         setFavoriteGames(gamesData);
-      } catch (error){
-        dispatch(setMessage({error:`Не удалось получить игры из избранного:${error}`}))
+        setLoadingFavorites(false);
+      } catch (error) {
+        dispatch(
+          setMessage({
+            error: `Не удалось получить игры из избранного:${error}`,
+          })
+        );
       }
     }
   }, [currentUser, dispatch]);
@@ -93,6 +104,7 @@ export const ProfilePage = () => {
       <CarouselWrapper arrows infinite={false} dots={false}>
         <div>
           <ContainerItems>
+            {loadingTiers && SkeletonFactory(10, "Card")}
             {tiers.map((tier) => {
               const id = uuid4();
               return (
@@ -104,7 +116,7 @@ export const ProfilePage = () => {
                 />
               );
             })}
-            {tiers.length === 0 && (
+            {!loadingTiers && tiers.length === 0 && (
               <div style={{ fontSize: "1.2rem" }}>
                 Вы еще не состовляли списки по шаблонам
               </div>
@@ -121,12 +133,11 @@ export const ProfilePage = () => {
       <CarouselWrapper arrows infinite={false} dots={false}>
         <div>
           <ContainerItems>
+            {loadingFavorites && SkeletonFactory(10, "Card")}
             {favoriteGames.map((game) => {
-              return (
-                <CardGame key={game.id} game={game} id={game.id}/>
-              );
+              return <CardGame key={game.id} game={game} id={game.id} />;
             })}
-            {favoriteGames.length === 0 && (
+            {!loadingFavorites && favoriteGames.length === 0 && (
               <div style={{ fontSize: "1.2rem" }}>
                 Вы не добавили игры в избранное
               </div>

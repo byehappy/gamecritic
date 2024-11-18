@@ -6,9 +6,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { getAllTiers } from "../axios";
 import uuid4 from "uuid4";
 import { SkeletonFactory } from "../utils/skeleton/skeleton-factory";
+import { UserTemplateCard } from "../components/userTemplateCard/UserTemplateCard";
 
 const CarouselWrapper = styled(Carousel)`
-  margin-top: 2vh;
+  margin: 2vh 0;
   padding: 0.3em;
   button.slick-arrow {
     color: black;
@@ -84,6 +85,31 @@ export const HomePage = () => {
             {!tiers && SkeletonFactory(12,"Card")}
               {tiers?.map((tier) => (
                 <TemplateCard
+                  key={uuid4()}
+                  img={tier.imageSrc ?? ""}
+                  name={tier.title}
+                  id={tier.id}
+                />
+              ))}
+            </ContainerItems>
+          </div>
+          <div>
+            <ContainerItems>
+              
+            </ContainerItems>
+          </div>
+        </CarouselWrapper>
+      </div>
+      <div>
+        <HeaderTemplate>
+          <h1>Шаблоны других пользователей</h1>
+        </HeaderTemplate>
+        <CarouselWrapper arrows infinite={false} dots={false}>
+          <div>
+            <ContainerItems>
+            {!tiers && SkeletonFactory(12,"Card")}
+              {tiers?.map((tier) => (
+                <UserTemplateCard
                   key={uuid4()}
                   img={tier.imageSrc ?? ""}
                   name={tier.title}

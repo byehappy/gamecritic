@@ -13,7 +13,7 @@ export default createGlobalStyle`
         flex-direction:column;
         min-height:100vh
     }
-    main{
+    #content{
         flex-grow:1;
         margin: 0 10vw;
     }

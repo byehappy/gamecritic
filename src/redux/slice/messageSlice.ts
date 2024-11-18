@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 type MessageType = {
     error?:string;
     message?:string;
+    success?:string;
 }
 
 const initialState:MessageType = {};

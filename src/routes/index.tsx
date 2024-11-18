@@ -11,6 +11,7 @@ import { TemplatesPage } from "../pages/TemplatesPage";
 import { SignInPage } from "../pages/auth/SignIn";
 import { SignUpPage } from "../pages/auth/SignUp";
 import { ProfilePage } from "../pages/Profile";
+import { refreshToken } from "../axios";
 
 export const router = createBrowserRouter([
   {
@@ -49,11 +50,17 @@ export const router = createBrowserRouter([
   },
 ]);
 
-function protectedLoader({ request }: LoaderFunctionArgs) {
+async function protectedLoader({ request }: LoaderFunctionArgs) {
   if (!localStorage.getItem("accessToken")) {
-    const params = new URLSearchParams();
-    params.set("from", new URL(request.url).pathname);
-    return redirect("/auth/sign-in?" + params.toString());
+    if (localStorage.getItem("refreshToken")) {
+      const rs = await refreshToken();
+      const { accessToken } = rs.data;
+      localStorage.setItem("accessToken", accessToken);
+    } else {
+      const params = new URLSearchParams();
+      params.set("from", new URL(request.url).pathname);
+      return redirect("/auth/sign-in?" + params.toString());
+    }
   }
-  return null
+  return null;
 }

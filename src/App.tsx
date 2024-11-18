@@ -19,10 +19,19 @@ function App() {
     if (currentUser) {
       try {
         for (const key in sessionStorage) {
-          const data = sessionStorage.getItem(key);
-          if (data) {
-            await updateUserRows(currentUser.id, key, data);
-            sessionStorage.removeItem(key);
+          if (key.includes("save-")) {
+            const data = sessionStorage.getItem(key);
+            if (data) {
+              const strKey = RegExp(/\d+/).exec(key);
+              const numKey = strKey ? parseInt(strKey[0]) : null;
+              if (numKey) {
+                await updateUserRows(currentUser.id, numKey, data);
+                sessionStorage.removeItem(key);
+                dispatch(
+                  setMessage({ success: "Последние изменения сохранены" })
+                );
+              }
+            }
           }
         }
       } catch (error) {
@@ -34,9 +43,8 @@ function App() {
     saveSession();
   }, [saveSession]);
   useEffect(() => {
-    if (messages.error) {
-      addMessage(messages.error, "error");
-    }
+    if (messages.error) addMessage(messages.error, "error");
+    if (messages.success) addMessage(messages.success, "success");
     if (messages.message) addMessage(messages.message, "info");
   }, [addMessage, messages]);
   localStorage.setItem("theme", "light");
@@ -46,10 +54,7 @@ function App() {
         <RouterProvider router={router} fallbackElement={<p>Загрузка...</p>} />
         <GlobalStyle />
         {container &&
-          createPortal(
-            <ToasterList toasters={toasters} />,
-            container
-          )}
+          createPortal(<ToasterList toasters={toasters} />, container)}
       </ThemeProvider>
     </ConfigProvider>
   );

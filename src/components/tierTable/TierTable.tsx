@@ -10,7 +10,6 @@ import {
 } from "@ant-design/icons";
 import { useState } from "react";
 import { RowSettings } from "./rowSettings/RowSettings";
-import uuid4 from "uuid4";
 import { useAppSelector, useAppDispatch } from "../../redux/hooks";
 import { setRows } from "../../redux/slice/tierDataSlice";
 import { SkeletonFactory } from "../../utils/skeleton/skeleton-factory";
@@ -75,6 +74,7 @@ const RowHeader = styled(Col)`
 export const TierTable: React.FC<{
   loading: boolean;
 }> = ({ loading }) => {
+  const {user:currentUser} = useAppSelector(state => state.auth)
   const [isOpenTierId, setIsOpenTierId] = useState<string | null>();
   const rowsData = useAppSelector((state) => state.tierData.rows);
   const dispatch = useAppDispatch();
@@ -97,7 +97,7 @@ export const TierTable: React.FC<{
   return loading
     ? SkeletonFactory(5, "Table")
     : rowsData.map((tier, index) => (
-        <Container key={uuid4()}>
+        <Container key={tier.id} id={tier.id}>
           <RowHeader style={{ backgroundColor: tier.color }}>
             <div
               style={{
@@ -119,7 +119,7 @@ export const TierTable: React.FC<{
               })}
             </DroppableCell>
           </SortableContext>
-          <FilterRow>
+          {currentUser && <FilterRow>
             <SettingOutlined
               style={{ fontSize: "3rem" }}
               onClick={() => setIsOpenTierId(tier.id)}
@@ -134,7 +134,7 @@ export const TierTable: React.FC<{
                 onClick={() => changeIndex(index, "down")}
               />
             </div>
-          </FilterRow>
+          </FilterRow>}
           {isOpenTierId === tier.id ? (
             <RowSettings
               id={tier.id}

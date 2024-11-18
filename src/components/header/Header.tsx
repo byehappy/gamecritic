@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { Button } from "antd";
@@ -22,18 +22,25 @@ const StyledHeader = styled.header`
   }
 `;
 export const Header = () => {
+  const navigate = useNavigate()
   const [currentUser, setCurrentUser] = useState<{
     username: string;
     id: string;
   } | null>();
   const { user } = useAppSelector((state) => state.auth);
+  const {pathname} = useLocation()
   const dispatch = useAppDispatch();
   const logOut = useCallback(() => {
     dispatch(logout());
-  }, [dispatch]);
+    navigate('/')
+    sessionStorage.clear()
+  }, [dispatch, navigate]);
   useEffect(() => {
     setCurrentUser(user);
   }, [user]);
+  const params = new URLSearchParams();
+  params.set("from", pathname);
+  
   return (
     <StyledHeader>
       <Link className="logo" to={""} style={{ fontSize: "2rem" }}>
@@ -41,7 +48,7 @@ export const Header = () => {
       </Link>
       {!currentUser ? (
         <div style={{ display: "flex", gap: "1vw" }}>
-          <Link to="/auth/sign-in">
+          <Link to={`/auth/sign-in?${params.toString()}`}>
             <Button>Авторизация</Button>
           </Link>
         </div>

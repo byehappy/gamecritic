@@ -6,7 +6,7 @@ import {
   WarningIcon,
 } from "../assets/icons/toaster";
 import uuid4 from "uuid4";
-import styled, { css, keyframes } from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { TOAST_TIMEOUT } from "./constans";
 
 type MessageType = "error" | "info" | "warning" | "success";
@@ -82,7 +82,7 @@ const ToasterWrapper = styled.div<{$isClosing?:boolean}>`
   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
   padding:.5em;
   background:white;
-  animation: ${fadeIn} .5s ease-in, ${fadeOut} .75s ease-out ${TOAST_TIMEOUT - 750}ms;
+  animation: ${fadeIn} .5s ease-in, ${fadeOut} .5s ease-out ${TOAST_TIMEOUT - 500}ms;
 `
 
 const StyledMessage = styled.div`
@@ -111,11 +111,10 @@ const Toaster: React.FC<{
 
 const StyledList = styled.div`
   position: fixed;
-  bottom: 3vh;
-  right: 10px;
-  z-index: 1000;
+  bottom: 10vh;
+  right: 1vw;
+  z-index: 999;
   border-radius: 5px;
-  padding: 2vw;
   display:flex;
   gap:2vh; 
   flex-direction:column-reverse;
