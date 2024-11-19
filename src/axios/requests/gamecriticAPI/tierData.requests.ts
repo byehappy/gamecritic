@@ -55,7 +55,7 @@ export const updateUserRows = async (
   userId: string,
   tierId: string | number,
   rows: string,
-  present_img: string | null
+  present_img?: string
 ) => {
   return await instanceAPI.post(`/user/rows/${userId}/${tierId}`, {
     rows,
