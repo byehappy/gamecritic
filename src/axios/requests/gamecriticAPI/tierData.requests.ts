@@ -1,7 +1,7 @@
 import { AxiosPromise } from "axios";
 import { instanceAPI } from ".";
 
-interface Tier {
+export interface Tier {
   id: string;
   title: string;
   imageSrc?: string;
@@ -9,6 +9,18 @@ interface Tier {
   platforms?: string;
   tags?: string;
 }
+export interface UserTier {
+  user: {
+    id: string;
+    name: string;
+  };
+  tier: {
+    id: number | string;
+    title: string;
+  };
+  present_image: string;
+}
+
 let currentAbortController: AbortController | null = null;
 
 export const getAllTiers = async (): Promise<Tier[]> => {
@@ -21,6 +33,10 @@ export const getAllTiers = async (): Promise<Tier[]> => {
     .then((res) => res.data);
   currentAbortController = null;
   return response;
+};
+
+export const getUsersTiers = async (): Promise<UserTier[]> => {
+  return await instanceAPI.get(`/tierlists/users`).then((res) => res.data);
 };
 
 export const getTierById = (id: string): AxiosPromise<Tier> => {
@@ -39,7 +55,10 @@ export const updateUserRows = async (
   userId: string,
   tierId: string | number,
   rows: string,
-  present_img: Blob | null
+  present_img: string | null
 ) => {
-  return await instanceAPI.post(`/user/rows/${userId}/${tierId}`, { rows,present_img });
+  return await instanceAPI.post(`/user/rows/${userId}/${tierId}`, {
+    rows,
+    present_img,
+  });
 };

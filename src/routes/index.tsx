@@ -26,7 +26,7 @@ export const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
-        path: "/tier-list/:tierType",
+        path: "/tier-list/:tierType/:paramsUserId?",
         element: <TierPage />,
       },
       {

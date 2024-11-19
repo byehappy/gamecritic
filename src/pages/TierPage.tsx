@@ -33,19 +33,21 @@ import {
   setRows,
   setTrayGames,
 } from "../redux/slice/tierDataSlice";
-import { useParams } from "react-router-dom";
+import { redirect, useNavigate, useParams } from "react-router-dom";
 import { useBeforeUnloadSave } from "../utils/beforeUnload";
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "../utils/constans";
 import { setMessage } from "../redux/slice/messageSlice";
 import { logout } from "../redux/slice/authSlice";
+import html2canvas from "html2canvas";
 
 function TierPage() {
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const { rows } = useAppSelector((state) => state.tierData);
   const rowsRef = useRef(rows);
   const [dirty, setDirty] = useState(false);
-  const { tierType } = useParams() as {
+  const { tierType, paramsUserId } = useParams() as {
     tierType: string;
+    paramsUserId?: string;
   };
   const tierData = useAppSelector((state) => state.tierData);
   const dispatch = useAppDispatch();
@@ -69,13 +71,14 @@ function TierPage() {
       },
     })
   );
+  const navigate = useNavigate();
   useBeforeUnloadSave(
     tierData.rows.map((row) => ({
       ...row,
       games: row.games.map((game) => game.id),
     })),
     tierType,
-    dirty
+    dirty && !paramsUserId
   );
   const setTierFliter = useCallback(async () => {
     const res = await getTierById(tierType);
@@ -101,10 +104,19 @@ function TierPage() {
     if (!dirty) {
       setDirty(JSON.stringify(rows) !== JSON.stringify(rowsRef.current));
     }
-  }, [dirty, rows, setDirty]);
+  }, [dirty, rows]);
+  useEffect(() => {
+    if (dirty && paramsUserId) {
+      navigate(`/tier-list/${tierType}`);
+    }
+  }, [dirty, loadingTray, navigate, paramsUserId, tierType]);
   const loadGamesStorage = useCallback(async () => {
     let tiers;
-    if (currentUser) {
+    if (paramsUserId) {
+      tiers = await getUserRows(paramsUserId, tierType).then(
+        (res) => res.data.rows
+      );
+    } else if (currentUser) {
       tiers = await getUserRows(currentUser.id, tierType).then(
         (res) => res.data.rows
       );
@@ -381,7 +393,7 @@ function TierPage() {
       setActiveGame(activeGame);
     }
   };
-
+  //TODO:если сгорел токен заново запустить рефреш если не удачно то выкинуть ошибку
   const handleSaveRows = async () => {
     sessionStorage.removeItem(tierType);
     const rowsGamesIds = tierData.rows.map((row) => ({
@@ -389,11 +401,17 @@ function TierPage() {
       games: row.games.map((game) => game.id),
     }));
     if (currentUser) {
+      const canvas = await html2canvas(document.getElementById("table")!, {
+        useCORS: false,
+        proxy: "http://localhost:3001/proxy",
+      });
+      const image = canvas.toDataURL("img/png");
       try {
         await updateUserRows(
           currentUser.id,
           tierType,
-          JSON.stringify(rowsGamesIds)
+          JSON.stringify(rowsGamesIds),
+          image
         );
         dispatch(
           setMessage({
@@ -415,12 +433,10 @@ function TierPage() {
     } else {
       dispatch(
         setMessage({
-          message:
-            "Результат сохраниться после авторизации",
+          message: "Результат сохраниться после авторизации",
         })
       );
-      sessionStorage.setItem(
-        `save-${tierType}`, JSON.stringify(rowsGamesIds));
+      sessionStorage.setItem(`save-${tierType}`, JSON.stringify(rowsGamesIds));
     }
   };
 
@@ -434,7 +450,9 @@ function TierPage() {
       <h1 style={{ margin: "1vw 0", width: "100%", textAlign: "center" }}>
         {tier?.name}
       </h1>
-      <TierTable loading={loadingRows || loadingTray} />
+      <div id="table">
+        <TierTable loading={loadingRows || loadingTray} />
+      </div>
       <div
         style={{
           display: "flex",

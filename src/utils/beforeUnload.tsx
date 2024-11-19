@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from "react";
 import { SaveTierData } from "../interfaces/tierData";
-import { useBlocker, useLocation } from "react-router-dom";
+import { useBlocker } from "react-router-dom";
 import { useAppSelector } from "../redux/hooks";
 
 export const useBeforeUnloadSave = (
@@ -9,7 +9,6 @@ export const useBeforeUnloadSave = (
   dirty: boolean
 ) => {
   const {user:currentUser } = useAppSelector(state => state.auth)
-  const location = useLocation();
   const blocker = useBlocker(dirty);
   const handleSaveData = useCallback(async () => {
     if (dirty && !currentUser) {
@@ -21,7 +20,7 @@ export const useBeforeUnloadSave = (
       handleSaveData();
       blocker.proceed();
     }
-  }, [location, blocker, handleSaveData]);
+  }, [blocker, handleSaveData]);
   useEffect(() => {
     window.addEventListener("beforeunload", handleSaveData);
     return () => {

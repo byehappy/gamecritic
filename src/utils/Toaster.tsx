@@ -39,7 +39,10 @@ export const useToaster = () => {
 
   const addMessage = useCallback((message: string, type: MessageType) => {
     const newToaster: Toaster = { type, content: message, id: uuid4() };
-    setToasters((prev) => [...prev, newToaster]);
+    setToasters((prev) => {
+      const newToasters = prev.length >= 10 ? prev.slice(1) : prev;
+      return [...newToasters, newToaster];
+    });
 
     setTimeout(() => {
       setToasters((prev) => prev.slice(1));
@@ -126,7 +129,7 @@ export const ToasterList: React.FC<{
 }> = ({ toasters }) => (
   <StyledList id="toaster-list">
     {toasters.map((toaster) => (
-      <Toaster key={toaster.id} toaster={toaster} />
+      <Toaster key={toaster.id} toaster={toaster}/>
     ))}
   </StyledList>
 );

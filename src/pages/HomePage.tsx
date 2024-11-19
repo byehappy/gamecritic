@@ -7,6 +7,7 @@ import { getAllTiers } from "../axios";
 import uuid4 from "uuid4";
 import { SkeletonFactory } from "../utils/skeleton/skeleton-factory";
 import { UserTemplateCard } from "../components/userTemplateCard/UserTemplateCard";
+import { getUsersTiers, Tier, UserTier } from "../axios/requests/gamecriticAPI/tierData.requests";
 
 const CarouselWrapper = styled(Carousel)`
   margin: 2vh 0;
@@ -42,26 +43,17 @@ const HeaderTemplate = styled.div`
   }
 `;
 
-interface Tier {
-  id: string;
-  title: string;
-  imageSrc?: string;
-  genres?: string;
-  platforms?: string;
-  tags?: string;
-}
-
 export const HomePage = () => {
   const [tiers, setTiers] = useState<Tier[] | null>();
-  const getTiersRef = useRef(false)
+  const [usersTiers,setUsersTiers] = useState<UserTier[]| null>();
   const getTiers = useCallback(() => {
     getAllTiers()
       .then((res) => setTiers(res))
+      getUsersTiers()
+      .then((res) => setUsersTiers(res))
   }, []);
 
   useEffect(() => {
-    if(getTiersRef.current) return;
-    getTiersRef.current = true
     getTiers();
   }, [getTiers]);
 
@@ -107,13 +99,15 @@ export const HomePage = () => {
         <CarouselWrapper arrows infinite={false} dots={false}>
           <div>
             <ContainerItems>
-            {!tiers && SkeletonFactory(12,"Card")}
-              {tiers?.map((tier) => (
+            {!usersTiers && SkeletonFactory(12,"Card")}
+              {usersTiers?.map((tier) => (
                 <UserTemplateCard
                   key={uuid4()}
-                  img={tier.imageSrc ?? ""}
-                  name={tier.title}
-                  id={tier.id}
+                  img={tier.present_image ?? ""}
+                  name={tier.tier.title}
+                  username={tier.user.name}
+                  userid = {tier.user.id}
+                  id={tier.tier.id}
                 />
               ))}
             </ContainerItems>
