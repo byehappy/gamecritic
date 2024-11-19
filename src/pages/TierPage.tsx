@@ -33,7 +33,7 @@ import {
   setRows,
   setTrayGames,
 } from "../redux/slice/tierDataSlice";
-import { redirect, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useBeforeUnloadSave } from "../utils/beforeUnload";
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "../utils/constans";
 import { setMessage } from "../redux/slice/messageSlice";
@@ -43,7 +43,7 @@ import html2canvas from "html2canvas";
 function TierPage() {
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const { rows } = useAppSelector((state) => state.tierData);
-  const rowsRef = useRef(rows);
+  const rowsRef = useRef("");
   const [dirty, setDirty] = useState(false);
   const { tierType, paramsUserId } = useParams() as {
     tierType: string;
@@ -101,15 +101,22 @@ function TierPage() {
     setTierFliter();
   }, [setTierFliter]);
   useEffect(() => {
-    if (!dirty) {
-      setDirty(JSON.stringify(rows) !== JSON.stringify(rowsRef.current));
+    if (!dirty && !loadingRows) {
+      setDirty(
+        JSON.stringify(
+          tierData.rows.map((row) => ({
+            ...row,
+            games: row.games.map((game) => game.id),
+          }))
+        ) !== rowsRef.current
+      );
     }
-  }, [dirty, rows]);
+  }, [dirty, loadingRows, rows, tierData.rows]);
   useEffect(() => {
-    if (dirty && paramsUserId) {
+    if (dirty && paramsUserId && !loadingRows) {
       navigate(`/tier-list/${tierType}`);
     }
-  }, [dirty, loadingTray, navigate, paramsUserId, tierType]);
+  }, [dirty, loadingRows, navigate, paramsUserId, tierType]);
   const loadGamesStorage = useCallback(async () => {
     let tiers;
     if (paramsUserId) {
@@ -128,6 +135,7 @@ function TierPage() {
       setLoadingRows(false);
       return;
     }
+    rowsRef.current = tiers;
     const parsedTiers: SaveTierData[] = JSON.parse(tiers);
     const gameIds = parsedTiers.flatMap((tier) => tier.games);
     const gameRequests = gameIds.map((id) =>
@@ -393,7 +401,7 @@ function TierPage() {
       setActiveGame(activeGame);
     }
   };
-  //TODO:если сгорел токен заново запустить рефреш если не удачно то выкинуть ошибку
+  //TODO:если сгорел токен заново запустить рефреш и запрос если не удачно то выкинуть ошибку
   const handleSaveRows = async () => {
     sessionStorage.removeItem(tierType);
     const rowsGamesIds = tierData.rows.map((row) => ({
@@ -425,10 +433,12 @@ function TierPage() {
         );
         dispatch(
           setMessage({
-            error: "Сохранение не удалось. Попробуйте авторизоваться",
+            error: "Сохранение не удалось.",
           })
         );
-        dispatch(logout());
+        if (!localStorage.getItem("refreshToken")) {
+          dispatch(logout());
+        }
       }
     } else {
       dispatch(
