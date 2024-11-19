@@ -1,4 +1,4 @@
-import { Flex, Spin } from "antd";
+import { Flex, Spin, Tooltip } from "antd";
 import { Modal } from "../../modal/Modal";
 import { LoadingOutlined, StarFilled, StarOutlined } from "@ant-design/icons";
 import { gameRequest } from "../../../axios/requests/games.requests";
@@ -60,6 +60,12 @@ export const CardModal: React.FC<{
       } catch (error) {
         dispatch(setMessage(error));
       }
+    } else {
+      dispatch(
+        setMessage({
+          message: "Для добавления в избранное необходимо авторизоваться",
+        })
+      );
     }
   }, [currentUser, dispatch, game]);
   const deleteGameFromFavorites = useCallback(async () => {
@@ -76,21 +82,23 @@ export const CardModal: React.FC<{
   const gameInfo = game ? (
     <div style={{ display: "flex", flexDirection: "column", gap: "1vh 0" }}>
       <div style={{ display: "flex", gap: ".5vw" }}>
-        {currentUser && isFavorite !== null &&
-          (isFavorite ? (
+        {isFavorite ? (
+          <Tooltip title="Удалить из избранного">
             <StarFilled
               style={{ color: "#ffc400", fontSize: "1.5rem" }}
               onClick={() => deleteGameFromFavorites()}
             />
-          ) : (
+          </Tooltip>
+        ) : (
+          <Tooltip title="Доавить в избранное">
             <StarOutlined
               style={{ fontSize: "1.5rem" }}
               onClick={() => {
                 addGameInFavorites();
               }}
             />
-          ))}
-
+          </Tooltip>
+        )}
         <h2>{game.name}</h2>
       </div>
       <p>

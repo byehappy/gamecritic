@@ -76,7 +76,7 @@ const fadeOut = keyframes`
   }
   to{
     opacity:1;
-    transform:translateX(1000%);
+    transform:translateX(100%);
   }
 `
 
