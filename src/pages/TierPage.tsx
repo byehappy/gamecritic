@@ -102,7 +102,7 @@ function TierPage() {
     setTierFliter();
   }, [setTierFliter]);
   useEffect(() => {
-    if (!dirty && !loadingRows) {
+    if (!loadingRows) {
       setDirty(
         JSON.stringify(
           tierData.rows.map((row) => ({
@@ -112,7 +112,7 @@ function TierPage() {
         ) !== rowsRef.current
       );
     }
-  }, [dirty, loadingRows, rows, tierData.rows]);
+  }, [loadingRows, rows, tierData.rows]);
   useEffect(() => {
     if (dirty && paramsUserId && !loadingRows) {
       navigate(`/tier-list/${tierType}`);
@@ -470,6 +470,7 @@ function TierPage() {
       );
       sessionStorage.setItem(tierType, JSON.stringify(rowsGamesIds));
     }
+    setDirty(false);
   };
 
   return (

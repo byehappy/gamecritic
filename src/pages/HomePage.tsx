@@ -2,7 +2,7 @@ import { Carousel } from "antd";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { TemplateCard } from "../components/templateCard/TemplateCard";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getAllTiers } from "../axios";
 import uuid4 from "uuid4";
 import { SkeletonFactory } from "../utils/skeleton/skeleton-factory";
@@ -19,7 +19,7 @@ const CarouselWrapper = styled(Carousel)`
 const ContainerItems = styled.div`
   display: flex;
   gap: 1vw;
-  height: 20vh;
+  height: 100%;
   padding: 0 1vw;
 `;
 

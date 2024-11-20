@@ -6,13 +6,13 @@ export const Item = styled.div`
   width: 18vw;
   position: relative;
   flex: none;
-  height: 20vh;
+  height: 24vh;
   transition: transform 0.3s ease-in-out;
   overflow: hidden;
   img {
     object-fit: cover;
-    object-position: top;
-    width: 110%;
+    object-position: left top;
+    width: 130%;
     height: 100%;
   }
   .bottom-text {
@@ -23,7 +23,7 @@ export const Item = styled.div`
     width: 100%;
     color: white;
     line-height: 22px;
-    background-color: black;
+    background-color: #000000ce;
     height: 6vh;
     gap: 0.2vw;
     display: flex;

@@ -12,6 +12,7 @@ import { SignInPage } from "../pages/auth/SignIn";
 import { SignUpPage } from "../pages/auth/SignUp";
 import { ProfilePage } from "../pages/Profile";
 import { refreshToken } from "../axios";
+import { FavoritesPage } from "../pages/FavoritesPage";
 
 export const router = createBrowserRouter([
   {
@@ -32,6 +33,14 @@ export const router = createBrowserRouter([
       {
         path: "/all",
         element: <TemplatesPage />,
+      },
+      {
+        path: "/all-tierlits/:userid",
+        element: <TemplatesPage />,
+      },
+      {
+        path: "/all-favorites/:userid",
+        element: <FavoritesPage />,
       },
       {
         path: "/auth/sign-in",

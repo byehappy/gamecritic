@@ -99,7 +99,7 @@ export const ProfilePage = () => {
     <div>
       <HeaderTemplate>
         <h1>Ваши шаблоны</h1>
-        {tiers.length !== 0 && <Link to={"/all"}>Увидеть все шаблоны</Link>}
+        {tiers.length !== 0 && <Link to={`/all-tierlits/${currentUser?.id}`}>Увидеть все шаблоны</Link>}
       </HeaderTemplate>
       <CarouselWrapper arrows infinite={false} dots={false}>
         <div>
@@ -127,7 +127,7 @@ export const ProfilePage = () => {
       <HeaderTemplate>
         <h1>Избранные игры</h1>
         {favoriteGames.length !== 0 && (
-          <Link to={"/"}>Увидеть все избранные игры</Link>
+          <Link to={`/all-favorites/${currentUser?.id}`}>Увидеть все избранные игры</Link>
         )}
       </HeaderTemplate>
       <CarouselWrapper arrows infinite={false} dots={false}>

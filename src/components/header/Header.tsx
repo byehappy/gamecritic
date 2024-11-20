@@ -86,11 +86,13 @@ export const Header = () => {
                     backgroundColor: token[1].colorBgElevated,
                     borderRadius: token[1].borderRadiusLG,
                     boxShadow: token[1].boxShadowSecondary,
+                    display:"flex",
+                    flexDirection:"column",
+                    alignItems:"center",
+                    paddingTop:"1vh"
                   }}
                 >
-                   <Space style={{padding:"0 auto"}}>
                    {`Привет,${currentUser?.username}!`}
-                   </Space>
                     {cloneElement(originNode as React.ReactElement, { style: {boxShadow:"none"} })}
                 </div>
               )}
