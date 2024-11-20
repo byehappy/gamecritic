@@ -3,6 +3,7 @@ import {
   gamesRequest,
   getTierById,
   getUserRows,
+  refreshToken,
   updateUserRows,
 } from "../axios";
 import { Button, FloatButton, Pagination, Popover } from "antd";
@@ -401,13 +402,20 @@ function TierPage() {
       setActiveGame(activeGame);
     }
   };
-  //TODO:если сгорел токен заново запустить рефреш и запрос если не удачно то выкинуть ошибку
   const handleSaveRows = async () => {
     sessionStorage.removeItem(tierType);
     const rowsGamesIds = tierData.rows.map((row) => ({
       ...row,
       games: row.games.map((game) => game.id),
     }));
+    if (!dirty) {
+      dispatch(
+        setMessage({
+          message: "Изменений не обнаружено",
+        })
+      );
+      return;
+    }
     if (currentUser) {
       const canvas = await html2canvas(document.getElementById("table")!, {
         useCORS: false,
@@ -427,26 +435,40 @@ function TierPage() {
           })
         );
       } catch {
-        sessionStorage.setItem(
-          `save-${tierType}`,
-          JSON.stringify(rowsGamesIds)
-        );
-        dispatch(
-          setMessage({
-            error: "Сохранение не удалось.",
-          })
-        );
-        if (!localStorage.getItem("refreshToken")) {
-          dispatch(logout());
+        try {
+          const rs = await refreshToken();
+          const { accessToken } = rs.data;
+          localStorage.setItem("accessToken", accessToken);
+          await updateUserRows(
+            currentUser.id,
+            tierType,
+            JSON.stringify(rowsGamesIds),
+            image
+          );
+          dispatch(
+            setMessage({
+              success: "Успешно сохранено",
+            })
+          );
+        } catch {
+          dispatch(
+            setMessage({
+              message: "Для сохранения результата необходимо авторизоваться",
+            })
+          );
+          sessionStorage.setItem(tierType, JSON.stringify(rowsGamesIds));
+          if (!localStorage.getItem("refreshToken")) {
+            dispatch(logout());
+          }
         }
       }
     } else {
       dispatch(
         setMessage({
-          message: "Результат сохраниться после авторизации",
+          message: "Для сохранения результата необходимо авторизоваться",
         })
       );
-      sessionStorage.setItem(`save-${tierType}`, JSON.stringify(rowsGamesIds));
+      sessionStorage.setItem(tierType, JSON.stringify(rowsGamesIds));
     }
   };
 
