@@ -1,10 +1,11 @@
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { login } from "../../redux/slice/authSlice";
+import { ErrorSignIn, login } from "../../redux/slice/authSlice";
 import { Input, Button, Form } from "antd";
-
+import { useForm } from "antd/es/form/Form";
 export const SignInPage = () => {
+  const [form] = useForm();
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const redirectTo = params.get("from") ?? "/";
@@ -12,22 +13,40 @@ export const SignInPage = () => {
   const { isLoggedIn } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   type FieldType = {
-    username: string;
+    login: string;
     password: string;
   };
   const navigation = useNavigate();
-  const handleLogin = (formValue: { username: string; password: string }) => {
-    const { username, password } = formValue;
+  const handleLogin = async (formValue: {
+    login: string;
+    password: string;
+  }) => {
+    const { login: username, password } = formValue;
     setLoading(true);
 
-    dispatch(login({ username, password })).finally(() => setLoading(false));
+    try {
+      await dispatch(login({ username, password })).unwrap();
+    } catch (_error) {
+      const e = _error as ErrorSignIn;
+      if (Array.isArray(e.error)) {
+        form.setFields(
+          e.error.map((err) => ({
+            name: err.path,
+            errors: [err.msg],
+          }))
+        );
+      } else {
+        form.setFields([{ name: e.path, errors: [e.error || ""] }]);
+      }
+    } finally {
+      setLoading(false);
+    }
   };
-  useEffect(()=>{
+  useEffect(() => {
     if (isLoggedIn) {
       navigation(redirectTo || "/");
     }
-  },[isLoggedIn, navigation, redirectTo])
-
+  }, [isLoggedIn, navigation, redirectTo]);
   return (
     <div
       style={{
@@ -40,28 +59,29 @@ export const SignInPage = () => {
     >
       <h1 style={{ fontSize: "2rem", margin: "0 auto" }}>Авторизация</h1>
       <Form
+        form={form}
         labelCol={{ xs: { span: 24 }, sm: { span: 4 } }}
         wrapperCol={{ xs: { span: 24 }, sm: { span: 24 } }}
         initialValues={{ remember: true }}
         onFinish={handleLogin}
         autoComplete="off"
       >
-        <Form.Item<FieldType>
-          label="Логин"
-          name="username"
-          rules={[{ required: true, message: "Введите свой логин" }]}
-        >
-          <Input placeholder="Логин" />
+        <Form.Item<FieldType> label="Логин" name="login">
+          <Input
+            placeholder="Логин"
+            onChange={() => {
+              form.setFields([{ name: "login", errors: [] }]);
+            }}
+          />
         </Form.Item>
 
-        <Form.Item<FieldType>
-          label="Пароль"
-          name="password"
-          rules={[
-            { required: true, message: "Это поле обязательно для заполнения" },
-          ]}
-        >
-          <Input.Password placeholder="Пароль" />
+        <Form.Item<FieldType> label="Пароль" name="password">
+          <Input.Password
+            placeholder="Пароль"
+            onChange={() => {
+              form.setFields([{ name: "password", errors: [] }]);
+            }}
+          />
         </Form.Item>
 
         <Form.Item

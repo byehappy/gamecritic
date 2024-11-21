@@ -32,6 +32,16 @@ export const register = createAsyncThunk(
   }
 );
 
+export type ErrorSignIn = {
+  path?:string,
+  error:string | [{
+    type:string,
+    msg:string,
+    path:string,
+    locataion:string
+  }]
+}
+
 export const login = createAsyncThunk(
   "auth/sign-in",
   async ({ username, password }: LoginType, thunkAPI) => {
@@ -42,9 +52,12 @@ export const login = createAsyncThunk(
       return { user: response.data.user };
     } catch (e) {
       const error = e as AxiosError;
-      const message = error.response?.data;
-      thunkAPI.dispatch(setMessage(message));
-      return thunkAPI.rejectWithValue(error.response?.data);
+      const message  = error.response?.data as ErrorSignIn;
+      if(!Array.isArray(message.error)){
+        thunkAPI.dispatch(setMessage({error:message.error}));
+      } 
+        return thunkAPI.rejectWithValue(error.response?.data);
+      
     }
   }
 );
