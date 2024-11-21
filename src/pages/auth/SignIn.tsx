@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ErrorSignIn, login } from "../../redux/slice/authSlice";
+import { ErrorAuth, login } from "../../redux/slice/authSlice";
 import { Input, Button, Form } from "antd";
 import { useForm } from "antd/es/form/Form";
 export const SignInPage = () => {
@@ -27,7 +27,7 @@ export const SignInPage = () => {
     try {
       await dispatch(login({ username, password })).unwrap();
     } catch (_error) {
-      const e = _error as ErrorSignIn;
+      const e = _error as ErrorAuth;
       if (Array.isArray(e.error)) {
         form.setFields(
           e.error.map((err) => ({

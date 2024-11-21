@@ -25,22 +25,28 @@ export const register = createAsyncThunk(
       return response.data;
     } catch (e) {
       const error = e as AxiosError;
-      const message = error.response?.data;
-      thunkAPI.dispatch(setMessage(message));
+      const message = error.response?.data as ErrorAuth;
+      if (!Array.isArray(message.error)) {
+        thunkAPI.dispatch(setMessage({ error: message.error }));
+      }
       return thunkAPI.rejectWithValue(error.response?.data);
     }
   }
 );
 
-export type ErrorSignIn = {
-  path?:string,
-  error:string | [{
-    type:string,
-    msg:string,
-    path:string,
-    locataion:string
-  }]
-}
+export type ErrorAuth = {
+  path?: string;
+  error:
+    | string
+    | [
+        {
+          type: string;
+          msg: string;
+          path: string;
+          locataion: string;
+        }
+      ];
+};
 
 export const login = createAsyncThunk(
   "auth/sign-in",
@@ -52,12 +58,11 @@ export const login = createAsyncThunk(
       return { user: response.data.user };
     } catch (e) {
       const error = e as AxiosError;
-      const message  = error.response?.data as ErrorSignIn;
-      if(!Array.isArray(message.error)){
-        thunkAPI.dispatch(setMessage({error:message.error}));
-      } 
-        return thunkAPI.rejectWithValue(error.response?.data);
-      
+      const message = error.response?.data as ErrorAuth;
+      if (!Array.isArray(message.error)) {
+        thunkAPI.dispatch(setMessage(message));
+      }
+      return thunkAPI.rejectWithValue(error.response?.data);
     }
   }
 );
