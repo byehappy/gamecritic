@@ -18,6 +18,9 @@ export const gamesRequest = (params:FilterFlags) =>{
 export const gameRequest = (id:number) =>{
     return instanceRawg.get<IGameOnly | IGame>(`/games/${id}`)
 }
+export const gameScreenshots = (id:number)=>{
+    return instanceRawg.get<{results:[{image:string,id:number}]}>(`/games/${id}/screenshots`).then(res=>res.data)
+}
 
 export const tagsRequest = () =>{
     return instanceRawg.get<GetTags>("/tags")

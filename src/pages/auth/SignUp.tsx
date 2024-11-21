@@ -35,7 +35,6 @@ export const SignUpPage = () => {
       })
       .catch((_error) => {
         const e = _error as ErrorAuth;
-        console.log(e);
         if (Array.isArray(e.error)) {
           form.setFields(
             e.error.map((err) => ({
