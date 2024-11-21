@@ -3,7 +3,6 @@ import {
   gamesRequest,
   getTierById,
   getUserRows,
-  refreshToken,
   updateUserRows,
 } from "../axios";
 import { Button, FloatButton, Pagination, Popover } from "antd";
@@ -40,6 +39,7 @@ import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "../utils/constans";
 import { setMessage } from "../redux/slice/messageSlice";
 import { logout } from "../redux/slice/authSlice";
 import html2canvas from "html2canvas";
+import { AxiosError } from "axios";
 
 function TierPage() {
   const { user: currentUser } = useAppSelector((state) => state.auth);
@@ -434,32 +434,24 @@ function TierPage() {
             success: "Успешно сохранено",
           })
         );
-      } catch {
-        try {
-          const rs = await refreshToken();
-          const { accessToken } = rs.data;
-          localStorage.setItem("accessToken", accessToken);
-          await updateUserRows(
-            currentUser.id,
-            tierType,
-            JSON.stringify(rowsGamesIds),
-            image
-          );
+      } catch (e) {
+        const error = e as AxiosError;
+        if (
+          typeof error.response?.data === "object" &&
+          error.response.data &&
+          "error" in error.response.data
+        ) {
           dispatch(
             setMessage({
-              success: "Успешно сохранено",
+              error: error.response?.data.error,
             })
           );
-        } catch {
-          dispatch(
-            setMessage({
-              message: "Для сохранения результата необходимо авторизоваться",
-            })
-          );
+        }
+        if (error.response?.status !== 429) {
           sessionStorage.setItem(tierType, JSON.stringify(rowsGamesIds));
-          if (!localStorage.getItem("refreshToken")) {
-            dispatch(logout());
-          }
+        }
+        if (!localStorage.getItem("refreshToken")) {
+          dispatch(logout());
         }
       }
     } else {
