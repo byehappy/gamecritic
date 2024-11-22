@@ -26,26 +26,23 @@ export const register = createAsyncThunk(
     } catch (e) {
       const error = e as AxiosError;
       const message = error.response?.data as ErrorAuth;
-      if (!Array.isArray(message.error)) {
-        thunkAPI.dispatch(setMessage({ error: message.error }));
-      }
+      message.error.map(error => {
+        thunkAPI.dispatch(setMessage({error:error.msg}));
+      })
       return thunkAPI.rejectWithValue(error.response?.data);
     }
   }
 );
 
 export type ErrorAuth = {
-  path?: string;
-  error:
-    | string
-    | [
-        {
-          type: string;
-          msg: string;
-          path: string;
-          locataion: string;
-        }
-      ];
+  error: [
+    {
+      type: string;
+      msg: string;
+      path: string;
+      locataion: string;
+    }
+  ];
 };
 
 export const login = createAsyncThunk(
@@ -59,9 +56,9 @@ export const login = createAsyncThunk(
     } catch (e) {
       const error = e as AxiosError;
       const message = error.response?.data as ErrorAuth;
-      if (!Array.isArray(message.error)) {
-        thunkAPI.dispatch(setMessage(message));
-      }
+      message.error.map(error => {
+        thunkAPI.dispatch(setMessage({error:error.msg}));
+      })
       return thunkAPI.rejectWithValue(error.response?.data);
     }
   }

@@ -28,16 +28,12 @@ export const SignInPage = () => {
       await dispatch(login({ username, password })).unwrap();
     } catch (_error) {
       const e = _error as ErrorAuth;
-      if (Array.isArray(e.error)) {
-        form.setFields(
-          e.error.map((err) => ({
-            name: err.path,
-            errors: [err.msg],
-          }))
-        );
-      } else {
-        form.setFields([{ name: e.path, errors: [e.error || ""] }]);
-      }
+      form.setFields(
+        e.error.map((err) => ({
+          name: err.path,
+          errors: [err.msg],
+        }))
+      );
     } finally {
       setLoading(false);
     }
