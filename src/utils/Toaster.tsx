@@ -116,7 +116,7 @@ const StyledList = styled.div`
   position: fixed;
   bottom: 10vh;
   right: 1vw;
-  z-index: 999;
+  z-index: 100;
   border-radius: 5px;
   display:flex;
   gap:2vh; 

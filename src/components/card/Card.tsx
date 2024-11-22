@@ -25,7 +25,7 @@ const StyleCoverImage = styled.div<{ $name: string }>`
     color: white;
     opacity: 0;
     pointer-events: none;
-    z-index: 999;
+    z-index: 5;
     text-overflow: ellipsis;
     max-height: 65px;
     overflow: hidden;
