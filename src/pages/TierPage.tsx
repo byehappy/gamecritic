@@ -434,6 +434,7 @@ function TierPage() {
             success: "Успешно сохранено",
           })
         );
+        setDirty(false);
       } catch (e) {
         const error = e as AxiosError;
         if (
@@ -457,12 +458,10 @@ function TierPage() {
     } else {
       dispatch(
         setMessage({
-          message: "Для сохранения результата необходимо авторизоваться",
+          message: "Чтобы сохранять результат необходимо авторизоваться",
         })
       );
-      sessionStorage.setItem(tierType, JSON.stringify(rowsGamesIds));
     }
-    setDirty(false);
   };
 
   return (
@@ -472,7 +471,7 @@ function TierPage() {
       onDragStart={handleDragStart}
       sensors={sensors}
     >
-      <h1 style={{ margin: "1vw 0", width: "100%", textAlign: "center" }}>
+      <h1 style={{ margin: "1vw 0", width: "100%", textAlign: "center", color:"#2e2532" }}>
         {tier?.name}
       </h1>
       <div id="table">
@@ -537,7 +536,7 @@ function TierPage() {
         {activeGame ? <CardGame id={activeGame.id} game={activeGame} /> : null}
       </DragOverlay>
       <FloatButton
-        style={{ zIndex: 1000 }}
+        style={{ zIndex: 5 }}
         icon={<SaveOutlined />}
         tooltip={<div>Сохранить</div>}
         onClick={handleSaveRows}
