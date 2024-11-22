@@ -7,7 +7,12 @@ import { getAllTiers } from "../axios";
 import uuid4 from "uuid4";
 import { SkeletonFactory } from "../utils/skeleton/skeleton-factory";
 import { UserTemplateCard } from "../components/userTemplateCard/UserTemplateCard";
-import { getUsersTiers, Tier, UserTier } from "../axios/requests/gamecriticAPI/tierData.requests";
+import {
+  getUsersTiers,
+  Tier,
+  UserTier,
+} from "../axios/requests/gamecriticAPI/tierData.requests";
+import { partArray } from "../utils/partedArray";
 
 const CarouselWrapper = styled(Carousel)`
   margin: 2vh 0;
@@ -27,10 +32,10 @@ const IntroText = styled.h1`
   display: flex;
   flex-direction: column;
   margin: 3vh 0;
-  gap: 1vh;
   font-size: 1.8rem;
   p {
-    font-weight: normal;
+    margin:1vh 0;
+    font-weight: 300;
   }
 `;
 const HeaderTemplate = styled.div`
@@ -38,19 +43,24 @@ const HeaderTemplate = styled.div`
   justify-content: space-between;
   align-items: center;
   font-size: 0.8rem;
+  margin-top:3vh;
   a {
     font-size: 1.5em;
   }
 `;
 
 export const HomePage = () => {
-  const [tiers, setTiers] = useState<Tier[] | null>();
-  const [usersTiers,setUsersTiers] = useState<UserTier[]| null>();
+  const [tiers, setTiers] = useState<Tier[][] | null>();
+  const [usersTiers, setUsersTiers] = useState<UserTier[][] | null>();
   const getTiers = useCallback(() => {
-    getAllTiers()
-      .then((res) => setTiers(res))
-      getUsersTiers()
-      .then((res) => setUsersTiers(res))
+    getAllTiers().then((res) => {
+      const partedArray = partArray(res, 4);
+      setTiers(partedArray);
+    });
+    getUsersTiers().then((res) => {
+      const partedArray = partArray(res, 4);
+      setUsersTiers(partedArray);
+    });
   }, []);
 
   useEffect(() => {
@@ -72,24 +82,21 @@ export const HomePage = () => {
           <Link to={"/all"}>Увидеть все шаблоны</Link>
         </HeaderTemplate>
         <CarouselWrapper arrows infinite={false} dots={false}>
-          <div>
-            <ContainerItems>
-            {!tiers && SkeletonFactory(12,"Card")}
-              {tiers?.map((tier) => (
-                <TemplateCard
-                  key={uuid4()}
-                  img={tier.imageSrc ?? ""}
-                  name={tier.title}
-                  id={tier.id}
-                />
-              ))}
-            </ContainerItems>
-          </div>
-          <div>
-            <ContainerItems>
-              
-            </ContainerItems>
-          </div>
+          {!tiers && SkeletonFactory(4, "Card")}
+          {tiers?.map((part) => (
+            <div key={uuid4()}>
+              <ContainerItems>
+                {part.map((tier) => (
+                  <TemplateCard
+                    key={uuid4()}
+                    img={tier.imageSrc ?? ""}
+                    name={tier.title}
+                    id={tier.id}
+                  />
+                ))}
+              </ContainerItems>
+            </div>
+          ))}
         </CarouselWrapper>
       </div>
       <div>
@@ -97,26 +104,23 @@ export const HomePage = () => {
           <h1>Шаблоны других пользователей</h1>
         </HeaderTemplate>
         <CarouselWrapper arrows infinite={false} dots={false}>
-          <div>
-            <ContainerItems>
-            {!usersTiers && SkeletonFactory(12,"Card")}
-              {usersTiers?.map((tier) => (
-                <UserTemplateCard
-                  key={uuid4()}
-                  img={tier.present_image ?? ""}
-                  name={tier.tier.title}
-                  username={tier.user.name}
-                  userid = {tier.user.id}
-                  id={tier.tier.id}
-                />
-              ))}
-            </ContainerItems>
-          </div>
-          <div>
-            <ContainerItems>
-              
-            </ContainerItems>
-          </div>
+          {!usersTiers && SkeletonFactory(4, "Card")}
+          {usersTiers?.map((part) => (
+            <div key={uuid4()}>
+              <ContainerItems>
+                {part.map((tier) => (
+                  <UserTemplateCard
+                    key={uuid4()}
+                    img={tier.present_image ?? ""}
+                    name={tier.tier.title}
+                    username={tier.user.name}
+                    userid={tier.user.id}
+                    id={tier.tier.id}
+                  />
+                ))}
+              </ContainerItems>
+            </div>
+          ))}
         </CarouselWrapper>
       </div>
     </>
