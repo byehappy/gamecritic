@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
-import { SaveTierData } from "../interfaces/tierData";
+import { SaveTierData } from "../../interfaces/tierData";
 import { useBlocker } from "react-router-dom";
-import { useAppSelector } from "../redux/hooks";
+import { useAppSelector } from "../../redux/hooks";
 
 export const useBeforeUnloadSave = (
   rows: SaveTierData[],

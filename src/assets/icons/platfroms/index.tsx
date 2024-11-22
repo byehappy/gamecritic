@@ -132,12 +132,14 @@ type Platform =
   | "PS Vita"
   | "iOS"
   | "macOS"
+  | "Apple Macintosh"
   | "Android"
   | "Xbox"
   | "Xbox 360"
   | "Xbox One"
   | "Xbox Series S/X"
   | "Linux"
+  | "Nintendo"
   | "Nintendo 64"
   | "Nintendo DS"
   | "Nintendo DSi"
@@ -158,12 +160,14 @@ export const platformIcons: Record<
   "PS Vita" : PlaystationIcon,
   "iOS" : IphoneIcon,
   "macOS" : IphoneIcon,
+  "Apple Macintosh":IphoneIcon,
   "Android" : AndroidIcon,
   "Xbox" : XboxIcon,
   "Xbox 360" : XboxIcon,
   "Xbox One" : XboxIcon,
   "Xbox Series S/X" : XboxIcon,
   "Linux" : LinuxIcon,
+  "Nintendo":NintendoIcon,
   "Nintendo 64" : NintendoIcon,
   "Nintendo DS" : NintendoIcon,
   "Nintendo DSi" : NintendoIcon,

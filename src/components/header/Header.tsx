@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { Avatar, Button, Dropdown, MenuProps, Space } from "antd";
+import { Avatar, Button, Dropdown, MenuProps } from "antd";
 import { cloneElement, useCallback, useEffect, useState } from "react";
 import { logout } from "../../redux/slice/authSlice";
 import { UserOutlined } from "@ant-design/icons";
@@ -9,13 +9,13 @@ import uuid4 from "uuid4";
 import useToken from "antd/es/theme/useToken";
 
 const StyledHeader = styled.header`
-  background-color: ${({ theme }) => theme.base.colors.bg};
   color: ${({ theme }) => theme.base.colors.font};
   height: 6vh;
   display: flex;
   align-items: center;
   padding: 0 10vw;
   justify-content: space-between;
+  border-bottom: 2px #8a2be2 solid;
   .logo {
     color: ${({ theme }) => theme.base.colors.font};
     font-family: "Silkscreen";

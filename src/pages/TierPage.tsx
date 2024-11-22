@@ -34,7 +34,7 @@ import {
   setTrayGames,
 } from "../redux/slice/tierDataSlice";
 import { useNavigate, useParams } from "react-router-dom";
-import { useBeforeUnloadSave } from "../utils/beforeUnload";
+import { useBeforeUnloadSave } from "../utils/hooks/beforeUnload";
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "../utils/constans";
 import { setMessage } from "../redux/slice/messageSlice";
 import { logout } from "../redux/slice/authSlice";
@@ -542,7 +542,6 @@ function TierPage() {
         tooltip={<div>Сохранить</div>}
         onClick={handleSaveRows}
       />
-      ;
     </DndContext>
   );
 }

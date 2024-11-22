@@ -14,26 +14,26 @@ const fadeIn = keyframes`
 export const DotsContainer = styled.div`
   display: flex;
   justify-content: center;
-  gap: 1vw;
-  margin-top: 1vh;
+  gap: .8vw;
+  padding:0 1vw;
   position: absolute;
   bottom: 5%;
   width: 100%;
 `;
 
 export const Dot = styled.div<{ $isActive: boolean }>`
-  width: 150px;
-  height: 10px;
+  width: 100%;
+  height: 1vh;
   border-radius: 4px;
   background-color: ${(props) =>
-    props.$isActive ? "rgb(255, 196, 0)" : "#ccc"};
+    props.$isActive ? "#8a2be2" : "#ccc"};
   animation: ${(props) => (props.$isActive ? fadeIn : "none")} 0.3s ease-in-out;
   transition: background-color 0.3s, transform 0.3s;
 `;
 
 export const SliderContainer = styled.div`
-  width: 100%;
-  height: 30vh;
+  width: 40vw;
+  height:47vh;
   overflow: hidden;
   position: relative;
 `;
@@ -41,5 +41,5 @@ export const SliderContainer = styled.div`
 export const SliderImage = styled.img`
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit:cover;
 `;

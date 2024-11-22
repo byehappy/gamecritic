@@ -16,12 +16,13 @@ export interface IGameDis extends Omit<IGame, "id"> {
 }
 
 export interface IGameOnly extends IGame {
+  parent_platforms: [{platform:{name:string,slug:string}}];
   metacritic: string;
   released: string;
   updated: string;
   rating: string;
   playtime: string;
-  description: string;
+  description_raw: string;
   website: string | undefined;
   platforms: {
     platform: { id: number; slug: string; name: string };

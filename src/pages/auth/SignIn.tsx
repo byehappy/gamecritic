@@ -97,7 +97,7 @@ export const SignInPage = () => {
         </Form.Item>
       </Form>
       <div style={{ textAlign: "center" }}>
-        Еще не зарегистрировались?{" "}
+        Еще не зарегистрировались?
         <Link to="/auth/sign-up">Зарегистрироваться</Link>
       </div>
     </div>

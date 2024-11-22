@@ -17,6 +17,7 @@ import {
 } from "../../../axios";
 import { platformIcons } from "../../../assets/icons/platfroms";
 import { SliderContainer, SliderImage, DotsContainer, Dot } from "./card.style";
+import { useWordDeclination } from "../../../utils/hooks/useWorldDeclination";
 
 export const CardModal: React.FC<{
   id: number;
@@ -125,24 +126,20 @@ export const CardModal: React.FC<{
 
     setCurrentImageIndex(currentIndex);
   };
+  const textHoursPlay = useWordDeclination(Number(game?.playtime), [
+    "час",
+    "часа",
+    "часов",
+  ]).text;
+  const textMetacritic = useWordDeclination(Number(game?.metacritic), [
+    "балл",
+    "балла",
+    "баллов",
+  ]).text;
   const gameInfo = game ? (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1vh 0" }}>
-      {screenshotsGame && (
-        <div style={{ position: "relative" }}>
-          <SliderContainer onMouseMove={handleMouseMove} ref={sliderRef}>
-            <SliderImage
-              src={screenshotsGame[currentImageIndex].image}
-              alt={`Скриншот ${currentImageIndex + 1}`}
-            />
-          </SliderContainer>
-          <DotsContainer>
-            {screenshotsGame.map((_, index) => (
-              <Dot key={uuid4()} $isActive={index === currentImageIndex} />
-            ))}
-          </DotsContainer>
-        </div>
-      )}
-      <div style={{ display: "flex", gap: ".5vw" }}>
+    <div>
+      <h1 style={{ textWrap: "nowrap" }}>
+        {game.name}{" "}
         {isFavorite ? (
           <Tooltip title="Удалить из избранного">
             <StarFilled
@@ -160,49 +157,83 @@ export const CardModal: React.FC<{
             />
           </Tooltip>
         )}
-        <h2>{game.name}</h2>
-      </div>
-      <p>
-        <strong>Оценка на Metacritic:</strong> {game.metacritic}
-      </p>
-      <p>
-        <strong>Дата релиза:</strong>{" "}
-        {new Date(game.released).toLocaleString().split(",")[0]}
-      </p>
-      <p>
-        <strong>Последнее обновление:</strong>{" "}
-        {new Date(game.updated).toLocaleString().split(",")[0]}
-      </p>
-      <p>
-        <strong>Рейтинг:</strong> {game.rating}
-      </p>
-      <p>
-        <strong>Среднее время игры:</strong> {game.playtime} hours
-      </p>
-      <p>
-        <strong>Описание:</strong>{" "}
-        <span dangerouslySetInnerHTML={{ __html: game.description }}></span>
-      </p>
-      {game.platforms && (
+      </h1>
+      <div style={{ width: "min-content", display: "flex", gap: "1vw" }}>
         <div>
-          <h3>Платформы:</h3>
-          <ul style={{ listStyle: "none" }}>
-            {game.platforms.map((platform) => (
-              <li key={uuid4()} style={{ display: "flex", gap: "1vw" }}>
-                <span>
-                  {createElement(
-                    platformIcons[
-                      platform.platform.name as keyof typeof platformIcons
-                    ] || platformIcons.Global
-                  )}
-                </span>
-                {platform.platform.name} -
-                {new Date(platform.released_at).toLocaleString().split(",")[0]}
-              </li>
-            ))}
-          </ul>
+          {screenshotsGame && (
+            <div
+              style={{ position: "relative" }}
+              onMouseMove={handleMouseMove}
+              ref={sliderRef}
+            >
+              <SliderContainer>
+                <SliderImage
+                  src={screenshotsGame[currentImageIndex].image}
+                  alt={`Скриншот ${currentImageIndex + 1}`}
+                />
+                <DotsContainer>
+                  {screenshotsGame.map((_, index) => (
+                    <Dot
+                      key={uuid4()}
+                      $isActive={index === currentImageIndex}
+                    />
+                  ))}
+                </DotsContainer>
+              </SliderContainer>
+            </div>
+          )}
         </div>
-      )}
+        <div style={{ display: "flex", flexDirection: "column", gap: "1.2vw" }}>
+          <img
+            src={game.background_image}
+            alt={game.name}
+            style={{ width: "15vw" }}
+          />
+          <div
+            style={{
+              display: "-webkit-box",
+              WebkitBoxOrient: "vertical",
+              textOverflow: "ellipsis",
+              WebkitLineClamp: "5",
+              overflow: "hidden",
+              width: "100%",
+              maxHeight: "7.5em",
+            }}
+          >
+            {game.description_raw}
+          </div>
+          <div>
+            <p><strong>Оценка на Metacritic:</strong> {game.metacritic} {textMetacritic}</p>
+            <p><strong>Рейтинг:</strong> {game.rating} из 5.00</p>
+          </div>
+          <div>
+            <p>
+              <strong>Дата релиза:</strong>
+              {new Date(game.released).toLocaleDateString()}
+            </p>
+            <p>
+              <strong>Среднее время игры:</strong> {game.playtime}
+              {textHoursPlay}
+            </p>
+            <p>
+              <strong style={{ display: "flex" }}>
+                Платформы:
+                <div style={{ display: "flex", gap: ".5vw" }}>
+                  {game.parent_platforms.map((platform) => (
+                    <span key={uuid4()}>
+                      {createElement(
+                        platformIcons[
+                          platform.platform.name as keyof typeof platformIcons
+                        ] || platformIcons.Global
+                      )}
+                    </span>
+                  ))}
+                </div>
+              </strong>
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   ) : (
     <p>Не удалось загрузить данные об игре.</p>
