@@ -24,7 +24,7 @@ export const lightTheme: DefaultTheme = {
     colors: {
       ...baseTheme.colors,
       bg: '#E5E4E8',
-      font: '#19191B',
+      font: '#2e2532',
     },
   }
   
@@ -34,7 +34,7 @@ export const lightTheme: DefaultTheme = {
   
     colors: {
       ...baseTheme.colors,
-      bg: '#19191B',
+      bg: '#2e2532',
       font: '#E5E4E8',
     },
   }

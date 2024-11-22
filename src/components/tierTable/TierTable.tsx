@@ -16,7 +16,7 @@ import { SkeletonFactory } from "../../utils/skeleton/skeleton-factory";
 
 const DroppableWrapper = styled.div<{ $isOver: boolean }>`
   background-color: ${(props) =>
-    props.$isOver ? "#e6f7ff" : "rgba(0, 0, 0,0.04)"};
+    props.$isOver ? "#dfdfdf" : "rgba(0, 0, 0,0.04)"};
   min-height: 12rem;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));

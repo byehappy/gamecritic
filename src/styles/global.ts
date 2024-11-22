@@ -11,7 +11,8 @@ export default createGlobalStyle`
     #root{
         display:flex;
         flex-direction:column;
-        min-height:100vh
+        min-height:100vh;
+        background-color:#fbfbfb
     }
     #content{
         flex-grow:1;

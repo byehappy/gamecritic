@@ -183,11 +183,18 @@ export const CardModal: React.FC<{
             </div>
           )}
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "1.2vw" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            maxHeight: "47vh",
+            justifyContent: "space-between",
+          }}
+        >
           <img
             src={game.background_image}
             alt={game.name}
-            style={{ width: "15vw" }}
+            style={{ width: "15vw",objectFit:"cover", minHeight:"15vh"}}
           />
           <div
             style={{
@@ -203,8 +210,13 @@ export const CardModal: React.FC<{
             {game.description_raw}
           </div>
           <div>
-            <p><strong>Оценка на Metacritic:</strong> {game.metacritic} {textMetacritic}</p>
-            <p><strong>Рейтинг:</strong> {game.rating} из 5.00</p>
+            <p>
+              <strong>Оценка на Metacritic:</strong> {game.metacritic}{" "}
+              {textMetacritic}
+            </p>
+            <p>
+              <strong>Рейтинг:</strong> {game.rating} из 5.00
+            </p>
           </div>
           <div>
             <p>
@@ -212,7 +224,7 @@ export const CardModal: React.FC<{
               {new Date(game.released).toLocaleDateString()}
             </p>
             <p>
-              <strong>Среднее время игры:</strong> {game.playtime}
+              <strong>Среднее время игры:</strong> {game.playtime}{" "}
               {textHoursPlay}
             </p>
             <p>
