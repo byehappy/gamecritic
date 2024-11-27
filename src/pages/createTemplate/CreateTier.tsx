@@ -27,6 +27,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { toggleGameSelection } from "../../redux/slice/createTemplateSlice";
 import { useForm } from "antd/es/form/Form";
 import { ExampleTierPage } from "./ExampleTierPage";
+import { AggregationColor } from "antd/es/color-picker/color";
 const StyledForm = styled(Form)`
   .ant-form-item {
     margin-bottom: 0;
@@ -58,7 +59,6 @@ export const CreateTierPage = () => {
   const [visibleForm, setVisibleForm] = useState(true);
   const createTemlate = useAppSelector((state) => state.createTemplate);
   const carouselRef: RefObject<CarouselRef> = createRef<CarouselRef>();
-  const globalCarouselRef: RefObject<CarouselRef> = createRef<CarouselRef>();
   const [activeButton, setActiveButton] = useState("filter");
   const [totalCount, setTotalCount] = useState<number>(1);
   const [loadingGames, setLoadingGames] = useState(true);
@@ -96,16 +96,22 @@ export const CreateTierPage = () => {
   useEffect(() => {
     getGames();
   }, [getGames]);
-  const saveChangeValues = (e: {
-    rows: { id: string; name: string; color: string }[];
-    name: string;
-  }) => {
-    setFormValues({ rows: e.rows, name: e.name });
+  const saveChangeValues = (
+    _changedValue: any,
+    e: {
+      rows: { id: string; name: string; color: AggregationColor | string }[];
+      name: string;
+    }
+  ) => {
+    setFormValues({
+      rows: e.rows.map((row) => ({
+        ...row,
+        color:
+          typeof row.color === "object" ? row.color.toHexString() : row.color,
+      })),
+      name: e.name,
+    });
   };
-  useEffect(() => {
-    console.log(globalCarouselRef);
-    console.log(carouselRef);
-  }, [carouselRef, globalCarouselRef]);
 
   return (
     <div>
@@ -291,7 +297,7 @@ export const CreateTierPage = () => {
             <Carousel
               infinite={false}
               dots={false}
-              style={{ width: "31vw"}}
+              style={{ width: "31vw" }}
               ref={carouselRef}
             >
               <div>
@@ -351,8 +357,8 @@ export const CreateTierPage = () => {
           </div>
         </div>
       </StyledForm>
-      <div style={{display: visibleForm ? "none" : "block"}}>
-      <ExampleTierPage formValues={formValues} />
+      <div style={{ display: visibleForm ? "none" : "block" }}>
+        <ExampleTierPage formValues={formValues} />
       </div>
       <FloatButton
         style={{ zIndex: 5 }}
