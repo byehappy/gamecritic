@@ -17,7 +17,7 @@ export const DotsContainer = styled.div`
   gap: .8vw;
   padding:0 1vw;
   position: absolute;
-  bottom: 5%;
+  bottom: 2%;
   width: 100%;
 `;
 

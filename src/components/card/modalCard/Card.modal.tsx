@@ -1,11 +1,17 @@
-import { Flex, Spin, Tooltip } from "antd";
+import { Flex, Rate, Spin, Tooltip } from "antd";
 import { Modal } from "../../modal/Modal";
 import { LoadingOutlined, StarFilled, StarOutlined } from "@ant-design/icons";
 import {
   gameRequest,
   gameScreenshots,
 } from "../../../axios/requests/games.requests";
-import { createElement, useCallback, useEffect, useRef, useState } from "react";
+import {
+  createElement,
+  createRef,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { IGameOnly } from "../../../interfaces/games";
 import uuid4 from "uuid4";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
@@ -30,7 +36,7 @@ export const CardModal: React.FC<{
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(true);
   const [game, setGame] = useState<IGameOnly | null>(null);
-  const sliderRef = useRef(null);
+  const sliderRef = createRef<HTMLDivElement>();
   const [sliderWidth, setSliderWidth] = useState<number | undefined>(0);
   const [screenshotsGame, setScreenshotsGame] =
     useState<[{ image: string; id: number }]>();
@@ -110,12 +116,11 @@ export const CardModal: React.FC<{
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [loading]);
+  }, [loading, sliderRef]);
 
-  const handleMouseMove = (event: any) => {
-    if (!screenshotsGame) return;
-    if (!sliderWidth) return;
-    const rect = event.target.getBoundingClientRect();
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!screenshotsGame || !sliderWidth || !sliderRef.current) return;
+    const rect = sliderRef.current.getBoundingClientRect();
 
     const sectionWidth = sliderWidth / screenshotsGame.length;
     const deltaX = event.clientX - rect.left;
@@ -159,30 +164,24 @@ export const CardModal: React.FC<{
         )}
       </h1>
       <div style={{ width: "min-content", display: "flex", gap: "1vw" }}>
-        <div>
-          {screenshotsGame && (
-            <div
-              style={{ position: "relative" }}
-              onMouseMove={handleMouseMove}
-              ref={sliderRef}
-            >
-              <SliderContainer>
-                <SliderImage
-                  src={screenshotsGame[currentImageIndex].image}
-                  alt={`Скриншот ${currentImageIndex + 1}`}
-                />
-                <DotsContainer>
-                  {screenshotsGame.map((_, index) => (
-                    <Dot
-                      key={uuid4()}
-                      $isActive={index === currentImageIndex}
-                    />
-                  ))}
-                </DotsContainer>
-              </SliderContainer>
-            </div>
-          )}
-        </div>
+        {screenshotsGame && (
+          <div onMouseMove={handleMouseMove} ref={sliderRef}>
+            <SliderContainer>
+              <SliderImage
+                src={screenshotsGame[currentImageIndex].image}
+                alt={`Скриншот ${currentImageIndex + 1}`}
+              />
+              <DotsContainer>
+                {screenshotsGame.map((_, index) => (
+                  <Dot
+                    key={screenshotsGame[index].id}
+                    $isActive={index === currentImageIndex}
+                  />
+                ))}
+              </DotsContainer>
+            </SliderContainer>
+          </div>
+        )}
         <div
           style={{
             display: "flex",
@@ -194,7 +193,7 @@ export const CardModal: React.FC<{
           <img
             src={game.background_image}
             alt={game.name}
-            style={{ width: "15vw",objectFit:"cover", minHeight:"15vh"}}
+            style={{ width: "15vw", objectFit: "cover", minHeight: "15vh" }}
           />
           <div
             style={{
@@ -214,8 +213,9 @@ export const CardModal: React.FC<{
               <strong>Оценка на Metacritic:</strong> {game.metacritic}{" "}
               {textMetacritic}
             </p>
-            <p>
-              <strong>Рейтинг:</strong> {game.rating} из 5.00
+            <p style={{ display: "flex", alignItems: "center" }}>
+              <strong>Рейтинг:</strong>{" "}
+              <Rate allowHalf defaultValue={Number(game.rating)} disabled />
             </p>
           </div>
           <div>
@@ -248,7 +248,7 @@ export const CardModal: React.FC<{
       </div>
     </div>
   ) : (
-    <p>Не удалось загрузить данные об игре.</p>
+    <div>Не удалось загрузить данные об игре.</div>
   );
 
   return (

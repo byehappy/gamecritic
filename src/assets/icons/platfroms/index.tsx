@@ -1,5 +1,5 @@
 import Icon from "@ant-design/icons";
-import type { GetProps } from "antd";
+import { Tooltip, type GetProps } from "antd";
 
 export type CustomIconComponentProps = GetProps<typeof Icon>;
 
@@ -15,7 +15,9 @@ const PCSvg = () => (
   </svg>
 );
 export const PCIcon = (props: Partial<CustomIconComponentProps>) => (
-  <Icon component={PCSvg} {...props} />
+  <Tooltip title="PC">
+    <Icon component={PCSvg} {...props} />
+  </Tooltip>
 );
 
 const GlobalSvg = () => (
@@ -30,7 +32,9 @@ const GlobalSvg = () => (
   </svg>
 );
 export const GloablIcon = (props: Partial<CustomIconComponentProps>) => (
-  <Icon component={GlobalSvg} {...props} />
+  <Tooltip title="Другие платформы">
+    <Icon component={GlobalSvg} {...props} />
+  </Tooltip>
 );
 
 const AndroidSvg = () => (
@@ -45,7 +49,9 @@ const AndroidSvg = () => (
   </svg>
 );
 export const AndroidIcon = (props: Partial<CustomIconComponentProps>) => (
-  <Icon component={AndroidSvg} {...props} />
+  <Tooltip title="Android">
+    <Icon component={AndroidSvg} {...props} />
+  </Tooltip>
 );
 const IphoneSvg = () => (
   <svg
@@ -59,7 +65,9 @@ const IphoneSvg = () => (
   </svg>
 );
 export const IphoneIcon = (props: Partial<CustomIconComponentProps>) => (
-  <Icon component={IphoneSvg} {...props} />
+  <Tooltip title="MacOS">
+    <Icon component={IphoneSvg} {...props} />
+  </Tooltip>
 );
 const NintendoSvg = () => (
   <svg
@@ -76,7 +84,9 @@ const NintendoSvg = () => (
   </svg>
 );
 export const NintendoIcon = (props: Partial<CustomIconComponentProps>) => (
+  <Tooltip title="Nintendo">
   <Icon component={NintendoSvg} {...props} />
+  </Tooltip>
 );
 const PlaystationSvg = () => (
   <svg
@@ -90,7 +100,9 @@ const PlaystationSvg = () => (
   </svg>
 );
 export const PlaystationIcon = (props: Partial<CustomIconComponentProps>) => (
+  <Tooltip title="Playstation">
   <Icon component={PlaystationSvg} {...props} />
+  </Tooltip>
 );
 export const XboxSvg = () => (
   <svg
@@ -104,7 +116,9 @@ export const XboxSvg = () => (
   </svg>
 );
 export const XboxIcon = (props: Partial<CustomIconComponentProps>) => (
+  <Tooltip title="Xbox">
   <Icon component={XboxSvg} {...props} />
+  </Tooltip>
 );
 
 export const LinuxSvg = () => (
@@ -119,7 +133,9 @@ export const LinuxSvg = () => (
   </svg>
 );
 export const LinuxIcon = (props: Partial<CustomIconComponentProps>) => (
+  <Tooltip title="Linux">
   <Icon component={LinuxSvg} {...props} />
+  </Tooltip>
 );
 type Platform =
   | "PC"
@@ -150,29 +166,29 @@ export const platformIcons: Record<
   Platform,
   (props: Partial<CustomIconComponentProps>) => JSX.Element
 > = {
-  "PC" : PCIcon,
-  "PlayStation" : PlaystationIcon,
-  "PlayStation 2" : PlaystationIcon,
-  "PlayStation 3" : PlaystationIcon,
-  "PlayStation 4" : PlaystationIcon,
-  "PlayStation 5" : PlaystationIcon,
-  "PSP" : PlaystationIcon,
-  "PS Vita" : PlaystationIcon,
-  "iOS" : IphoneIcon,
-  "macOS" : IphoneIcon,
-  "Apple Macintosh":IphoneIcon,
-  "Android" : AndroidIcon,
-  "Xbox" : XboxIcon,
-  "Xbox 360" : XboxIcon,
-  "Xbox One" : XboxIcon,
-  "Xbox Series S/X" : XboxIcon,
-  "Linux" : LinuxIcon,
-  "Nintendo":NintendoIcon,
-  "Nintendo 64" : NintendoIcon,
-  "Nintendo DS" : NintendoIcon,
-  "Nintendo DSi" : NintendoIcon,
-  "Nintendo 3DS" : NintendoIcon,
-  "Nintendo Switch" : NintendoIcon,
-  "Global" : GloablIcon
+  PC: PCIcon,
+  PlayStation: PlaystationIcon,
+  "PlayStation 2": PlaystationIcon,
+  "PlayStation 3": PlaystationIcon,
+  "PlayStation 4": PlaystationIcon,
+  "PlayStation 5": PlaystationIcon,
+  PSP: PlaystationIcon,
+  "PS Vita": PlaystationIcon,
+  iOS: IphoneIcon,
+  macOS: IphoneIcon,
+  "Apple Macintosh": IphoneIcon,
+  Android: AndroidIcon,
+  Xbox: XboxIcon,
+  "Xbox 360": XboxIcon,
+  "Xbox One": XboxIcon,
+  "Xbox Series S/X": XboxIcon,
+  Linux: LinuxIcon,
+  Nintendo: NintendoIcon,
+  "Nintendo 64": NintendoIcon,
+  "Nintendo DS": NintendoIcon,
+  "Nintendo DSi": NintendoIcon,
+  "Nintendo 3DS": NintendoIcon,
+  "Nintendo Switch": NintendoIcon,
+  Global: GloablIcon,
 };
 export const keysPlatformIcons = Object.keys(platformIcons);

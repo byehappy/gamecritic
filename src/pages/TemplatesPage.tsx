@@ -13,7 +13,7 @@ import { useParams } from "react-router-dom";
 
 const TepmlatesContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(7vw, 1fr));
   gap: 1rem;
   grid-template-rows: repeat(auto-fill, 20vh);
   ${Item}:hover {

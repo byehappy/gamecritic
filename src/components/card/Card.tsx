@@ -5,13 +5,13 @@ import styled from "styled-components";
 import { useState } from "react";
 import { CardModal } from "./modalCard/Card.modal";
 import { isString } from "antd/es/button";
-const StyleCoverImage = styled.div<{ $name: string }>`
+const StyleCoverImage = styled.div<{ $name: string; $size: string }>`
   position: relative;
   display: block;
   overflow: hidden;
   img {
     transition: filter 0.3s ease;
-    height: 12rem;
+    height: ${(props) => (props.$size === "large" ? "12rem" : "10rem")};
   }
   &:hover img {
     filter: brightness(50%);
@@ -39,7 +39,9 @@ const StyleCoverImage = styled.div<{ $name: string }>`
 export const CardGame: React.FC<{
   game: IGameDis;
   id: number | string;
-}> = ({ game, id }) => {
+  size?: "small" | "large";
+  onCardClick?: (game: IGameDis) => void;
+}> = ({ game, id, size = "large", onCardClick }) => {
   const isDisabled = game.disabled ?? false;
   const [openModalGameId, setOpenModalGameId] = useState<
     number | string | null
@@ -55,26 +57,32 @@ export const CardGame: React.FC<{
     id: id,
     disabled: isDisabled,
   });
+  const cursor = onCardClick ? "pointer" : isDisabled ? "not-allowed" : "grab";
   const style: React.CSSProperties = {
     transform: CSS.Translate.toString(transform),
     transition,
     opacity: isDragging || game.disabled ? "0.5" : "1",
     boxShadow: isDragging ? "0px 0px 9px 1px #000000" : "none",
     overflow: "hidden",
-    minHeight: "12rem",
-    maxHeight: "12rem",
     maxWidth: "130px",
     border: "none",
-    cursor: isDisabled ? "not-allowed" : "grab",
+    cursor: cursor,
+    maxHeight: "12rem",
   };
   function handleClick(game: IGameDis) {
-    setOpenModalGameId(game.id);
+    if (onCardClick) {
+      onCardClick(game);
+    } else {
+      setOpenModalGameId(game.id);
+    }
   }
+
   return (
     <>
       <StyleCoverImage
         $name={game.name}
         ref={setNodeRef}
+        $size={size}
         {...listeners}
         {...attributes}
         key={id}
@@ -84,7 +92,10 @@ export const CardGame: React.FC<{
         <img
           style={{ objectFit: "cover", width: "100%" }}
           alt={game.name}
-          src={game.background_image?.replace("/media/", "/media/crop/600/400/")}
+          src={game.background_image?.replace(
+            "/media/",
+            "/media/crop/600/400/"
+          )}
           draggable={!game.disabled}
         />
       </StyleCoverImage>

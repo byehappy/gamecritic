@@ -20,7 +20,7 @@ export interface IGameOnly extends IGame {
   metacritic: string;
   released: string;
   updated: string;
-  rating: string;
+  rating: number;
   playtime: string;
   description_raw: string;
   website: string | undefined;

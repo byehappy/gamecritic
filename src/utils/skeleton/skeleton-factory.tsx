@@ -1,11 +1,12 @@
 import uuid4 from 'uuid4'
-import { CardSkeleton } from './Type/Card.skeleton';
+import { CardSkeleton, CardSmallSkeleton } from './Type/Card.skeleton';
 import { TableSkeleton } from './Type/Table.skeleton';
 
-type SkeletonType = "Card" | "Table"
+type SkeletonType = "Card-small" |"Card" | "Table"
 
 const types: Record<SkeletonType,React.FC> ={
     "Card":CardSkeleton,
+    "Card-small":CardSmallSkeleton,
     "Table":TableSkeleton
 }
 
