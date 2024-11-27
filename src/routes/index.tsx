@@ -13,6 +13,7 @@ import { SignUpPage } from "../pages/auth/SignUp";
 import { ProfilePage } from "../pages/Profile";
 import { refreshToken } from "../axios";
 import { FavoritesPage } from "../pages/FavoritesPage";
+import { CreateTierPage } from "../pages/createTemplate/CreateTier";
 
 export const router = createBrowserRouter([
   {
@@ -55,6 +56,11 @@ export const router = createBrowserRouter([
         loader: protectedLoader,
         element: <ProfilePage />,
       },
+      {
+        path: "/create-tierlist",
+        loader:protectedLoader,
+        element: <CreateTierPage />,
+      }
     ],
   },
 ]);

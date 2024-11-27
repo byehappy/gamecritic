@@ -55,6 +55,14 @@ export const Header = () => {
     },
     {
       label: (
+        <Link className="profile" to={`/create-tierlist`}>
+          Создать свой шаблон
+        </Link>
+      ),
+      key: uuid4(),
+    },
+    {
+      label: (
         <Button danger onClick={logOut}>
           Выйти
         </Button>
@@ -75,7 +83,7 @@ export const Header = () => {
         </div>
       ) : (
         currentUser.username && (
-          <div style={{ display: "flex", gap: "1vw", alignItems: "center" }}>
+          <div style={{ display: "flex", gap: "1vw"}}>
             <Dropdown
               menu={{ items }}
               placement="bottomRight"
@@ -88,11 +96,10 @@ export const Header = () => {
                     boxShadow: token[1].boxShadowSecondary,
                     display:"flex",
                     flexDirection:"column",
-                    alignItems:"center",
                     paddingTop:"1vh"
                   }}
                 >
-                   {`Привет,${currentUser?.username}!`}
+                   <span style={{paddingLeft:"9%"}}>{`Привет,${currentUser?.username}!`}</span>
                     {cloneElement(originNode as React.ReactElement, { style: {boxShadow:"none"} })}
                 </div>
               )}
