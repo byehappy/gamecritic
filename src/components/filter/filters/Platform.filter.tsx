@@ -77,7 +77,7 @@ export const PlatformFilter: React.FC<{
         dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
         allowClear
         options={platforms}
-        defaultValue={valueArray}
+        defaultValue={location.pathname !== "/create-tierlist" ? valueArray : null}
         optionRender={(option) => (
           <Space>
             {option.data.icon}

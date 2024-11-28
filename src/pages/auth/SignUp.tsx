@@ -51,7 +51,7 @@ export const SignUpPage = () => {
     return <Navigate to="/" />;
   }
   if (successful) {
-    dispatch(setMessage({ message: "Вы успешно зарегистрировались" }));
+    dispatch(setMessage({ success: "Вы успешно зарегистрировались" }));
     return <Navigate to="/auth/sign-in" />;
   }
 

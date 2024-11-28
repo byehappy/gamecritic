@@ -54,7 +54,7 @@ export const HomePage = () => {
   const [usersTiers, setUsersTiers] = useState<UserTier[][] | null>();
   const getTiers = useCallback(() => {
     getAllTiers().then((res) => {
-      const partedArray = partArray(res, 4);
+      const partedArray = partArray(res, 12);
       setTiers(partedArray);
     });
     getUsersTiers().then((res) => {
@@ -82,7 +82,7 @@ export const HomePage = () => {
           <Link to={"/all"}>Увидеть все шаблоны</Link>
         </HeaderTemplate>
         <CarouselWrapper arrows infinite={false} dots={false}>
-          {!tiers && SkeletonFactory(4, "Card")}
+          {!tiers && SkeletonFactory(12, "Card")}
           {tiers?.map((part) => (
             <div key={uuid4()}>
               <ContainerItems>

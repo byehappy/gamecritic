@@ -121,7 +121,7 @@ export const CreateTierPage = () => {
   const finishForm = async () => {
     if (!currentUser) return;
     try {
-      await UploadTier({
+      const result = await UploadTier({
         author_id: currentUser.id,
         title: formValues.name,
         rows: formValues.rows,
@@ -129,10 +129,15 @@ export const CreateTierPage = () => {
         imageSrc: formValues.img,
         pickGame: createTemlate.pickGame.map((e) => e.id),
       });
+      dispatch(
+        setMessage({
+          success: result.data.message,
+        })
+      );
     } catch (e) {
       const error = e as AxiosError;
       const message = error.response?.data as ErrorAuth;
-      dispatch(setMessage({error:message.error[0].msg}));
+      dispatch(setMessage({ error: message.error[0].msg }));
     }
   };
   return (
@@ -326,57 +331,59 @@ export const CreateTierPage = () => {
               ref={carouselRef}
             >
               <Form.Item name={"filter"}>
-                <Filter handleChangeFiters={handleChangeFiters}/>
+                <Filter handleChangeFiters={handleChangeFiters} />
               </Form.Item>
               <Form.Item name={"pickGame"}>
-                <Search
-                  placeholder="Введите название игры"
-                  size="large"
-                  onSearch={(value) => {
-                    handleChangeFiters("page", 1);
-                    handleChangeFiters("search", value);
-                  }}
-                />
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: " repeat(auto-fill,130px)",
-                    gap: ".1rem",
-                    marginTop: ".25vh",
-                  }}
-                >
-                  {loadingGames
-                    ? SkeletonFactory(filterFlags.page_size, "Card-small")
-                    : games?.map((game) => {
-                        return (
-                          <CardGame
-                            key={game.id}
-                            game={{
-                              ...game,
-                              disabled: !createTemlate.pickGame.find(
-                                (pickGame) => pickGame.id === game.id
-                              ),
-                            }}
-                            id={game.id}
-                            size="small"
-                            onCardClick={() =>
-                              dispatch(toggleGameSelection(game))
-                            }
-                          />
-                        );
-                      })}
+                <div>
+                  <Search
+                    placeholder="Введите название игры"
+                    size="large"
+                    onSearch={(value) => {
+                      handleChangeFiters("page", 1);
+                      handleChangeFiters("search", value);
+                    }}
+                  />
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: " repeat(auto-fill,130px)",
+                      gap: ".1rem",
+                      marginTop: ".25vh",
+                    }}
+                  >
+                    {loadingGames
+                      ? SkeletonFactory(filterFlags.page_size, "Card-small")
+                      : games?.map((game) => {
+                          return (
+                            <CardGame
+                              key={game.id}
+                              game={{
+                                ...game,
+                                disabled: !createTemlate.pickGame.find(
+                                  (pickGame) => pickGame.id === game.id
+                                ),
+                              }}
+                              id={game.id}
+                              size="small"
+                              onCardClick={() =>
+                                dispatch(toggleGameSelection(game))
+                              }
+                            />
+                          );
+                        })}
+                    <Pagination
+                      style={{ marginTop: "1vw" }}
+                      defaultCurrent={1}
+                      defaultPageSize={10}
+                      total={totalCount}
+                      onChange={(page, pageSize) => {
+                        handleChangeFiters("page", page);
+                        handleChangeFiters("page_size", pageSize);
+                      }}
+                      pageSizeOptions={[10]}
+                    />
+                  </div>
                 </div>
-                <Pagination
-                  style={{ marginTop: "1vw" }}
-                  defaultCurrent={1}
-                  defaultPageSize={10}
-                  total={totalCount}
-                  onChange={(page, pageSize) => {
-                    handleChangeFiters("page", page);
-                    handleChangeFiters("page_size", pageSize);
-                  }}
-                  pageSizeOptions={[10]}
-                />
               </Form.Item>
             </Carousel>
           </div>
@@ -394,21 +401,21 @@ export const CreateTierPage = () => {
     </div>
   );
 };
+//7уже после сохранения можно будет увидеть на деле шаблон(вывести тостер что все сохраненно-дать возможность сразу перейти к данному шаблону)/просто тостер, при появлении кнопки пользователю нужно среагировать что не так хорошо
+//8отобразить в профиле мои шаблоны
+//9дать возможность его редактировать в будущем
 //Пользователь заходит на эту страницу и может выбрать:
-//Название,картинку для того как будет выглядить на главной странице сам шаблон(x)
-//Строки таблицы(надо придумать как именно в бд будет реализованно)(+ -)
-//Выбор игр(по жанрам,платформам,дате,тэги)(или дать возможность найти игру и подобрать по нему список)(x)
-//Дать возможность убрать какие то поля из фильтров что бы не отображались(x)
-//Сохранение в бд(x)
-//Педелать логику тиров под новую бд, интерфейс уже написанн
-//уже после сохранения можно будет увидеть на деле шаблон(вывести тостер что все сохраненно-дать возможность сразу перейти к данному шаблону)
-//отобразить в профиле мои шаблоны
-//дать возможность его редактировать в будущем
+//1.Название,картинку для того как будет выглядить на главной странице сам шаблон(x)
+//2Строки таблицы(надо придумать как именно в бд будет реализованно)(x)
+//3Выбор игр(по жанрам,платформам,дате,тэги)(или дать возможность найти игру и подобрать по нему список)(x)
+//4Дать возможность убрать какие то поля из фильтров что бы не отображались(x)
+//5Сохранение в бд(x)
+//6Педелать логику тиров под новую бд, интерфейс уже написанн(x)
 
-//Поля в бд:id,name,imageUrl,userId(автор),поля(tier-rows),gameIds(если выбор конкретных игр),
-//фильтры(объектом{tags:{value,visible?},date,genre,platform})
+//10Поля в бд:id,name,imageUrl,userId(автор),поля(tier-rows),gameIds(если выбор конкретных игр)(x),
+//11фильтры(объектом{tags:{value,visible?},date,genre,platform})(x)
 
-//если игры выбираются то реализовать вывод только этих игр в tierPage(изменить запрос на получение игр)
+//12если игры выбираются то реализовать вывод только этих игр в tierPage(изменить запрос на получение игр)(x)
 
-//Сделать прототип(убрать функции перекидывания и показывать только как будет выглядеть)/отмена слишком много времени в никуда
-//предварительно можно отобразить как будет выглядеть шаблон не сохраняя/отмена слишком много времени в никуда
+//13Сделать прототип(убрать функции перекидывания и показывать только как будет выглядеть)/отмена слишком много времени в никуда/(x)
+//14предварительно можно отобразить как будет выглядеть шаблон не сохраняя/отмена слишком много времени в никуда/(x)

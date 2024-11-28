@@ -53,6 +53,12 @@ export const getTierById = (id: string): AxiosPromise<ViewTier> => {
 export const getUserTiers = async (userId: string): AxiosPromise<Tier[]> => {
   return await instanceAPI.get(`/user/tierlists/${userId}`);
 };
+export const getAuthorTiersSize = async(userId:string,size:number): AxiosPromise<Tier[]> =>{
+  return await instanceAPI.get(`/author-tierlist/${userId}/${size}`);
+}
+export const getAuthorTiers = async(userId:string): AxiosPromise<Tier[]> =>{
+  return await instanceAPI.get(`/author-tierlist/${userId}/all`);
+}
 
 export const getUserRows = async (userId: string, tierId: string) => {
   return await instanceAPI.get(`/user/rows/${userId}/${tierId}`);

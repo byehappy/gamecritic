@@ -11,7 +11,10 @@ import { IGame } from "../interfaces/games";
 import { gameRequest } from "../axios/requests/games.requests";
 import { CardGame } from "../components/card/Card";
 import { SkeletonFactory } from "../utils/skeleton/skeleton-factory";
-import { Tier } from "../axios/requests/gamecriticAPI/tierData.requests";
+import {
+  getAuthorTiersSize,
+  Tier,
+} from "../axios/requests/gamecriticAPI/tierData.requests";
 const CarouselWrapper = styled(Carousel)`
   margin-top: 2vh;
   padding: 0.3em;
@@ -40,6 +43,7 @@ export const ProfilePage = () => {
   const dispatch = useAppDispatch();
   const navigation = useNavigate();
   const [tiers, setTiers] = useState<Tier[]>([]);
+  const [myTiers, setMyTiers] = useState<Tier[]>([]);
   const [favoriteGames, setFavoriteGames] = useState<IGame[]>([]);
   const [loadingTiers, setLoadingTiers] = useState(true);
   const [loadingFavorites, setLoadingFavorites] = useState(true);
@@ -50,7 +54,11 @@ export const ProfilePage = () => {
       return;
     }
     const tiers = await getUserTiers(currentUser.id).then((res) => res.data);
+    const authorTiers = await getAuthorTiersSize(currentUser.id, 12).then(
+      (res) => res.data
+    );
     setTiers(tiers);
+    setMyTiers(authorTiers);
     setLoadingTiers(false);
   }, [currentUser, dispatch, navigation]);
 
@@ -67,7 +75,7 @@ export const ProfilePage = () => {
           setLoadingFavorites(false);
           return;
         }
-        const gameIds:string[] = JSON.parse(jsonGameIds);
+        const gameIds: string[] = JSON.parse(jsonGameIds);
         const gameRequests = gameIds.map((id) =>
           gameRequest(Number(id)).then((res) => res.data)
         );
@@ -91,7 +99,43 @@ export const ProfilePage = () => {
     <div>
       <HeaderTemplate>
         <h1>Ваши шаблоны</h1>
-        {tiers.length !== 0 && <Link to={`/all-tierlits/${currentUser?.id}`}>Увидеть все шаблоны</Link>}
+        {myTiers.length !== 0 && (
+          <Link to={`/all-my-tierlits/${currentUser?.id}`}>
+            Увидеть все свои шаблоны
+          </Link>
+        )}
+      </HeaderTemplate>
+      <CarouselWrapper arrows infinite={false} dots={false}>
+        <div>
+          <ContainerItems>
+            {loadingTiers && SkeletonFactory(10, "Card")}
+            {myTiers.map((tier) => {
+              const id = uuid4();
+              return (
+                <TemplateCard
+                  key={id}
+                  img={tier.imageSrc ?? ""}
+                  name={tier.title}
+                  id={tier.id}
+                />
+              );
+            })}
+            {!loadingTiers && myTiers.length === 0 && (
+              <div style={{ fontSize: "1.2rem" }}>
+                У вас нет созданных шаблонов
+              </div>
+            )}
+          </ContainerItems>
+        </div>
+      </CarouselWrapper>
+      <HeaderTemplate></HeaderTemplate>
+      <HeaderTemplate>
+        <h1>Используемые шаблоны</h1>
+        {tiers.length !== 0 && (
+          <Link to={`/all-tierlits/${currentUser?.id}`}>
+            Увидеть все шаблоны
+          </Link>
+        )}
       </HeaderTemplate>
       <CarouselWrapper arrows infinite={false} dots={false}>
         <div>
@@ -119,7 +163,9 @@ export const ProfilePage = () => {
       <HeaderTemplate>
         <h1>Избранные игры</h1>
         {favoriteGames.length !== 0 && (
-          <Link to={`/all-favorites/${currentUser?.id}`}>Увидеть все избранные игры</Link>
+          <Link to={`/all-favorites/${currentUser?.id}`}>
+            Увидеть все избранные игры
+          </Link>
         )}
       </HeaderTemplate>
       <CarouselWrapper arrows infinite={false} dots={false}>

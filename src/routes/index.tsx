@@ -58,9 +58,13 @@ export const router = createBrowserRouter([
       },
       {
         path: "/create-tierlist",
-        loader:protectedLoader,
+        loader: protectedLoader,
         element: <CreateTierPage />,
-      }
+      },
+      {
+        path: "/all-my-tierlits/:userid",
+        element: <TemplatesPage author={true} />,
+      },
     ],
   },
 ]);

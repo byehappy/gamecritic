@@ -41,7 +41,9 @@ export const DateFilter: React.FC<{
         format={"YYYY-MM-DD"}
         style={{ width: "100%" }}
         defaultValue={
-          valueArray ? [dayjs(valueArray[0]), dayjs(valueArray[1])] : undefined
+          location.pathname !== "/create-tierlist" && valueArray
+            ? [dayjs(valueArray[0]), dayjs(valueArray[1])]
+            : undefined
         }
         onChange={(_, value) => {
           if (handleChangeFiters !== undefined) {

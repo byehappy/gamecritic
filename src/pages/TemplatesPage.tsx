@@ -4,6 +4,7 @@ import { Item } from "../components/templateCard/TemplateCard.style";
 import { useState, useCallback, useEffect } from "react";
 import { getAllTiers } from "../axios";
 import {
+  getAuthorTiers,
   getUserTiers,
   Tier,
 } from "../axios/requests/gamecriticAPI/tierData.requests";
@@ -21,7 +22,7 @@ const TepmlatesContainer = styled.div`
   }
 `;
 
-export const TemplatesPage = () => {
+export const TemplatesPage: React.FC<{ author?: boolean }> = ({ author }) => {
   const { userid } = useParams() as {
     userid?: string;
   };
@@ -29,20 +30,26 @@ export const TemplatesPage = () => {
   const [loadingTiers, setLoadingTiers] = useState(true);
   const getTiers = useCallback(async () => {
     if (userid) {
+      if (author) {
+        const tiers = await getAuthorTiers(userid).then((res) => res.data);
+        setTiers(tiers);
+        setLoadingTiers(false);
+        return;
+      }
       const tiers = await getUserTiers(userid).then((res) => res.data);
       setTiers(tiers);
     } else {
       getAllTiers().then((res) => setTiers(res));
     }
     setLoadingTiers(false);
-  }, [userid]);
+  }, [author, userid]);
 
   useEffect(() => {
     getTiers();
   }, [getTiers]);
   return (
     <>
-     <h1 style={{ margin: "1vw 0" }}>Все шаблоны</h1>
+      <h1 style={{ margin: "1vw 0" }}>Все шаблоны</h1>
       <TepmlatesContainer>
         {loadingTiers && SkeletonFactory(30, "Card")}
         {tiers?.map((tier) => (
@@ -54,10 +61,10 @@ export const TemplatesPage = () => {
           />
         ))}
         {!loadingTiers && tiers.length === 0 && (
-              <div style={{ fontSize: "1.2rem" }}>
-                Вы еще не состовляли списки по шаблонам
-              </div>
-            )}
+          <div style={{ fontSize: "1.2rem" }}>
+            Вы еще не состовляли списки по шаблонам
+          </div>
+        )}
       </TepmlatesContainer>
     </>
   );

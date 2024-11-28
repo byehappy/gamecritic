@@ -64,7 +64,7 @@ export const GenreFilter: React.FC<{
         dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
         allowClear
         options={genres}
-        defaultValue={valueArray}
+        defaultValue={location.pathname !== "/create-tierlist" ? valueArray : null}
         onChange={(value) => {
           if (handleChangeFiters !== undefined) {
             if (location.pathname === "/create-tierlist")
