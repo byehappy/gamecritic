@@ -15,6 +15,12 @@ export const PlatformFilter: React.FC<{
   ) => void;
 }> = ({ handleChangeFiters }) => {
   const [platforms, setPlatforms] = useState<TreeDataState[]>();
+  const { platforms: initPlatforms } = useAppSelector(
+    (state) => state.tierData.filters
+  );
+  const valueArray: number[] | undefined = initPlatforms?.value
+    ?.split(",")
+    .map(Number);
 
   const getPlatforms = useCallback(async () => {
     const res = await platformsRequest();
@@ -71,6 +77,7 @@ export const PlatformFilter: React.FC<{
         dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
         allowClear
         options={platforms}
+        defaultValue={valueArray}
         optionRender={(option) => (
           <Space>
             {option.data.icon}
@@ -84,7 +91,7 @@ export const PlatformFilter: React.FC<{
                 setFilter({
                   filter: "platforms",
                   type: {
-                    value: value.every((val: string) => val === "")
+                    value: value.every((val) => val.toString() === "")
                       ? null
                       : value.join(","),
                   },
@@ -92,7 +99,9 @@ export const PlatformFilter: React.FC<{
               );
             handleChangeFiters(
               "platforms",
-              value.every((val: string) => val === "") ? null : value.join(",")
+              value.every((val) => val.toString() === "")
+                ? null
+                : value.join(",")
             );
           }
         }}

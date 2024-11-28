@@ -1,18 +1,17 @@
+export type FilterValueType = string[] | string | null;
 export interface FilterFlags {
   search?: string;
-  dates?: string;
-  genres?: string[] | string;
-  tags?: string[] | string;
-  platforms?: string[] | string;
+  date?: FilterValueType;
+  genres?: FilterValueType;
+  tags?: FilterValueType;
+  platforms?: FilterValueType;
   page: number;
   page_size: number;
 }
-
-export interface FilterTierType {
-  name: string;
-  filters?: {
-    genres?: string[] | string;
-    tags?: string[] | string;
-    platforms?: string[] | string;
-  };
+export type FilterType = { visible: boolean; value: string | null };
+export interface FilterTierValue {
+  genres?: FilterType;
+  tags?: FilterType;
+  platforms?: FilterType;
+  date?: FilterType;
 }

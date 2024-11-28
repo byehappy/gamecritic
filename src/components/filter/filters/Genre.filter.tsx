@@ -14,7 +14,8 @@ export const GenreFilter: React.FC<{
   ) => void;
 }> = ({ handleChangeFiters }) => {
   const [genres, setGenres] = useState<TreeDataState[]>();
-
+  const { genres:initGenres } = useAppSelector((state) => state.tierData.filters);
+  const valueArray = initGenres?.value?.split(",");
   const getGenres = useCallback(async () => {
     const res = await genresRequest();
     setGenres(
@@ -63,6 +64,7 @@ export const GenreFilter: React.FC<{
         dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
         allowClear
         options={genres}
+        defaultValue={valueArray}
         onChange={(value) => {
           if (handleChangeFiters !== undefined) {
             if (location.pathname === "/create-tierlist")

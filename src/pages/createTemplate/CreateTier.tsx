@@ -28,6 +28,10 @@ import { toggleGameSelection } from "../../redux/slice/createTemplateSlice";
 import { useForm } from "antd/es/form/Form";
 import { ExampleTierPage } from "./ExampleTierPage";
 import { AggregationColor } from "antd/es/color-picker/color";
+import { UploadTier } from "../../axios/index";
+import { setMessage } from "../../redux/slice/messageSlice";
+import { AxiosError } from "axios";
+import { ErrorAuth } from "../../redux/slice/authSlice";
 const StyledForm = styled(Form)`
   .ant-form-item {
     margin-bottom: 0;
@@ -52,6 +56,7 @@ const DEFAULT_ROWS = {
   ],
 };
 export const CreateTierPage = () => {
+  const { user: currentUser } = useAppSelector((state) => state.auth);
   const [tierInfo, setTierInfo] = useState({
     name: "Ваш шаблон",
     img: "",
@@ -65,6 +70,7 @@ export const CreateTierPage = () => {
   const [formValues, setFormValues] = useState({
     rows: DEFAULT_ROWS.rows,
     name: "",
+    img: "",
   });
   const [filterFlags, setFilterFlags] = useState({
     page: DEFAULT_PAGE,
@@ -96,29 +102,45 @@ export const CreateTierPage = () => {
   useEffect(() => {
     getGames();
   }, [getGames]);
-  const saveChangeValues = (
-    _changedValue: any,
-    e: {
+  const saveChangeValues = (_changedValue: unknown, e: unknown) => {
+    const value = e as {
       rows: { id: string; name: string; color: AggregationColor | string }[];
       name: string;
-    }
-  ) => {
+      img: string;
+    };
     setFormValues({
-      rows: e.rows.map((row) => ({
+      rows: value.rows.map((row) => ({
         ...row,
         color:
           typeof row.color === "object" ? row.color.toHexString() : row.color,
       })),
-      name: e.name,
+      name: value.name,
+      img: value.img,
     });
   };
-
+  const finishForm = async () => {
+    if (!currentUser) return;
+    try {
+      await UploadTier({
+        author_id: currentUser.id,
+        title: formValues.name,
+        rows: formValues.rows,
+        filters: createTemlate.filters,
+        imageSrc: formValues.img,
+        pickGame: createTemlate.pickGame.map((e) => e.id),
+      });
+    } catch (e) {
+      const error = e as AxiosError;
+      const message = error.response?.data as ErrorAuth;
+      dispatch(setMessage({error:message.error[0].msg}));
+    }
+  };
   return (
     <div>
       <StyledForm
         form={form}
         initialValues={DEFAULT_ROWS}
-        onFinish={(e) => console.log(e, createTemlate)}
+        onSubmitCapture={finishForm}
         onValuesChange={saveChangeValues}
         style={{ display: visibleForm ? "block" : "none" }}
       >
@@ -214,6 +236,7 @@ export const CreateTierPage = () => {
                       return (
                         <Form.Item>
                           <Button
+                            type="text"
                             onClick={() =>
                               add({ color: "#1677FF", id: uuid4() })
                             }
@@ -276,6 +299,7 @@ export const CreateTierPage = () => {
           <div>
             <div style={{ display: "flex", gap: "1vw" }}>
               <HeaderButton
+                type="button"
                 $isActive={activeButton === "filter"}
                 onClick={() => {
                   setActiveButton("filter");
@@ -285,6 +309,7 @@ export const CreateTierPage = () => {
                 <h1 style={{ marginBottom: "1vh" }}>Фильтры к играм</h1>
               </HeaderButton>
               <HeaderButton
+                type="button"
                 $isActive={activeButton === "ownGames"}
                 onClick={() => {
                   setActiveButton("ownGames");
@@ -300,10 +325,10 @@ export const CreateTierPage = () => {
               style={{ width: "31vw" }}
               ref={carouselRef}
             >
-              <div>
-                <Filter handleChangeFiters={handleChangeFiters} />
-              </div>
-              <div>
+              <Form.Item name={"filter"}>
+                <Filter handleChangeFiters={handleChangeFiters}/>
+              </Form.Item>
+              <Form.Item name={"pickGame"}>
                 <Search
                   placeholder="Введите название игры"
                   size="large"
@@ -352,7 +377,7 @@ export const CreateTierPage = () => {
                   }}
                   pageSizeOptions={[10]}
                 />
-              </div>
+              </Form.Item>
             </Carousel>
           </div>
         </div>
@@ -369,13 +394,13 @@ export const CreateTierPage = () => {
     </div>
   );
 };
-
 //Пользователь заходит на эту страницу и может выбрать:
 //Название,картинку для того как будет выглядить на главной странице сам шаблон(x)
 //Строки таблицы(надо придумать как именно в бд будет реализованно)(+ -)
 //Выбор игр(по жанрам,платформам,дате,тэги)(или дать возможность найти игру и подобрать по нему список)(x)
 //Дать возможность убрать какие то поля из фильтров что бы не отображались(x)
-//Сохранение в бд
+//Сохранение в бд(x)
+//Педелать логику тиров под новую бд, интерфейс уже написанн
 //уже после сохранения можно будет увидеть на деле шаблон(вывести тостер что все сохраненно-дать возможность сразу перейти к данному шаблону)
 //отобразить в профиле мои шаблоны
 //дать возможность его редактировать в будущем

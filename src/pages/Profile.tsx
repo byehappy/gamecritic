@@ -11,6 +11,7 @@ import { IGame } from "../interfaces/games";
 import { gameRequest } from "../axios/requests/games.requests";
 import { CardGame } from "../components/card/Card";
 import { SkeletonFactory } from "../utils/skeleton/skeleton-factory";
+import { Tier } from "../axios/requests/gamecriticAPI/tierData.requests";
 const CarouselWrapper = styled(Carousel)`
   margin-top: 2vh;
   padding: 0.3em;
@@ -34,15 +35,6 @@ const HeaderTemplate = styled.div`
     font-size: 1.5em;
   }
 `;
-
-interface Tier {
-  id: string;
-  title: string;
-  imageSrc?: string;
-  genres?: string;
-  platforms?: string;
-  tags?: string;
-}
 export const ProfilePage = () => {
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();

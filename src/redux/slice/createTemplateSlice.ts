@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IGame } from "../../interfaces/games";
+import { FilterType } from "../../interfaces/filters";
 
 type CreateTemplateType = {
-  filters: { [key: string]: { visible: boolean; value: string | null } };
+  filters: { [key: string]: FilterType };
   pickGame: IGame[];
 };
 

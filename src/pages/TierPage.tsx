@@ -25,11 +25,12 @@ import { SaveTierData } from "../interfaces/tierData";
 import { arrayMove } from "@dnd-kit/sortable";
 import { IGame, IGameDis } from "../interfaces/games";
 import { CardGame } from "../components/card/Card";
-import { FilterFlags } from "../interfaces/filters";
+import { FilterFlags, FilterTierValue } from "../interfaces/filters";
 import { gameRequest } from "../axios/requests/games.requests";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import {
   setDefault,
+  setFilters,
   setRows,
   setTrayGames,
 } from "../redux/slice/tierDataSlice";
@@ -57,7 +58,9 @@ function TierPage() {
   const [totalCount, setTotalCount] = useState<number>(1);
   const [tier, setTier] = useState<{
     name: string;
-    filter: { genres?: string; platforms?: string; tags?: string };
+    filter: FilterTierValue;
+    pickGame: IGame[] | [];
+    count: number | null;
   }>();
   const [filterFlags, setFilterFlags] = useState<FilterFlags>({
     page: DEFAULT_PAGE,
@@ -87,17 +90,21 @@ function TierPage() {
     const tierInfo = {
       name: axiosTier.title,
       filter: {
-        genres: axiosTier.genres,
-        platforms: axiosTier.platforms,
-        tags: axiosTier.tags,
+        ...axiosTier.filters,
       },
+      pickGame: axiosTier.pickGame,
+      count: axiosTier.count,
     };
     setTier(tierInfo);
     setFilterFlags((prev) => ({
       ...prev,
-      ...tierInfo.filter,
+      date: tierInfo.filter.date.value,
+      genres: tierInfo.filter.genres.value,
+      platforms: tierInfo.filter.platforms.value,
+      tags: tierInfo.filter.tags.value,
     }));
-  }, [tierType]);
+    dispatch(setFilters(axiosTier.filters));
+  }, [dispatch, tierType]);
   useEffect(() => {
     setTierFliter();
   }, [setTierFliter]);
@@ -175,11 +182,19 @@ function TierPage() {
     if (loadingRows) return;
     setLoadingTray(true);
     try {
-      const response = await gamesRequest({
-        ...filterFlags,
-      });
       const existingGamesInRows = rows.flatMap((row) => row.games);
-      const newGames: IGameDis[] = response.data.results.map((game) => ({
+      let resGames: IGame[], count: number;
+      if (tier?.pickGame) {
+        resGames = tier.pickGame;
+        count = tier.count!;
+      } else {
+        const response = await gamesRequest({
+          ...filterFlags,
+        });
+        resGames = response.data.results;
+        count = response.data.count;
+      }
+      const newGames: IGameDis[] = resGames.map((game) => ({
         ...game,
         disabled: existingGamesInRows.some(
           (existingGame) => existingGame.id === game.id
@@ -191,7 +206,7 @@ function TierPage() {
           : game.id,
       }));
       dispatch(setTrayGames(newGames));
-      setTotalCount(response.data.count);
+      setTotalCount(count);
       setLoadingTray(false);
     } catch {
       dispatch(setTrayGames([]));
@@ -471,7 +486,14 @@ function TierPage() {
       onDragStart={handleDragStart}
       sensors={sensors}
     >
-      <h1 style={{ margin: "1vw 0", width: "100%", textAlign: "center", color:"#2e2532" }}>
+      <h1
+        style={{
+          margin: "1vw 0",
+          width: "100%",
+          textAlign: "center",
+          color: "#2e2532",
+        }}
+      >
         {tier?.name}
       </h1>
       <div id="table">

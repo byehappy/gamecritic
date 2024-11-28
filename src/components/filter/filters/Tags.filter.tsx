@@ -14,6 +14,8 @@ export const TagFilter: React.FC<{
   ) => void;
 }> = ({ handleChangeFiters }) => {
   const [tags, setTags] = useState<TreeDataState[]>();
+  const { tags: initTags } = useAppSelector((state) => state.tierData.filters);
+  const valueArray = initTags?.value?.split(",");
   const { visible: visibleTags } = useAppSelector(
     (state) => state.createTemplate.filters.tags
   );
@@ -59,25 +61,27 @@ export const TagFilter: React.FC<{
         style={{ width: "100%" }}
         dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
         allowClear
+        defaultValue={valueArray}
         options={tags}
         onChange={(value) => {
           if (handleChangeFiters !== undefined) {
-          if (location.pathname === "/create-tierlist")
-            dispatch(
-              setFilter({
-                filter: "tags",
-                type: {
-                  value: value.every((val: string) => val === "")
-                    ? null
-                    : value.join(","),
-                },
-              })
+            if (location.pathname === "/create-tierlist")
+              dispatch(
+                setFilter({
+                  filter: "tags",
+                  type: {
+                    value: value.every((val: string) => val === "")
+                      ? null
+                      : value.join(","),
+                  },
+                })
+              );
+            handleChangeFiters(
+              "tags",
+              value.every((val: string) => val === "") ? null : value.join(",")
             );
-          handleChangeFiters(
-            "tags",
-            value.every((val: string) => val === "") ? null : value.join(",")
-          );
-        }}}
+          }
+        }}
       />
     </Space>
   );

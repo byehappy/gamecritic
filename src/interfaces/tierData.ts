@@ -1,3 +1,4 @@
+import { FilterTierValue } from "./filters";
 import { IGame, IGameDis } from "./games";
 
 export interface TierData {
@@ -17,4 +18,5 @@ export interface SaveTierData {
 export interface InitTierData {
     rows:TierData[];
     games:IGameDis[]
+    filters:FilterTierValue;
 }

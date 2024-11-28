@@ -78,6 +78,7 @@ export const ExampleTierPage: React.FC<{
           placeholder="Введите название игры"
           enterButton="Поиск"
           size="large"
+          disabled
         />
         <Popover
           content={<Filter filters={createTemplate.filters} />}
@@ -85,7 +86,7 @@ export const ExampleTierPage: React.FC<{
           trigger="click"
           title={"Фильтры"}
         >
-          <Button size="large" type="primary" icon={<FilterOutlined />} />
+          <Button size="large" type="primary" icon={<FilterOutlined />}  disabled/>
         </Popover>
       </div>
       <Row

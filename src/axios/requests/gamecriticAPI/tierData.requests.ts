@@ -1,13 +1,20 @@
 import { AxiosPromise } from "axios";
 import { instanceAPI } from ".";
+import { FilterType } from "../../../interfaces/filters";
+import { IGame } from "../../../interfaces/games";
 
 export interface Tier {
   id: string;
   title: string;
   imageSrc?: string;
-  genres?: string;
-  platforms?: string;
-  tags?: string;
+  rows: { id: string; name: string; color: string }[];
+  filters: { [key: string]: FilterType };
+  pickGame?: number[];
+  author_id: string;
+}
+export interface ViewTier extends Omit<Tier, "pickGame"> {
+  pickGame: IGame[] | [];
+  count:number | null;
 }
 export interface UserTier {
   user: {
@@ -39,7 +46,7 @@ export const getUsersTiers = async (): Promise<UserTier[]> => {
   return await instanceAPI.get(`/tierlists/users`).then((res) => res.data);
 };
 
-export const getTierById = (id: string): AxiosPromise<Tier> => {
+export const getTierById = (id: string): AxiosPromise<ViewTier> => {
   return instanceAPI.get(`/tierlist/${id}`);
 };
 
@@ -61,4 +68,8 @@ export const updateUserRows = async (
     rows,
     present_img,
   });
+};
+
+export const UploadTier = async (tier: Omit<Tier, "id">) => {
+  return await instanceAPI.post("/create-tierlist", { ...tier });
 };

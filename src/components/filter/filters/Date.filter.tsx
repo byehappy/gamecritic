@@ -3,7 +3,7 @@ import { FilterFlags } from "../../../interfaces/filters";
 import { useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { setFilter } from "../../../redux/slice/createTemplateSlice";
-
+import dayjs from "dayjs";
 export const DateFilter: React.FC<{
   handleChangeFiters?: (
     param: keyof FilterFlags,
@@ -13,9 +13,10 @@ export const DateFilter: React.FC<{
   const { visible: visibleDate } = useAppSelector(
     (state) => state.createTemplate.filters.date
   );
+  const { date } = useAppSelector((state) => state.tierData.filters);
   const dispatch = useAppDispatch();
   const location = useLocation();
-
+  const valueArray = date?.value?.split(",");
   return (
     <Space wrap styles={{ item: { width: "100%" } }}>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -39,6 +40,9 @@ export const DateFilter: React.FC<{
       <DatePicker.RangePicker
         format={"YYYY-MM-DD"}
         style={{ width: "100%" }}
+        defaultValue={
+          valueArray ? [dayjs(valueArray[0]), dayjs(valueArray[1])] : undefined
+        }
         onChange={(_, value) => {
           if (handleChangeFiters !== undefined) {
             if (location.pathname === "/create-tierlist")
@@ -53,7 +57,7 @@ export const DateFilter: React.FC<{
                 })
               );
             handleChangeFiters(
-              "dates",
+              "date",
               value.every((val) => val === "") ? null : value.join(",")
             );
           }
