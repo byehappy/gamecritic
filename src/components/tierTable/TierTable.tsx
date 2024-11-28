@@ -108,7 +108,7 @@ export const TierTable: React.FC<{
               }}
             >
               <span style={{ textAlign: "center", display: "inline-block" }}>
-                {tier.tier}
+                {tier.name}
               </span>
             </div>
           </RowHeader>

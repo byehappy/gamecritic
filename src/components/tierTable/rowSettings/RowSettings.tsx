@@ -79,7 +79,7 @@ export const RowSettings: React.FC<{
           tier.id === id
             ? {
                 ...tier,
-                tier: tierName ?? tier.tier,
+                tier: tierName ?? tier.name,
                 color,
                 games: deleteGames ? [] : tier.games,
               }
@@ -96,7 +96,7 @@ export const RowSettings: React.FC<{
     );
   };
   const [settingsRow, setSettingsRow] = useState({
-    tierName: tier.tier,
+    tierName: tier.name,
     color: tier.color,
     deleteGames: false,
   });

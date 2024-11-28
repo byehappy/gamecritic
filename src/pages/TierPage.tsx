@@ -61,13 +61,17 @@ function TierPage() {
     filter: FilterTierValue;
     pickGame: IGame[] | [];
     count: number | null;
+    rows: {
+      id: string;
+      name: string;
+      color: string;
+    }[];
   }>();
   const [filterFlags, setFilterFlags] = useState<FilterFlags>({
     page: DEFAULT_PAGE,
     page_size: DEFAULT_PAGE_SIZE,
   });
   const [activeGame, setActiveGame] = useState<IGameDis | null>(null);
-  const dataFetchedRef = useRef(false);
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -94,6 +98,7 @@ function TierPage() {
       },
       pickGame: axiosTier.pickGame,
       count: axiosTier.count,
+      rows: axiosTier.rows,
     };
     setTier(tierInfo);
     setFilterFlags((prev) => ({
@@ -139,7 +144,11 @@ function TierPage() {
       tiers = sessionStorage.getItem(tierType);
     }
     if (!tiers) {
-      dispatch(setDefault());
+      if (!tier) {
+        return;
+      }
+      
+      dispatch(setDefault(tier.rows));
       setLoadingRows(false);
       return;
     }
@@ -160,14 +169,10 @@ function TierPage() {
     });
     dispatch(setRows(updatedRows));
     setLoadingRows(false);
-  }, [currentUser, dispatch, tierType]);
+  }, [currentUser, dispatch, paramsUserId, tier, tierType]);
   useEffect(() => {
-    if (dataFetchedRef.current) return;
-    dataFetchedRef.current = true;
-    if (tierType) {
       loadGamesStorage();
-    }
-  }, [loadGamesStorage, tierType]);
+  }, [loadGamesStorage]);
   const handleChangeFiters = (
     param: keyof FilterFlags,
     value: string | string[] | number | null

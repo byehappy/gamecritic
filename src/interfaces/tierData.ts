@@ -3,7 +3,7 @@ import { IGame, IGameDis } from "./games";
 
 export interface TierData {
     id:string;
-    tier:string;
+    name:string;
     games:IGame[];
     color:string;
 }
