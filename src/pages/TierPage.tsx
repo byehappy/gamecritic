@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  DeleteTier,
   gamesRequest,
   getTierById,
   getUserRows,
@@ -8,7 +9,11 @@ import {
 import { Button, FloatButton, Pagination, Popover } from "antd";
 import Search from "antd/es/input/Search";
 import { CardList } from "../components/cardList/CardList";
-import { FilterOutlined, SaveOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  FilterOutlined,
+  SaveOutlined,
+} from "@ant-design/icons";
 import { Filter } from "../components/filter/Filter";
 import { TierTable } from "../components/tierTable/TierTable";
 import {
@@ -58,9 +63,11 @@ function TierPage() {
   const [totalCount, setTotalCount] = useState<number>(1);
   const [tier, setTier] = useState<{
     name: string;
+    id: string;
     filter: FilterTierValue;
     pickGame: IGame[] | [];
     count: number | null;
+    authorId: string;
     rows: {
       id: string;
       name: string;
@@ -93,12 +100,14 @@ function TierPage() {
     const axiosTier = res.data;
     const tierInfo = {
       name: axiosTier.title,
+      id: axiosTier.id,
       filter: {
         ...axiosTier.filters,
       },
       pickGame: axiosTier.pickGame,
       count: axiosTier.count,
       rows: axiosTier.rows,
+      authorId: axiosTier.author_id,
     };
     setTier(tierInfo);
     setFilterFlags((prev) => ({
@@ -147,7 +156,7 @@ function TierPage() {
       if (!tier) {
         return;
       }
-      
+
       dispatch(setDefault(tier.rows));
       setLoadingRows(false);
       return;
@@ -171,7 +180,7 @@ function TierPage() {
     setLoadingRows(false);
   }, [currentUser, dispatch, paramsUserId, tier, tierType]);
   useEffect(() => {
-      loadGamesStorage();
+    loadGamesStorage();
   }, [loadGamesStorage]);
   const handleChangeFiters = (
     param: keyof FilterFlags,
@@ -499,7 +508,23 @@ function TierPage() {
           color: "#2e2532",
         }}
       >
-        {tier?.name}
+        {tier?.name}{" "}
+        {currentUser && tier && currentUser.id === tier.authorId && (
+          <Button
+            onClick={() => {
+              try {
+                DeleteTier(tier.id, currentUser.id);
+                dispatch(setMessage({ success: "Успешно удалено" }));
+                navigate("/");
+              } catch (error) {
+                dispatch(setMessage(error));
+              }
+            }}
+            style={{ background: "red" }}
+          >
+            <DeleteOutlined style={{ color: "white", fontSize: "1rem" }} />
+          </Button>
+        )}
       </h1>
       <div id="table">
         <TierTable loading={loadingRows || loadingTray} />

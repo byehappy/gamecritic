@@ -14,7 +14,7 @@ export interface Tier {
 }
 export interface ViewTier extends Omit<Tier, "pickGame"> {
   pickGame: IGame[] | [];
-  count:number | null;
+  count: number | null;
 }
 export interface UserTier {
   user: {
@@ -53,12 +53,15 @@ export const getTierById = (id: string): AxiosPromise<ViewTier> => {
 export const getUserTiers = async (userId: string): AxiosPromise<Tier[]> => {
   return await instanceAPI.get(`/user/tierlists/${userId}`);
 };
-export const getAuthorTiersSize = async(userId:string,size:number): AxiosPromise<Tier[]> =>{
+export const getAuthorTiersSize = async (
+  userId: string,
+  size: number
+): AxiosPromise<Tier[]> => {
   return await instanceAPI.get(`/author-tierlist/${userId}/${size}`);
-}
-export const getAuthorTiers = async(userId:string): AxiosPromise<Tier[]> =>{
+};
+export const getAuthorTiers = async (userId: string): AxiosPromise<Tier[]> => {
   return await instanceAPI.get(`/author-tierlist/${userId}/all`);
-}
+};
 
 export const getUserRows = async (userId: string, tierId: string) => {
   return await instanceAPI.get(`/user/rows/${userId}/${tierId}`);
@@ -74,6 +77,10 @@ export const updateUserRows = async (
     rows,
     present_img,
   });
+};
+
+export const DeleteTier = async (tierId: string, userId: string) => {
+  return await instanceAPI.delete(`/delete-tierlist/${tierId}/${userId}`);
 };
 
 export const UploadTier = async (tier: Omit<Tier, "id">) => {
