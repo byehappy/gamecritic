@@ -73,6 +73,7 @@ type InitialType = {
   user: {
     username: string;
     id: string;
+    icon:string;
   } | null;
 };
 let user;

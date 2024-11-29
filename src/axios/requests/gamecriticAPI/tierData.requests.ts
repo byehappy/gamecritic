@@ -20,6 +20,7 @@ export interface UserTier {
   user: {
     id: string;
     name: string;
+    image:string;
   };
   tier: {
     id: number | string;

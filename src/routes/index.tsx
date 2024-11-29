@@ -14,6 +14,7 @@ import { ProfilePage } from "../pages/Profile";
 import { refreshToken } from "../axios";
 import { FavoritesPage } from "../pages/FavoritesPage";
 import { CreateTierPage } from "../pages/createTemplate/CreateTier";
+import { AboutePage } from "../pages/AboutPage";
 
 export const router = createBrowserRouter([
   {
@@ -68,7 +69,15 @@ export const router = createBrowserRouter([
       {
         path:"/user/:userId",
         element:<ProfilePage/>
-      }
+      },
+      {
+        path:"/about-me",
+        element:<AboutePage />
+      },
+      {
+        path:"/about/:userId",
+        element:<AboutePage />
+      },
     ],
   },
 ]);

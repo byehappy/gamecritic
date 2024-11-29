@@ -127,6 +127,7 @@ export const HomePage = () => {
                     username={tier.user.name}
                     userid={tier.user.id}
                     id={tier.tier.id}
+                    userImage={tier.user.image}
                   />
                 ))}
               </ContainerItems>

@@ -35,7 +35,8 @@ export const UserTemplateCard: React.FC<{
   username: string;
   userid: string;
   id: string | number;
-}> = ({ img, name, id, username, userid }) => {
+  userImage:string;
+}> = ({ img, name, id, username, userid,userImage }) => {
   return (
     <Item>
       <Link to={`/tier-list/${id}/${userid}`}>
@@ -46,7 +47,7 @@ export const UserTemplateCard: React.FC<{
           <Avatar
             style={{ backgroundColor: "gray" }}
             size={40}
-            icon={<UserOutlined />}
+            icon={<img src={userImage} alt={username} />}
           />
         </Link>
         <div style={{ display: "flex", flexDirection: "column" }}>

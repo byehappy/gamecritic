@@ -2,9 +2,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { Avatar, Button, Dropdown, MenuProps } from "antd";
-import { cloneElement, useCallback, useEffect, useState } from "react";
+import { cloneElement, useCallback } from "react";
 import { logout } from "../../redux/slice/authSlice";
-import { UserOutlined } from "@ant-design/icons";
 import uuid4 from "uuid4";
 import useToken from "antd/es/theme/useToken";
 
@@ -27,11 +26,7 @@ const StyledHeader = styled.header`
 export const Header = () => {
   const navigate = useNavigate();
   const token = useToken();
-  const [currentUser, setCurrentUser] = useState<{
-    username: string;
-    id: string;
-  } | null>();
-  const { user } = useAppSelector((state) => state.auth);
+  const { user: currentUser } = useAppSelector((state) => state.auth);
   const { pathname } = useLocation();
   const dispatch = useAppDispatch();
   const logOut = useCallback(() => {
@@ -39,9 +34,6 @@ export const Header = () => {
     navigate("/");
     sessionStorage.clear();
   }, [dispatch, navigate]);
-  useEffect(() => {
-    setCurrentUser(user);
-  }, [user]);
   const params = new URLSearchParams();
   params.set("from", pathname);
   const items: MenuProps["items"] = [
@@ -49,6 +41,22 @@ export const Header = () => {
       label: (
         <Link className="profile" to={`/my-profile`}>
           Мой профиль
+        </Link>
+      ),
+      key: uuid4(),
+    },
+    {
+      label: (
+        <Link className="profile" to={`/about-me`}>
+          О себе
+        </Link>
+      ),
+      key: uuid4(),
+    },
+    {
+      label: (
+        <Link className="profile" to="/catalog-games">
+          Каталог пройденных игр
         </Link>
       ),
       key: uuid4(),
@@ -72,12 +80,9 @@ export const Header = () => {
   ];
   return (
     <StyledHeader>
-      <div style={{display:"flex", alignItems:"center", gap:"1vw"}}>
         <Link className="logo" to={""} style={{ fontSize: "2rem" }}>
           GameCritic
         </Link>
-        {currentUser && <Link to="/catalog-games" style={{fontSize:"1.2rem"}}>Каталог пройденных игр</Link>}
-      </div>
       {!currentUser ? (
         <div style={{ display: "flex", gap: "1vw" }}>
           <Link to={`/auth/sign-in?${params.toString()}`}>
@@ -113,7 +118,9 @@ export const Header = () => {
             >
               <Avatar
                 size={40}
-                icon={<UserOutlined />}
+                icon={
+                    <img src={currentUser.icon} style={{objectFit:"contain"}} alt={`iconUser`} />
+                }
                 style={{ cursor: "pointer" }}
               />
             </Dropdown>
