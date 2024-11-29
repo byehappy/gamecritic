@@ -17,6 +17,7 @@ import { partArray } from "../utils/partedArray";
 const CarouselWrapper = styled(Carousel)`
   margin: 2vh 0;
   padding: 0.3em;
+  display: flex;
   button.slick-arrow {
     color: black;
   }
@@ -34,7 +35,7 @@ const IntroText = styled.h1`
   margin: 3vh 0;
   font-size: 1.8rem;
   p {
-    margin:1vh 0;
+    margin: 1vh 0;
     font-weight: 300;
   }
 `;
@@ -43,7 +44,7 @@ const HeaderTemplate = styled.div`
   justify-content: space-between;
   align-items: center;
   font-size: 0.8rem;
-  margin-top:3vh;
+  margin-top: 3vh;
   a {
     font-size: 1.5em;
   }
@@ -82,7 +83,13 @@ export const HomePage = () => {
           <Link to={"/all"}>Увидеть все шаблоны</Link>
         </HeaderTemplate>
         <CarouselWrapper arrows infinite={false} dots={false}>
-          {!tiers && SkeletonFactory(12, "Card")}
+          {!tiers && (
+            <div>
+              <div style={{ display: "flex" }}>
+                {SkeletonFactory(12, "Card")}
+              </div>
+            </div>
+          )}
           {tiers?.map((part) => (
             <div key={uuid4()}>
               <ContainerItems>
@@ -104,7 +111,11 @@ export const HomePage = () => {
           <h1>Шаблоны других пользователей</h1>
         </HeaderTemplate>
         <CarouselWrapper arrows infinite={false} dots={false}>
-          {!usersTiers && SkeletonFactory(4, "Card")}
+          {!usersTiers && <div>
+              <div style={{ display: "flex" }}>
+                {SkeletonFactory(12, "Card")}
+              </div>
+            </div>}
           {usersTiers?.map((part) => (
             <div key={uuid4()}>
               <ContainerItems>

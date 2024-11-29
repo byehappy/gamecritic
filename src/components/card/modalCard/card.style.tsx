@@ -6,7 +6,7 @@ const fadeIn = keyframes`
     transform: scale(0.8);
   }
   to {
-    opacity: 1;
+    opacity: 0.75;
     transform: scale(1);
   }
 `;
@@ -28,6 +28,7 @@ export const Dot = styled.div<{ $isActive: boolean }>`
   background-color: ${(props) =>
     props.$isActive ? "#8a2be2" : "#ccc"};
   animation: ${(props) => (props.$isActive ? fadeIn : "none")} 0.3s ease-in-out;
+  opacity: 0.75;
   transition: background-color 0.3s, transform 0.3s;
 `;
 

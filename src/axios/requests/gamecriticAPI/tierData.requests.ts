@@ -28,17 +28,10 @@ export interface UserTier {
   present_image: string;
 }
 
-let currentAbortController: AbortController | null = null;
-
 export const getAllTiers = async (): Promise<Tier[]> => {
-  if (currentAbortController) {
-    currentAbortController.abort();
-  }
-  currentAbortController = new AbortController();
   const response = await instanceAPI
-    .get<Tier[]>("/tierlist", { signal: currentAbortController.signal })
+    .get<Tier[]>("/tierlist")
     .then((res) => res.data);
-  currentAbortController = null;
   return response;
 };
 

@@ -10,7 +10,7 @@ export interface TierData {
 
 export interface SaveTierData {
     id:string;
-    tier:string;
+    name:string;
     games:number[];
     color:string;
 }

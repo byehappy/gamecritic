@@ -140,9 +140,15 @@ export const CreateTierPage = () => {
       dispatch(setMessage({ error: message.error[0].msg }));
     }
   };
+  function handleKeyDown(event : any) {
+    if ((event as KeyboardEvent).key === "Enter") {
+      event.preventDefault();
+    }
+  }
   return (
     <div>
       <StyledForm
+        onKeyDown={handleKeyDown}
         form={form}
         initialValues={DEFAULT_ROWS}
         onSubmitCapture={finishForm}
@@ -371,18 +377,18 @@ export const CreateTierPage = () => {
                             />
                           );
                         })}
-                    <Pagination
-                      style={{ marginTop: "1vw" }}
-                      defaultCurrent={1}
-                      defaultPageSize={10}
-                      total={totalCount}
-                      onChange={(page, pageSize) => {
-                        handleChangeFiters("page", page);
-                        handleChangeFiters("page_size", pageSize);
-                      }}
-                      pageSizeOptions={[10]}
-                    />
                   </div>
+                  <Pagination
+                    style={{ marginTop: "1vw" }}
+                    defaultCurrent={1}
+                    defaultPageSize={10}
+                    total={totalCount}
+                    onChange={(page, pageSize) => {
+                      handleChangeFiters("page", page);
+                      handleChangeFiters("page_size", pageSize);
+                    }}
+                    pageSizeOptions={[10]}
+                  />
                 </div>
               </Form.Item>
             </Carousel>

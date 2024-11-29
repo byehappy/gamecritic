@@ -209,25 +209,25 @@ export const CardModal: React.FC<{
             {game.description_raw}
           </div>
           <div>
-            <p>
+            <div>
               <strong>Оценка на Metacritic:</strong> {game.metacritic}{" "}
               {textMetacritic}
-            </p>
-            <p style={{ display: "flex", alignItems: "center" }}>
+            </div>
+            <div style={{ display: "flex", alignItems: "center" }}>
               <strong>Рейтинг:</strong>{" "}
               <Rate allowHalf defaultValue={Number(game.rating)} disabled />
-            </p>
+            </div>
           </div>
           <div>
-            <p>
+            <div>
               <strong>Дата релиза:</strong>
               {new Date(game.released).toLocaleDateString()}
-            </p>
-            <p>
+            </div>
+            <div>
               <strong>Среднее время игры:</strong> {game.playtime}{" "}
               {textHoursPlay}
-            </p>
-            <p>
+            </div>
+            <div>
               <strong style={{ display: "flex" }}>
                 Платформы:
                 <div style={{ display: "flex", gap: ".5vw" }}>
@@ -242,7 +242,7 @@ export const CardModal: React.FC<{
                   ))}
                 </div>
               </strong>
-            </p>
+            </div>
           </div>
         </div>
       </div>
