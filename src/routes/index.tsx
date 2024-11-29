@@ -65,6 +65,10 @@ export const router = createBrowserRouter([
         path: "/all-my-tierlits/:userid",
         element: <TemplatesPage author={true} />,
       },
+      {
+        path:"/user/:userId",
+        element:<ProfilePage/>
+      }
     ],
   },
 ]);

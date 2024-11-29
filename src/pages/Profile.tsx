@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import styled from "styled-components";
 import { Carousel } from "antd";
@@ -39,7 +39,9 @@ const HeaderTemplate = styled.div`
   }
 `;
 export const ProfilePage = () => {
+  const { userId } = useParams();
   const { user: currentUser } = useAppSelector((state) => state.auth);
+  const profileUserId = userId ?? currentUser?.id;
   const dispatch = useAppDispatch();
   const navigation = useNavigate();
   const [tiers, setTiers] = useState<Tier[]>([]);
@@ -53,22 +55,27 @@ export const ProfilePage = () => {
       navigation("/");
       return;
     }
-    const tiers = await getUserTiers(currentUser.id).then((res) => res.data);
-    const authorTiers = await getAuthorTiersSize(currentUser.id, 12).then(
+    if (!profileUserId) {
+      dispatch(setMessage({ error: "Профиль не найден" }));
+      navigation("/");
+      return;
+    }
+    const tiers = await getUserTiers(profileUserId).then((res) => res.data);
+    const authorTiers = await getAuthorTiersSize(profileUserId, 12).then(
       (res) => res.data
     );
     setTiers(tiers);
     setMyTiers(authorTiers);
     setLoadingTiers(false);
-  }, [currentUser, dispatch, navigation]);
+  }, [currentUser, dispatch, navigation, profileUserId]);
 
   useEffect(() => {
     getTiers();
   }, [getTiers]);
   const fillFavoriteGames = useCallback(async () => {
-    if (currentUser) {
+    if (profileUserId) {
       try {
-        const jsonGameIds = await getFavoriteGames(currentUser.id).then(
+        const jsonGameIds = await getFavoriteGames(profileUserId).then(
           (res) => res.data.game_ids
         );
         if (!jsonGameIds) {
@@ -90,7 +97,7 @@ export const ProfilePage = () => {
         );
       }
     }
-  }, [currentUser, dispatch]);
+  }, [dispatch, profileUserId]);
   useEffect(() => {
     fillFavoriteGames();
   }, [fillFavoriteGames]);
@@ -100,7 +107,7 @@ export const ProfilePage = () => {
       <HeaderTemplate>
         <h1>Ваши шаблоны</h1>
         {myTiers.length !== 0 && (
-          <Link to={`/all-my-tierlits/${currentUser?.id}`}>
+          <Link to={`/all-my-tierlits/${profileUserId}`}>
             Увидеть все свои шаблоны
           </Link>
         )}
@@ -132,7 +139,7 @@ export const ProfilePage = () => {
       <HeaderTemplate>
         <h1>Используемые шаблоны</h1>
         {tiers.length !== 0 && (
-          <Link to={`/all-tierlits/${currentUser?.id}`}>
+          <Link to={`/all-tierlits/${profileUserId}`}>
             Увидеть все шаблоны
           </Link>
         )}
@@ -163,7 +170,7 @@ export const ProfilePage = () => {
       <HeaderTemplate>
         <h1>Избранные игры</h1>
         {favoriteGames.length !== 0 && (
-          <Link to={`/all-favorites/${currentUser?.id}`}>
+          <Link to={`/all-favorites/${profileUserId}`}>
             Увидеть все избранные игры
           </Link>
         )}

@@ -26,7 +26,7 @@ const StyledHeader = styled.header`
 `;
 export const Header = () => {
   const navigate = useNavigate();
-  const token  = useToken();
+  const token = useToken();
   const [currentUser, setCurrentUser] = useState<{
     username: string;
     id: string;
@@ -72,9 +72,12 @@ export const Header = () => {
   ];
   return (
     <StyledHeader>
-      <Link className="logo" to={""} style={{ fontSize: "2rem" }}>
-        GameCritic
-      </Link>
+      <div style={{display:"flex", alignItems:"center", gap:"1vw"}}>
+        <Link className="logo" to={""} style={{ fontSize: "2rem" }}>
+          GameCritic
+        </Link>
+        {currentUser && <Link to="/catalog-games" style={{fontSize:"1.2rem"}}>Каталог пройденных игр</Link>}
+      </div>
       {!currentUser ? (
         <div style={{ display: "flex", gap: "1vw" }}>
           <Link to={`/auth/sign-in?${params.toString()}`}>
@@ -83,7 +86,7 @@ export const Header = () => {
         </div>
       ) : (
         currentUser.username && (
-          <div style={{ display: "flex", gap: "1vw"}}>
+          <div style={{ display: "flex", gap: "1vw" }}>
             <Dropdown
               menu={{ items }}
               placement="bottomRight"
@@ -94,13 +97,17 @@ export const Header = () => {
                     backgroundColor: token[1].colorBgElevated,
                     borderRadius: token[1].borderRadiusLG,
                     boxShadow: token[1].boxShadowSecondary,
-                    display:"flex",
-                    flexDirection:"column",
-                    paddingTop:"1vh"
+                    display: "flex",
+                    flexDirection: "column",
+                    paddingTop: "1vh",
                   }}
                 >
-                   <span style={{paddingLeft:"9%"}}>{`Привет,${currentUser?.username}!`}</span>
-                    {cloneElement(originNode as React.ReactElement, { style: {boxShadow:"none"} })}
+                  <span
+                    style={{ paddingLeft: "9%" }}
+                  >{`Привет,${currentUser?.username}!`}</span>
+                  {cloneElement(originNode as React.ReactElement, {
+                    style: { boxShadow: "none" },
+                  })}
                 </div>
               )}
             >
