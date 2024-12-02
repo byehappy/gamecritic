@@ -9,7 +9,7 @@ import useToken from "antd/es/theme/useToken";
 
 const StyledHeader = styled.header`
   color: ${({ theme }) => theme.base.colors.font};
-  height: 6vh;
+  height: 8vh;
   display: flex;
   align-items: center;
   padding: 0 10vw;
@@ -80,7 +80,7 @@ export const Header = () => {
   ];
   return (
     <StyledHeader>
-        <Link className="logo" to={""} style={{ fontSize: "2rem" }}>
+        <Link className="logo" to={""} style={{ fontSize: "3rem" }}>
           GameCritic
         </Link>
       {!currentUser ? (
@@ -117,7 +117,7 @@ export const Header = () => {
               )}
             >
               <Avatar
-                size={40}
+                size={60}
                 icon={
                     <img src={currentUser.icon} style={{objectFit:"contain"}} alt={`iconUser`} />
                 }

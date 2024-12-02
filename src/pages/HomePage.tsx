@@ -155,9 +155,13 @@ export const HomePage = () => {
               </div>
             </div>
           )}
-         {topUsers?.map(e=>(
-           <UserCard user={e} key={e.id}/>
-         ))}
+          <div>
+            <ContainerItems>
+              {topUsers?.map((e) => (
+                <UserCard user={e} key={e.id}/>
+              ))}
+            </ContainerItems>
+          </div>
         </CarouselWrapper>
       </div>
     </>
