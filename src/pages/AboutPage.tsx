@@ -5,12 +5,8 @@ import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { Button, Input } from "antd";
 import IconEditor from "../components/iconEditor/IconEditor";
 import AvatarEditor from "react-avatar-editor";
-import { useNavigate, useParams } from "react-router-dom";
-import {
-  getAllAboutGames,
-  getUserInfo,
-  uploadUserInfo,
-} from "../axios";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { getAllAboutGames, getUserInfo, uploadUserInfo } from "../axios";
 import { setMessage } from "../redux/slice/messageSlice";
 import { IAboutGame } from "../interfaces/aboutGames";
 import { AboutCard } from "../components/aboutCard/AboutCard";
@@ -102,7 +98,11 @@ export const AboutePage = () => {
   return (
     <>
       <UserInfoWrapper>
-        {loading && SkeletonFactory(1, "Icon")}
+        {loading && (
+          <div style={{ width: "15vw", height: "20vh" }}>
+            {SkeletonFactory(1, "Icon")}
+          </div>
+        )}
         {currentUser &&
           !loading &&
           userInfo.init_image &&
@@ -110,7 +110,10 @@ export const AboutePage = () => {
             <IconEditor editor={editor} init_image={userInfo.init_image} />
           )}
         {!loading && userInfo.init_image && whoAbout === userId && (
-          <IconUser style={{ width: "11vw" }} src={userInfo.init_image} />
+          <IconUser
+            style={{ width: "15vw", objectFit: "cover" }}
+            src={userInfo.init_image}
+          />
         )}
         {userInfo ? (
           <UserFormWrapper>
@@ -150,17 +153,25 @@ export const AboutePage = () => {
             {!userId && <Button onClick={handleSave}>Сохранить</Button>}
           </UserFormWrapper>
         ) : null}
+        {userId && (
+          <Link
+            to={`/user/${userId}`}
+            style={{ textWrap: "nowrap", height: "min-content" }}
+          >
+            Перейти в профиль
+          </Link>
+        )}
       </UserInfoWrapper>
       <div
         style={{
           display: "flex",
-          gap: "1vw",
+          justifyContent: "space-around",
           flexWrap: "wrap",
           marginTop: "2vw",
         }}
       >
         {aboutGames?.map((e) => (
-          <AboutCard card={e} key={e.id} />
+          <AboutCard card={e} key={e.id} change={!userId} />
         ))}
 
         {loading && SkeletonFactory(10, "AbouteCard")}

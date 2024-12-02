@@ -22,12 +22,14 @@ const StyleCoverImage = styled.div<{ $name: string; $size: string }>`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    text-align:center;
+    width:85%;
     color: white;
     opacity: 0;
     pointer-events: none;
     z-index: 5;
     text-overflow: ellipsis;
-    max-height: 65px;
+    max-height: 7em;
     overflow: hidden;
   }
   &:hover {

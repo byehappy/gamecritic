@@ -9,7 +9,7 @@ import { TemplateCard } from "../components/templateCard/TemplateCard";
 import { setMessage } from "../redux/slice/messageSlice";
 import { IGame } from "../interfaces/games";
 import { gameRequest } from "../axios/requests/games.requests";
-import { CardGame } from "../components/card/Card";
+import { CardGame } from "../components/card/CardGame";
 import { SkeletonFactory } from "../utils/skeleton/skeleton-factory";
 import {
   getAuthorTiersSize,

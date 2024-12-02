@@ -10,7 +10,7 @@ import { gameRequest, gamesRequest, updateAboutGame } from "../../axios";
 import { IGame } from "../../interfaces/games";
 import { FilterFlags } from "../../interfaces/filters";
 import { DEFAULT_PAGE } from "../../utils/constans";
-import { CardGame } from "../card/Card";
+import { CardGame } from "../card/CardGame";
 
 const AbouteCardWrapper = styled.div`
   width: 15vw;
@@ -20,7 +20,7 @@ const AbouteCardWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   img {
-    width: 10vw;
+    max-width: 100%;
     height: 31vh;
   }
   div {
@@ -29,8 +29,11 @@ const AbouteCardWrapper = styled.div`
     text-align: center;
   }
 `;
-export const AboutCard: React.FC<{ card: IAboutGame }> = ({ card }) => {
-  const { id: userId } = useAppSelector((state) => state.auth.user);
+export const AboutCard: React.FC<{ card: IAboutGame; change: boolean }> = ({
+  card,
+  change,
+}) => {
+  const { user: currentUser } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -87,8 +90,9 @@ export const AboutCard: React.FC<{ card: IAboutGame }> = ({ card }) => {
     }));
   };
   const choiceGame = async (id: number) => {
+    if (!currentUser) return;
     try {
-      await updateAboutGame(userId, card.id, id);
+      await updateAboutGame(currentUser.id, card.id, id);
       getGame(id);
     } catch (error) {
       dispatch(setMessage(error));
@@ -96,72 +100,85 @@ export const AboutCard: React.FC<{ card: IAboutGame }> = ({ card }) => {
   };
   return (
     <AbouteCardWrapper>
-      <Popover
-        open={open}
-        onOpenChange={handleOpenChange}
-        content={
-          <div style={{ display: "grid", height: "30vh" }}>
-            <Search
-              style={{ marginBottom: "1vw" }}
-              placeholder="Введите название игры"
-              onSearch={(value) => {
-                handleChangeFiters("page", 1);
-                handleChangeFiters("search", value);
-              }}
-            />
-            <div
-              style={{
-                display: "inline-flex",
-                gap: "1%",
-              }}
-            >
-              {loading && SkeletonFactory(filterFlags.page_size, "Card-small")}
-              {!loading &&
-                choiceGames?.map((game) => {
-                  return (
-                    <CardGame
-                      key={game.id}
-                      game={{
-                        ...game,
-                        disabled: game.id === valueGame?.id,
-                      }}
-                      id={game.id}
-                      size="small"
-                      onCardClick={() => {
-                        choiceGame(game.id);
-                      }}
-                    />
-                  );
-                })}
+      {change ? (
+        <Popover
+          open={open}
+          onOpenChange={handleOpenChange}
+          content={
+            <div style={{ display: "grid", height: "30vh" }}>
+              <Search
+                style={{ marginBottom: "1vw" }}
+                placeholder="Введите название игры"
+                onSearch={(value) => {
+                  handleChangeFiters("page", 1);
+                  handleChangeFiters("search", value);
+                }}
+              />
+              <div
+                style={{
+                  display: "inline-flex",
+                  gap: "1%",
+                }}
+              >
+                {loading &&
+                  SkeletonFactory(filterFlags.page_size, "Card-small")}
+                {!loading &&
+                  choiceGames?.map((game) => {
+                    return (
+                      <CardGame
+                        key={game.id}
+                        game={{
+                          ...game,
+                          disabled: game.id === valueGame?.id,
+                        }}
+                        id={game.id}
+                        size="small"
+                        onCardClick={() => {
+                          choiceGame(game.id);
+                        }}
+                      />
+                    );
+                  })}
+              </div>
+              <Pagination
+                defaultCurrent={1}
+                defaultPageSize={5}
+                total={count ?? 1}
+                pageSizeOptions={[5]}
+                onChange={(page, pageSize) => {
+                  handleChangeFiters("page", page);
+                  handleChangeFiters("page_size", pageSize);
+                }}
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              />
             </div>
-            <Pagination
-              defaultCurrent={1}
-              defaultPageSize={5}
-              total={count ?? 1}
-              pageSizeOptions={[5]}
-              onChange={(page, pageSize) => {
-                handleChangeFiters("page", page);
-                handleChangeFiters("page_size", pageSize);
-              }}
-              style={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "center",
-              }}
-            />
-          </div>
-        }
-        placement="bottom"
-        trigger="click"
-        title={"Выбрать игру"}
-      >
+          }
+          placement="bottom"
+          trigger="click"
+          title={"Выбрать игру"}
+        >
+          <img
+            src={valueGame?.background_image}
+            alt={valueGame?.name}
+            style={{ objectFit: "cover", cursor: "pointer" }}
+          />
+        </Popover>
+      ) : (
         <img
           src={valueGame?.background_image}
           alt={valueGame?.name}
-          style={{ objectFit: "cover", cursor: "pointer" }}
+          style={{ objectFit: "cover" }}
         />
-      </Popover>
-      <div>{card.name}<br/>{valueGame?.name}</div>
+      )}
+      <div>
+        {card.name}
+        <br />
+        {valueGame?.name}
+      </div>
     </AbouteCardWrapper>
   );
 };

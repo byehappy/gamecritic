@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 import { gameRequest } from "../axios/requests/games.requests";
 import { IGame } from "../interfaces/games";
 import { setMessage } from "../redux/slice/messageSlice";
-import { CardGame } from "../components/card/Card";
+import { CardGame } from "../components/card/CardGame";
 import { useAppDispatch } from "../redux/hooks";
 
 const TepmlatesContainer = styled.div`

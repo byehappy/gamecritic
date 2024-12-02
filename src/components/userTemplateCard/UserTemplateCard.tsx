@@ -1,7 +1,7 @@
 import Avatar from "antd/es/avatar/avatar";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { UserOutlined } from "@ant-design/icons";
+
 export const Item = styled.div`
   width: 18vw;
   position: relative;
@@ -43,7 +43,7 @@ export const UserTemplateCard: React.FC<{
         <img src={img} alt={name} />
       </Link>
       <div className="bottom-text">
-        <Link to={`/user/${userid}`}>
+        <Link to={`/about/${userid}`}>
           <Avatar
             style={{ backgroundColor: "gray" }}
             size={40}
@@ -54,7 +54,7 @@ export const UserTemplateCard: React.FC<{
           <Link to={`/tier-list/${id}`} style={{color:"white"}}>
             <p>{name}</p>
           </Link>
-          <Link to={`/user/${userid}`} style={{ color: "gray" }}>
+          <Link to={`/about/${userid}`} style={{ color: "gray" }}>
             {username}
           </Link>
         </div>

@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 export const Item = styled(Link)<{ $IsDisabled: boolean }>`
-  width: 7vw;
+  width: 10em;
   max-width:130px;
   position: relative;
   flex: none;

@@ -1,6 +1,6 @@
 import { Row } from "antd";
 import React from "react";
-import { CardGame } from "../card/Card";
+import { CardGame } from "../card/CardGame";
 import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
 import { SkeletonFactory } from "../../utils/skeleton/skeleton-factory";

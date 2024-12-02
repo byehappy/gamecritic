@@ -1,5 +1,5 @@
 import { useDroppable } from "@dnd-kit/core";
-import { CardGame } from "../card/Card";
+import { CardGame } from "../card/CardGame";
 import { rectSortingStrategy, SortableContext } from "@dnd-kit/sortable";
 import styled from "styled-components";
 import { Col } from "antd";

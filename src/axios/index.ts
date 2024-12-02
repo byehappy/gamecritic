@@ -30,4 +30,11 @@ export {
   checkFavoriteGame,
   delFavoriteGame,
 } from "./requests/gamecriticAPI/favorite.requests";
-export { getUserInfo,uploadUserInfo,getAboutGame,getAllAboutGames,updateAboutGame } from "./requests/gamecriticAPI/user.requests";
+export {
+  getUserInfo,
+  uploadUserInfo,
+  getAboutGame,
+  getAllAboutGames,
+  updateAboutGame,
+} from "./requests/gamecriticAPI/user.requests";
+export { getPassedGame,addPassedGame,UnpassedGame,getTopUsers } from "./requests/gamecriticAPI/passGame.request";

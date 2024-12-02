@@ -18,7 +18,7 @@ import styled from "styled-components";
 import { CarouselRef } from "antd/es/carousel";
 import { FilterFlags } from "../../interfaces/filters";
 import { DEFAULT_PAGE } from "../../utils/constans";
-import { CardGame } from "../../components/card/Card";
+import { CardGame } from "../../components/card/CardGame";
 import { gamesRequest } from "../../axios";
 import { IGame } from "../../interfaces/games";
 import { SkeletonFactory } from "../../utils/skeleton/skeleton-factory";

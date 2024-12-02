@@ -4,7 +4,7 @@ import { Button, Col, Popover, Row } from "antd";
 import { Filter } from "../../components/filter/Filter";
 import Search from "antd/es/input/Search";
 import { FilterOutlined } from "@ant-design/icons";
-import { CardGame } from "../../components/card/Card";
+import { CardGame } from "../../components/card/CardGame";
 import { SkeletonFactory } from "../../utils/skeleton/skeleton-factory";
 
 const Container = styled.div`

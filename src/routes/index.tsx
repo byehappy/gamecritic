@@ -15,6 +15,7 @@ import { refreshToken } from "../axios";
 import { FavoritesPage } from "../pages/FavoritesPage";
 import { CreateTierPage } from "../pages/createTemplate/CreateTier";
 import { AboutePage } from "../pages/AboutPage";
+import { CatalogGamesPage } from "../pages/CatalogGamesPage";
 
 export const router = createBrowserRouter([
   {
@@ -77,6 +78,10 @@ export const router = createBrowserRouter([
       {
         path:"/about/:userId",
         element:<AboutePage />
+      },
+      {
+        path:"/catalog-games",
+        element:<CatalogGamesPage />
       },
     ],
   },

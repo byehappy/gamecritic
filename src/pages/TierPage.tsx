@@ -29,7 +29,7 @@ import {
 import { SaveTierData } from "../interfaces/tierData";
 import { arrayMove } from "@dnd-kit/sortable";
 import { IGame, IGameDis } from "../interfaces/games";
-import { CardGame } from "../components/card/Card";
+import { CardGame } from "../components/card/CardGame";
 import { FilterFlags, FilterTierValue } from "../interfaces/filters";
 import { gameRequest } from "../axios/requests/games.requests";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";

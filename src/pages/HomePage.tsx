@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { TemplateCard } from "../components/templateCard/TemplateCard";
 import { useCallback, useEffect, useState } from "react";
-import { getAllTiers } from "../axios";
+import { getAllTiers, getTopUsers } from "../axios";
 import uuid4 from "uuid4";
 import { SkeletonFactory } from "../utils/skeleton/skeleton-factory";
 import { UserTemplateCard } from "../components/userTemplateCard/UserTemplateCard";
@@ -13,6 +13,8 @@ import {
   UserTier,
 } from "../axios/requests/gamecriticAPI/tierData.requests";
 import { partArray } from "../utils/partedArray";
+import { UserCard } from "../components/userCard/UserCard";
+import { TopUsers } from "../axios/requests/gamecriticAPI/passGame.request";
 
 const CarouselWrapper = styled(Carousel)`
   margin: 2vh 0;
@@ -53,6 +55,7 @@ const HeaderTemplate = styled.div`
 export const HomePage = () => {
   const [tiers, setTiers] = useState<Tier[][] | null>();
   const [usersTiers, setUsersTiers] = useState<UserTier[][] | null>();
+  const [topUsers, setTopUsers] = useState<TopUsers[] | null>(null);
   const getTiers = useCallback(() => {
     getAllTiers().then((res) => {
       const partedArray = partArray(res, 12);
@@ -61,6 +64,9 @@ export const HomePage = () => {
     getUsersTiers().then((res) => {
       const partedArray = partArray(res, 4);
       setUsersTiers(partedArray);
+    });
+    getTopUsers().then((res) => {
+      setTopUsers(res);
     });
   }, []);
 
@@ -111,11 +117,13 @@ export const HomePage = () => {
           <h1>Шаблоны других пользователей</h1>
         </HeaderTemplate>
         <CarouselWrapper arrows infinite={false} dots={false}>
-          {!usersTiers && <div>
+          {!usersTiers && (
+            <div>
               <div style={{ display: "flex" }}>
                 {SkeletonFactory(12, "Card")}
               </div>
-            </div>}
+            </div>
+          )}
           {usersTiers?.map((part) => (
             <div key={uuid4()}>
               <ContainerItems>
@@ -133,6 +141,23 @@ export const HomePage = () => {
               </ContainerItems>
             </div>
           ))}
+        </CarouselWrapper>
+      </div>
+      <div>
+        <HeaderTemplate>
+          <h1>Рекорды по пройденным играм</h1>
+        </HeaderTemplate>
+        <CarouselWrapper arrows infinite={false} dots={false}>
+          {!topUsers && (
+            <div>
+              <div style={{ display: "flex" }}>
+                {SkeletonFactory(12, "Card")}
+              </div>
+            </div>
+          )}
+         {topUsers?.map(e=>(
+           <UserCard user={e} key={e.id}/>
+         ))}
         </CarouselWrapper>
       </div>
     </>

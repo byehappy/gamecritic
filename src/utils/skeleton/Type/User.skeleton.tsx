@@ -5,8 +5,8 @@ const IconWrapper = styled.div`
   animation: slider 1.8s linear infinite forwards;
   background: linear-gradient(to right, #f6f6f6 8%, #f0f0f0 18%, #f6f6f6 33%);
   background-size: 1200px 100%;
-  width: 12vw;
-  height: 16vh;
+  width: 100%;
+  height: 100%;
   @keyframes slider {
     0% {
       background-position: -1200px 0;
