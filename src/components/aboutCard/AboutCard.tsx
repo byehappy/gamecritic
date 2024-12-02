@@ -164,7 +164,7 @@ export const AboutCard: React.FC<{ card: IAboutGame; change: boolean }> = ({
           <img
             src={valueGame?.background_image}
             alt={valueGame?.name}
-            style={{ objectFit: "cover", cursor: "pointer" }}
+            style={{ objectFit: "cover", cursor: "pointer",width:"100%" }}
           />
         </Popover>
       ) : (

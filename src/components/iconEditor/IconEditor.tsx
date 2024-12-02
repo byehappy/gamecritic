@@ -21,8 +21,8 @@ const IconEditor: React.FC<{
     scale: 1,
     rotate: 0,
     borderRadius: 100,
-    width: 150,
-    height: 150,
+    width: 200,
+    height: 200,
   });
 
   const handleNewImage = (e: ChangeEvent<HTMLInputElement>) => {

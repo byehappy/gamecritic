@@ -99,7 +99,7 @@ export const AboutePage = () => {
     <>
       <UserInfoWrapper>
         {loading && (
-          <div style={{ width: "15vw", height: "20vh" }}>
+          <div style={{ width: "12vw", height: "20vh" }}>
             {SkeletonFactory(1, "Icon")}
           </div>
         )}
@@ -111,7 +111,7 @@ export const AboutePage = () => {
           )}
         {!loading && userInfo.init_image && whoAbout === userId && (
           <IconUser
-            style={{ width: "15vw", objectFit: "cover" }}
+            style={{ width: "12vw", objectFit: "cover" }}
             src={userInfo.init_image}
           />
         )}
