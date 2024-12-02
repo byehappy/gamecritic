@@ -108,7 +108,7 @@ export const Header = () => {
                   }}
                 >
                   <span
-                    style={{ paddingLeft: "9%" }}
+                    style={{ paddingLeft: "8%" }}
                   >{`Привет,${currentUser?.username}!`}</span>
                   {cloneElement(originNode as React.ReactElement, {
                     style: { boxShadow: "none" },

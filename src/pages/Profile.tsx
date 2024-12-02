@@ -50,28 +50,23 @@ export const ProfilePage = () => {
   const [loadingTiers, setLoadingTiers] = useState(true);
   const [loadingFavorites, setLoadingFavorites] = useState(true);
   const getTiers = useCallback(async () => {
-    if (!currentUser) {
-      dispatch(setMessage({ error: "Вы не авторизованны" }));
-      navigation("/");
-      return;
-    }
-    if (!profileUserId) {
-      dispatch(setMessage({ error: "Профиль не найден" }));
-      navigation("/");
-      return;
-    }
-    const tiers = await getUserTiers(profileUserId).then((res) => res.data);
-    const authorTiers = await getAuthorTiersSize(profileUserId, 12).then(
+    const tiers = await getUserTiers(profileUserId!).then((res) => res.data);
+    const authorTiers = await getAuthorTiersSize(profileUserId!, 12).then(
       (res) => res.data
     );
     setTiers(tiers);
     setMyTiers(authorTiers);
     setLoadingTiers(false);
-  }, [currentUser, dispatch, navigation, profileUserId]);
+  }, [profileUserId]);
 
   useEffect(() => {
+    if (!profileUserId) {
+      dispatch(setMessage({ error: "Профиль не найден" }));
+      navigation("/");
+      return;
+    }
     getTiers();
-  }, [getTiers]);
+  }, [currentUser, dispatch, getTiers, navigation, profileUserId]);
   const fillFavoriteGames = useCallback(async () => {
     if (profileUserId) {
       try {

@@ -6,8 +6,14 @@ import { Button, Input } from "antd";
 import IconEditor from "../components/iconEditor/IconEditor";
 import AvatarEditor from "react-avatar-editor";
 import { useNavigate, useParams } from "react-router-dom";
-import { getUserInfo, uploadUserInfo } from "../axios";
+import {
+  getAllAboutGames,
+  getUserInfo,
+  uploadUserInfo,
+} from "../axios";
 import { setMessage } from "../redux/slice/messageSlice";
+import { IAboutGame } from "../interfaces/aboutGames";
+import { AboutCard } from "../components/aboutCard/AboutCard";
 const UserInfoWrapper = styled.div`
   display: flex;
   width: 100%;
@@ -36,6 +42,7 @@ export const AboutePage = () => {
   const [loading, setLoading] = useState(true);
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const [whoAbout, setWhoAbout] = useState<null | string>(null);
+  const [aboutGames, setAboutGames] = useState<IAboutGame[] | null>(null);
   const [userInfo, setUserInfo] = useState<{
     name: string | undefined;
     description: string | undefined;
@@ -58,13 +65,26 @@ export const AboutePage = () => {
       dispatch(setMessage(error));
     }
   };
-  const getInfo = useCallback(async (userId: string) => {
-    const resInfo = await getUserInfo(userId).then((res) => res.data);
-    setWhoAbout(userId);
-    setUserInfo(resInfo);
-  }, []);
+  const getInfo = useCallback(
+    async (userId: string) => {
+      try {
+        const resInfo = await getUserInfo(userId).then((res) => res.data);
+        const resGames = await getAllAboutGames(userId);
+        setWhoAbout(userId);
+        setAboutGames(resGames);
+        setUserInfo(resInfo);
+      } catch (error) {
+        dispatch(setMessage(error));
+      }
+    },
+    [dispatch]
+  );
   useEffect(() => {
     if (userId) {
+      if (userId === currentUser?.id) {
+        navigate("/about-me");
+        return;
+      }
       getInfo(userId);
       setLoading(false);
       return;
@@ -78,6 +98,7 @@ export const AboutePage = () => {
 
     setLoading(false);
   }, [currentUser, dispatch, getInfo, navigate, userId]);
+
   return (
     <>
       <UserInfoWrapper>
@@ -88,11 +109,10 @@ export const AboutePage = () => {
           whoAbout === currentUser.id && (
             <IconEditor editor={editor} init_image={userInfo.init_image} />
           )}
-        {currentUser &&
-          !loading &&
-          userInfo.init_image &&
-          whoAbout === userId && <IconUser style={{width:"11vw"}} src={userInfo.init_image} />}
-        {currentUser ? (
+        {!loading && userInfo.init_image && whoAbout === userId && (
+          <IconUser style={{ width: "11vw" }} src={userInfo.init_image} />
+        )}
+        {userInfo ? (
           <UserFormWrapper>
             <div>
               <div>
@@ -139,6 +159,10 @@ export const AboutePage = () => {
           marginTop: "2vw",
         }}
       >
+        {aboutGames?.map((e) => (
+          <AboutCard card={e} key={e.id} />
+        ))}
+
         {loading && SkeletonFactory(10, "AbouteCard")}
       </div>
     </>
