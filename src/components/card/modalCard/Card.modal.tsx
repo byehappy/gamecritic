@@ -209,43 +209,38 @@ export const CardModal: React.FC<{
             {game.description_raw}
           </div>
           <div>
-            <div>
-              <strong>Оценка на Metacritic:</strong> {game.metacritic}{" "}
-              {textMetacritic}
-            </div>
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <strong>Рейтинг:</strong>{" "}
-              <Tooltip title={`${game.rating} из 5`}>
-              
-                <Rate allowHalf defaultValue={Number(game.rating)} disabled />
-              </Tooltip>
-            </div>
+            <strong>Оценка на Metacritic:</strong> {game.metacritic}{" "}
+            {textMetacritic}
+          </div>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <strong>Рейтинг:</strong>{" "}
+            <Tooltip title={`${game.rating} из 5`}>
+              <Rate allowHalf defaultValue={Number(game.rating)} disabled />
+            </Tooltip>
+          </div>
+
+          <div>
+            <strong>Дата релиза:</strong>{" "}
+            {new Date(game.released).toLocaleDateString()}
           </div>
           <div>
-            <div>
-              <strong>Дата релиза:</strong>
-              {new Date(game.released).toLocaleDateString()}
-            </div>
-            <div>
-              <strong>Среднее время игры:</strong> {game.playtime}{" "}
-              {textHoursPlay}
-            </div>
-            <div>
-              <strong style={{ display: "flex" }}>
-                Платформы:
-                <div style={{ display: "flex", gap: ".5vw" }}>
-                  {game.parent_platforms.map((platform) => (
-                    <span key={uuid4()}>
-                      {createElement(
-                        platformIcons[
-                          platform.platform.name as keyof typeof platformIcons
-                        ] || platformIcons.Global
-                      )}
-                    </span>
-                  ))}
-                </div>
-              </strong>
-            </div>
+            <strong>Среднее время игры:</strong> {game.playtime} {textHoursPlay}
+          </div>
+          <div>
+            <strong style={{ display: "flex" }}>
+              Платформы:
+              <div style={{ display: "flex", gap: ".5vw",marginLeft:".4vw" }}>
+                {game.parent_platforms.map((platform) => (
+                  <span key={uuid4()}>
+                    {createElement(
+                      platformIcons[
+                        platform.platform.name as keyof typeof platformIcons
+                      ] || platformIcons.Global
+                    )}
+                  </span>
+                ))}
+              </div>
+            </strong>
           </div>
         </div>
       </div>
