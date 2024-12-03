@@ -68,7 +68,7 @@ const fadeIn = keyframes`
     opacity:1;
     transform:translateX(0%);
   }
-`
+`;
 const fadeOut = keyframes`
   from{
     opacity:1;
@@ -78,26 +78,30 @@ const fadeOut = keyframes`
     opacity:1;
     transform:translateX(100%);
   }
-`
+`;
 
-const ToasterWrapper = styled.div<{$isClosing?:boolean}>`
-  border-radius:5px;
+const ToasterWrapper = styled.div<{ $isClosing?: boolean }>`
+  width: fit-content;
+  margin-left:auto;
+  white-space: normal;
+  border-radius: 5px;
   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-  padding:.5em;
-  background:white;
-  animation: ${fadeIn} .5s ease-in, ${fadeOut} .5s ease-out ${TOAST_TIMEOUT - 500}ms;
-`
+  padding: 0.5em;
+  background: white;
+  animation: ${fadeIn} 0.5s ease-in,
+    ${fadeOut} 0.5s ease-out ${TOAST_TIMEOUT - 500}ms;
+`;
 
 const StyledMessage = styled.div`
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:1vw;
-  font-size:1rem;
-  svg{
-    height:2.5vh
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1vw;
+  font-size: 1rem;
+  svg {
+    height: 2.5vh;
   }
-`
+`;
 
 const Toaster: React.FC<{
   toaster: Toaster;
@@ -118,10 +122,10 @@ const StyledList = styled.div`
   right: 1vw;
   z-index: 100;
   border-radius: 5px;
-  display:flex;
-  gap:2vh; 
-  flex-direction:column-reverse;
-  max-width:35vw;
+  display: flex;
+  gap: 2vh;
+  flex-direction: column-reverse;
+  max-width: 35vw;
 `;
 
 export const ToasterList: React.FC<{
@@ -129,7 +133,7 @@ export const ToasterList: React.FC<{
 }> = ({ toasters }) => (
   <StyledList id="toaster-list">
     {toasters.map((toaster) => (
-      <Toaster key={toaster.id} toaster={toaster}/>
+      <Toaster key={toaster.id} toaster={toaster} />
     ))}
   </StyledList>
 );
