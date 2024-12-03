@@ -215,7 +215,10 @@ export const CardModal: React.FC<{
             </div>
             <div style={{ display: "flex", alignItems: "center" }}>
               <strong>Рейтинг:</strong>{" "}
-              <Rate allowHalf defaultValue={Number(game.rating)} disabled />
+              <Tooltip title={`${game.rating} из 5`}>
+              
+                <Rate allowHalf defaultValue={Number(game.rating)} disabled />
+              </Tooltip>
             </div>
           </div>
           <div>
