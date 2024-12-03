@@ -44,14 +44,20 @@ export const CardModal: React.FC<{
   const checkFavorite = useCallback(async () => {
     if (currentUser !== null && game !== null) {
       try {
-        await checkFavoriteGame(currentUser.id, game.id).then(() => {
-          setIsFavorite(true);
-        });
-      } catch {
-        setIsFavorite(false);
+        const res = await checkFavoriteGame(currentUser.id, game.id);
+        switch (res.status) {
+          case 200:
+            setIsFavorite(true);
+            break;
+          case 204:
+            setIsFavorite(false);
+            break;
+        }
+      } catch (error) {
+        dispatch(setMessage(error));
       }
     }
-  }, [currentUser, game]);
+  }, [currentUser, dispatch, game]);
   useEffect(() => {
     const fetchGame = async () => {
       setLoading(true);
