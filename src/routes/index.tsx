@@ -73,6 +73,7 @@ export const router = createBrowserRouter([
       },
       {
         path:"/about-me",
+        loader: protectedLoader,
         element:<AboutePage />
       },
       {
