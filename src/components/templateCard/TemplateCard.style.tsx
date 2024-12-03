@@ -1,7 +1,6 @@
-import { Link } from "react-router-dom";
 import styled from "styled-components";
 
-export const Item = styled(Link)<{ $IsDisabled: boolean }>`
+export const Item = styled.div<{ $IsDisabled: boolean }>`
   width: 7vw;
   max-width:130px;
   position: relative;
