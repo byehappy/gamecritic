@@ -8,7 +8,8 @@ export const Modal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
-}> = ({ isOpen, onClose, children }) => {
+  header?: ReactNode;
+}> = ({ isOpen, onClose, children,header }) => {
   const ref = useRef() as React.MutableRefObject<HTMLDivElement>;
   const checkKeyEscape = useCallback(
     (event: KeyboardEvent) => {
@@ -51,7 +52,8 @@ export const Modal: React.FC<{
     isOpen ? (
       <ModalOverlay>
         <ModalWindow ref={ref}>
-          <ModalHeader>
+          <ModalHeader $haveHeader={header !== undefined}>
+            {header}
               <CloseOutlined onClick={onClose} />
           </ModalHeader>
           {children}

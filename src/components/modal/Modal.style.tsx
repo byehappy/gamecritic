@@ -22,8 +22,9 @@ export const ModalWindow = styled.div`
   max-width:70vw;
   padding: 1em;
 `
-export const ModalHeader = styled.div`
+export const ModalHeader = styled.div<{$haveHeader:boolean}>`
   display:flex;
-  justify-content:right;
+  justify-content:${(props)=> props.$haveHeader ? "space-between" : "right"};
   font-size:1.5rem;
+  margin-bottom:1vh;
 `

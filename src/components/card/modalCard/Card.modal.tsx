@@ -164,7 +164,7 @@ export const CardModal: React.FC<{
     zoomContainer.style.justifyContent = " center";
     zoomContainer.style.alignItems = "center";
     zoomContainer.style.zIndex = "101";
-    zoomContainer.style.cursor = "zoom-out"
+    zoomContainer.style.cursor = "zoom-out";
     document.body.appendChild(zoomContainer);
     setPortalContainer(zoomContainer);
     zoomContainer.onclick = () => {
@@ -174,26 +174,6 @@ export const CardModal: React.FC<{
   };
   const gameInfo = game ? (
     <div>
-      <h1 style={{ textWrap: "nowrap" }}>
-        {game.name}{" "}
-        {isFavorite ? (
-          <Tooltip title="Удалить из избранного">
-            <StarFilled
-              style={{ color: "#ffc400", fontSize: "1.5rem" }}
-              onClick={() => deleteGameFromFavorites()}
-            />
-          </Tooltip>
-        ) : (
-          <Tooltip title="Доавить в избранное">
-            <StarOutlined
-              style={{ fontSize: "1.5rem" }}
-              onClick={() => {
-                addGameInFavorites();
-              }}
-            />
-          </Tooltip>
-        )}
-      </h1>
       <div style={{ width: "min-content", display: "flex", gap: "1vw" }}>
         {screenshotsGame && (
           <>
@@ -300,8 +280,36 @@ export const CardModal: React.FC<{
     <div>Не удалось загрузить данные об игре.</div>
   );
 
+  const modalHeader = loading ? undefined : (
+    <h2 style={{ textWrap: "nowrap" }}>
+      {game?.name}{" "}
+      {isFavorite ? (
+        <Tooltip title="Удалить из избранного">
+          <StarFilled
+            style={{ color: "#ffc400", fontSize: "1.5rem" }}
+            onClick={() => deleteGameFromFavorites()}
+          />
+        </Tooltip>
+      ) : (
+        <Tooltip title="Доавить в избранное">
+          <StarOutlined
+            style={{ fontSize: "1.5rem" }}
+            onClick={() => {
+              addGameInFavorites();
+            }}
+          />
+        </Tooltip>
+      )}
+    </h2>
+  );
+
   return (
-    <Modal key={uuid4()} isOpen={true} onClose={() => setOpenModalGameId(null)}>
+    <Modal
+      key={uuid4()}
+      isOpen={true}
+      onClose={() => setOpenModalGameId(null)}
+      header={modalHeader}
+    >
       {loading ? (
         <Flex justify="center">
           <Spin indicator={<LoadingOutlined spin />} size="large" />
