@@ -43,7 +43,8 @@ export const CardGame: React.FC<{
   id: number | string;
   size?: "small" | "large";
   onCardClick?: (game: IGameDis) => void;
-}> = ({ game, id, size = "large", onCardClick }) => {
+  cursorValue?:string
+}> = ({ game, id, size = "large", onCardClick,cursorValue }) => {
   const isDisabled = game.disabled ?? false;
   const [openModalGameId, setOpenModalGameId] = useState<
     number | string | null
@@ -68,7 +69,7 @@ export const CardGame: React.FC<{
     overflow: "hidden",
     maxWidth: "130px",
     border: "none",
-    cursor: cursor,
+    cursor: cursorValue ?? cursor,
     maxHeight: "12rem",
   };
   function handleClick(game: IGameDis) {

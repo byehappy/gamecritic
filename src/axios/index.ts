@@ -37,5 +37,11 @@ export {
   getAllAboutGames,
   updateAboutGame,
 } from "./requests/gamecriticAPI/user.requests";
-export { getPassedGame,addPassedGame,UnpassedGame,getTopUsers } from "./requests/gamecriticAPI/passGame.request";
-export {setupLoadingIntercepotrs} from './requests/gamecriticAPI/interceptors'
+export {
+  getPassedGame,
+  addPassedGame,
+  UnpassedGame,
+  getTopUsers,
+  getUserCount,
+} from "./requests/gamecriticAPI/passGame.request";
+export { setupLoadingIntercepotrs } from "./requests/gamecriticAPI/interceptors";

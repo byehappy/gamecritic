@@ -11,6 +11,7 @@ import { setMessage } from "../redux/slice/messageSlice";
 import { IAboutGame } from "../interfaces/aboutGames";
 import { AboutCard } from "../components/aboutCard/AboutCard";
 import { setImageIcon } from "../redux/slice/authSlice";
+import { EditOutlined } from "@ant-design/icons";
 const UserInfoWrapper = styled.div`
   display: flex;
   width: 100%;
@@ -38,8 +39,8 @@ export const AboutePage = () => {
   const editor = useRef<AvatarEditor>(null);
   const [loading, setLoading] = useState(true);
   const { user: currentUser } = useAppSelector((state) => state.auth);
-  const [whoAbout, setWhoAbout] = useState<null | string>(null);
   const [aboutGames, setAboutGames] = useState<IAboutGame[] | null>(null);
+  const [edit, setEdit] = useState(false);
   const [userInfo, setUserInfo] = useState<{
     name: string | undefined;
     description: string | undefined;
@@ -57,8 +58,8 @@ export const AboutePage = () => {
         about_text: userInfo.description,
         img_icon: img,
       });
-      dispatch(setMessage({success:result.data.success}));
-      dispatch(setImageIcon(result.data.image_icon))
+      dispatch(setMessage({ success: result.data.success }));
+      dispatch(setImageIcon(result.data.image_icon));
     } catch (error) {
       dispatch(setMessage(error));
     }
@@ -68,7 +69,6 @@ export const AboutePage = () => {
       try {
         const resInfo = await getUserInfo(userId).then((res) => res.data);
         const resGames = await getAllAboutGames(userId);
-        setWhoAbout(userId);
         setAboutGames(resGames);
         setUserInfo(resInfo);
       } catch (error) {
@@ -105,13 +105,10 @@ export const AboutePage = () => {
             {SkeletonFactory(1, "Icon")}
           </div>
         )}
-        {currentUser &&
-          !loading &&
-          userInfo.init_image &&
-          whoAbout === currentUser.id && (
-            <IconEditor editor={editor} init_image={userInfo.init_image} />
-          )}
-        {!loading && userInfo.init_image && whoAbout === userId && (
+        {edit && !loading && userInfo.init_image && (
+          <IconEditor editor={editor} init_image={userInfo.init_image} />
+        )}
+        {!loading && userInfo.init_image && !edit && (
           <IconUser
             style={{ width: "12vw", objectFit: "cover" }}
             src={userInfo.init_image}
@@ -122,7 +119,7 @@ export const AboutePage = () => {
             <div>
               <div>
                 Никнейм:
-                {userId ? (
+                {!edit ? (
                   userInfo.name
                 ) : (
                   <Input
@@ -136,7 +133,7 @@ export const AboutePage = () => {
               </div>
               <div>
                 Описание:
-                {userId ? (
+                {!edit ? (
                   userInfo.description
                 ) : (
                   <Input
@@ -152,16 +149,26 @@ export const AboutePage = () => {
                 )}
               </div>
             </div>
-            {!userId && <Button onClick={handleSave}>Сохранить</Button>}
+            {edit && <Button onClick={handleSave}>Сохранить</Button>}
           </UserFormWrapper>
         ) : null}
-        {userId && (
+        {userId ? (
           <Link
             to={`/user/${userId}`}
             style={{ textWrap: "nowrap", height: "min-content" }}
           >
             Перейти в профиль
           </Link>
+        ) : (
+          <Button
+            size="large"
+            type="primary"
+            danger={edit}
+            variant="solid"
+            onClick={() => setEdit((prev) => !prev)}
+          >
+            <EditOutlined />
+          </Button>
         )}
       </UserInfoWrapper>
       <div

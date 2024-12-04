@@ -84,6 +84,10 @@ export const router = createBrowserRouter([
         path:"/catalog-games",
         element:<CatalogGamesPage />
       },
+      {
+        path:"/passed-games/:userId",
+        element:<CatalogGamesPage />
+      },
     ],
   },
 ]);

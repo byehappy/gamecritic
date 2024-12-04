@@ -25,9 +25,7 @@ export const register = createAsyncThunk(
       return response;
     } catch (e) {
       const error = e as AxiosError;
-      console.log(e);
       const message = error.response?.data as ErrorAuth;
-  
       message.error.map((error) => {
         thunkAPI.dispatch(setMessage({ error: error.msg }));
       });
