@@ -24,6 +24,7 @@ import {
 import { platformIcons } from "../../../assets/icons/platfroms";
 import { SliderContainer, SliderImage, DotsContainer, Dot } from "./card.style";
 import { useWordDeclination } from "../../../utils/hooks/useWorldDeclination";
+import { createPortal } from "react-dom";
 
 export const CardModal: React.FC<{
   id: number;
@@ -41,6 +42,9 @@ export const CardModal: React.FC<{
   const [screenshotsGame, setScreenshotsGame] =
     useState<[{ image: string; id: number }]>();
   const [isFavorite, setIsFavorite] = useState<boolean | null>(null);
+  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(
+    null
+  );
   const checkFavorite = useCallback(async () => {
     if (currentUser !== null && game !== null) {
       try {
@@ -147,6 +151,27 @@ export const CardModal: React.FC<{
     "балла",
     "баллов",
   ]).text;
+  const handleZoomInImage = (src: string, alt: string) => {
+    const zoomContainer = document.createElement("div");
+    zoomContainer.id = "zoom-container";
+    zoomContainer.style.position = "fixed";
+    zoomContainer.style.top = "0";
+    zoomContainer.style.left = "0";
+    zoomContainer.style.width = " 100%";
+    zoomContainer.style.height = " 100%";
+    zoomContainer.style.background = " rgba(0, 0, 0, 0.5)";
+    zoomContainer.style.display = " flex";
+    zoomContainer.style.justifyContent = " center";
+    zoomContainer.style.alignItems = "center";
+    zoomContainer.style.zIndex = "101";
+    zoomContainer.style.cursor = "zoom-out"
+    document.body.appendChild(zoomContainer);
+    setPortalContainer(zoomContainer);
+    zoomContainer.onclick = () => {
+      document.body.removeChild(zoomContainer);
+      setPortalContainer(null);
+    };
+  };
   const gameInfo = game ? (
     <div>
       <h1 style={{ textWrap: "nowrap" }}>
@@ -171,22 +196,40 @@ export const CardModal: React.FC<{
       </h1>
       <div style={{ width: "min-content", display: "flex", gap: "1vw" }}>
         {screenshotsGame && (
-          <div onMouseMove={handleMouseMove} ref={sliderRef}>
-            <SliderContainer>
-              <SliderImage
-                src={screenshotsGame[currentImageIndex].image}
-                alt={`Скриншот ${currentImageIndex + 1}`}
-              />
-              <DotsContainer>
-                {screenshotsGame.map((_, index) => (
-                  <Dot
-                    key={screenshotsGame[index].id}
-                    $isActive={index === currentImageIndex}
-                  />
-                ))}
-              </DotsContainer>
-            </SliderContainer>
-          </div>
+          <>
+            <div onMouseMove={handleMouseMove} ref={sliderRef}>
+              <SliderContainer
+                onClick={() => {
+                  handleZoomInImage(
+                    screenshotsGame[currentImageIndex].image,
+                    `Скриншот ${currentImageIndex + 1}`
+                  );
+                }}
+              >
+                <SliderImage
+                  src={screenshotsGame[currentImageIndex].image}
+                  alt={`Скриншот ${currentImageIndex + 1}`}
+                />
+                <DotsContainer>
+                  {screenshotsGame.map((_, index) => (
+                    <Dot
+                      key={screenshotsGame[index].id}
+                      $isActive={index === currentImageIndex}
+                    />
+                  ))}
+                </DotsContainer>
+              </SliderContainer>
+            </div>
+            {portalContainer &&
+              createPortal(
+                <img
+                  style={{ width: "75%" }}
+                  src={screenshotsGame[currentImageIndex].image}
+                  alt={`Скриншот ${currentImageIndex + 1}`}
+                />,
+                portalContainer
+              )}
+          </>
         )}
         <div
           style={{

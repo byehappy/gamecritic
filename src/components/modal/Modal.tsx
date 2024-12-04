@@ -33,14 +33,17 @@ export const Modal: React.FC<{
     if (isOpen) {
       document.body.addEventListener("keydown", checkKeyEscape);
       document.addEventListener("mousedown", checkOutside);
+      document.body.style.overflow = 'hidden';
     }
     if (!isOpen) {
       document.body.removeEventListener("keydown", checkKeyEscape);
       document.removeEventListener("mousedown", checkOutside);
+      document.body.style.overflow = 'unset';
     }
     return () => {
       document.body.removeEventListener("keydown", checkKeyEscape);
       document.removeEventListener("mousedown", checkOutside);
+      document.body.style.overflow = 'unset';
     };
   }, [checkKeyEscape, checkOutside, isOpen]);
 
