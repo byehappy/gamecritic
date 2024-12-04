@@ -26,9 +26,9 @@ export const register = createAsyncThunk(
     } catch (e) {
       const error = e as AxiosError;
       const message = error.response?.data as ErrorAuth;
-      message.error.map(error => {
-        thunkAPI.dispatch(setMessage({error:error.msg}));
-      })
+      message.error.map((error) => {
+        thunkAPI.dispatch(setMessage({ error: error.msg }));
+      });
       return thunkAPI.rejectWithValue(error.response?.data);
     }
   }
@@ -56,9 +56,9 @@ export const login = createAsyncThunk(
     } catch (e) {
       const error = e as AxiosError;
       const message = error.response?.data as ErrorAuth;
-      message.error.map(error => {
-        thunkAPI.dispatch(setMessage({error:error.msg}));
-      })
+      message.error.map((error) => {
+        thunkAPI.dispatch(setMessage({ error: error.msg }));
+      });
       return thunkAPI.rejectWithValue(error.response?.data);
     }
   }
@@ -73,7 +73,7 @@ type InitialType = {
   user: {
     username: string;
     id: string;
-    icon:string;
+    icon: string;
   } | null;
 };
 let user;
@@ -91,7 +91,13 @@ const initialState: InitialType = user
 export const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {},
+  reducers: {
+    setImageIcon(state, action) {
+      if (state.user) {
+        state.user.icon = action.payload;
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(register.fulfilled, (state) => {
@@ -114,6 +120,6 @@ export const authSlice = createSlice({
       });
   },
 });
-
-const { reducer } = authSlice;
+const { reducer, actions } = authSlice;
+export const { setImageIcon } = actions;
 export default reducer;

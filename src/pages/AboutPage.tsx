@@ -10,6 +10,7 @@ import { getAllAboutGames, getUserInfo, uploadUserInfo } from "../axios";
 import { setMessage } from "../redux/slice/messageSlice";
 import { IAboutGame } from "../interfaces/aboutGames";
 import { AboutCard } from "../components/aboutCard/AboutCard";
+import { setImageIcon } from "../redux/slice/authSlice";
 const UserInfoWrapper = styled.div`
   display: flex;
   width: 100%;
@@ -56,7 +57,8 @@ export const AboutePage = () => {
         about_text: userInfo.description,
         img_icon: img,
       });
-      dispatch(setMessage(result.data));
+      dispatch(setMessage({success:result.data.success}));
+      dispatch(setImageIcon(result.data.image_icon))
     } catch (error) {
       dispatch(setMessage(error));
     }
