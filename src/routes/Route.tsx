@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom";
 import { Header } from "../components/header/Header";
 import { Footer } from "../components/footer/Footer";
 import { useEffect } from "react";
-import { refreshToken } from "../axios";
+import { refreshToken, setupLoadingIntercepotrs } from "../axios";
 import { decodeToken } from "../utils/expiredToken";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { logout } from "../redux/slice/authSlice";
@@ -41,6 +41,9 @@ function Root() {
       clearTimeout(refreshAccessTokenTimerId);
     };
   }, [dispacth, isLoggedIn]);
+  useEffect(()=>{
+    setupLoadingIntercepotrs(dispacth)
+  },[dispacth])
   return (
     <>
       <Header />

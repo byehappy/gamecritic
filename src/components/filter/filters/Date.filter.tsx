@@ -11,7 +11,7 @@ export const DateFilter: React.FC<{
   ) => void;
 }> = ({ handleChangeFiters }) => {
   const { visible: visibleDate } = useAppSelector(
-    (state) => state.createTemplate.filters.date
+    (state) => state.createTemplate.filters.dates
   );
   const { dates } = useAppSelector((state) => state.tierData.filters);
   const dispatch = useAppDispatch();

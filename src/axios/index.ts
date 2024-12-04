@@ -38,3 +38,4 @@ export {
   updateAboutGame,
 } from "./requests/gamecriticAPI/user.requests";
 export { getPassedGame,addPassedGame,UnpassedGame,getTopUsers } from "./requests/gamecriticAPI/passGame.request";
+export {setupLoadingIntercepotrs} from './requests/gamecriticAPI/interceptors'

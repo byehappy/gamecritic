@@ -452,7 +452,7 @@ function TierPage() {
       });
       const image = canvas.toDataURL("img/png");
       try {
-        await updateUserRows(
+        const res = await updateUserRows(
           currentUser.id,
           tierType,
           JSON.stringify(rowsGamesIds),
@@ -463,6 +463,7 @@ function TierPage() {
             success: "Успешно сохранено",
           })
         );
+        rowsRef.current = res.data.rows
         setDirty(false);
       } catch (e) {
         const error = e as AxiosError;

@@ -6,16 +6,24 @@ import {
   WarningIcon,
 } from "../assets/icons/toaster";
 import uuid4 from "uuid4";
-import styled, { keyframes } from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 import { TOAST_TIMEOUT } from "./constans";
+import { Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 
-type MessageType = "error" | "info" | "warning" | "success";
+type MessageType = "error" | "info" | "warning" | "success" | "loading";
 
 const typesIcon: Record<MessageType, JSX.Element> = {
   error: <ErrorIcon />,
   warning: <WarningIcon />,
   info: <InfoIcon />,
   success: <SuccessIcon />,
+  loading: (
+    <Spin
+      indicator={<LoadingOutlined spin style={{ fontSize: "1.5rem" }} />}
+      size="small"
+    />
+  ),
 };
 
 type Toaster = {
@@ -48,6 +56,19 @@ export const useToaster = () => {
       setToasters((prev) => prev.slice(1));
     }, TOAST_TIMEOUT);
   }, []);
+  const addLoading = useCallback((reqIds: string[]) => {
+    setToasters((prev)=>{
+      const updateToasters = prev.filter((e)=> reqIds.includes(e.id))
+      const newToasters:Toaster[] = reqIds
+          .filter((id) => !prev.some((e) => e.id === id)) 
+          .map((id) => ({
+            type: "loading",
+            content: `Запрос обрабатывается...`,
+            id:`loading-${id}`,
+          }));
+          return[...updateToasters,...newToasters]
+    })
+  }, []);
 
   useEffect(() => {
     if (toasters.length === 0 && container) {
@@ -56,7 +77,7 @@ export const useToaster = () => {
     }
   }, [toasters, container]);
 
-  return { addMessage, container, toasters };
+  return { addMessage, container, toasters, addLoading };
 };
 
 const fadeIn = keyframes`
@@ -68,7 +89,7 @@ const fadeIn = keyframes`
     opacity:1;
     transform:translateX(0%);
   }
-`
+`;
 const fadeOut = keyframes`
   from{
     opacity:1;
@@ -78,33 +99,40 @@ const fadeOut = keyframes`
     opacity:1;
     transform:translateX(100%);
   }
-`
-
-const ToasterWrapper = styled.div<{$isClosing?:boolean}>`
-  border-radius:5px;
+`;
+const ToasterWrapper = styled.div<{ $isLoading: boolean }>`
+  width: fit-content;
+  margin-left: auto;
+  white-space: normal;
+  border-radius: 5px;
   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-  padding:.5em;
-  background:white;
-  animation: ${fadeIn} .5s ease-in, ${fadeOut} .5s ease-out ${TOAST_TIMEOUT - 500}ms;
-`
+  padding: 0.5em;
+  background: white;
+  ${(props) =>
+    !props.$isLoading &&
+    css`
+      animation: ${fadeIn} 0.5s ease-in,
+        ${fadeOut} 0.5s ease-out ${TOAST_TIMEOUT - 500}ms;
+    `}
+`;
 
 const StyledMessage = styled.div`
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:1vw;
-  font-size:1rem;
-  svg{
-    height:2.5vh
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1vw;
+  font-size: 1rem;
+  svg {
+    height: 2.5vh;
   }
-`
+`;
 
 const Toaster: React.FC<{
   toaster: Toaster;
 }> = ({ toaster }) => {
   const glyph = typesIcon[toaster.type] || null;
   return (
-    <ToasterWrapper>
+    <ToasterWrapper $isLoading={toaster.id.includes("loading")}>
       <StyledMessage>
         {glyph} {toaster.content}
       </StyledMessage>
@@ -118,10 +146,10 @@ const StyledList = styled.div`
   right: 1vw;
   z-index: 100;
   border-radius: 5px;
-  display:flex;
-  gap:2vh; 
-  flex-direction:column-reverse;
-  max-width:35vw;
+  display: flex;
+  gap: 2vh;
+  flex-direction: column-reverse;
+  max-width: 35vw;
 `;
 
 export const ToasterList: React.FC<{
@@ -129,7 +157,7 @@ export const ToasterList: React.FC<{
 }> = ({ toasters }) => (
   <StyledList id="toaster-list">
     {toasters.map((toaster) => (
-      <Toaster key={toaster.id} toaster={toaster}/>
+      <Toaster key={toaster.id} toaster={toaster} />
     ))}
   </StyledList>
 );
