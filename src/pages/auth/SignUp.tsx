@@ -30,9 +30,7 @@ export const SignUpPage = () => {
 
     dispatch(register({ username, email, password }))
       .unwrap()
-      .then(() => {
-        setSuccessful(true);
-      })
+      .then((res) => res.status === 200 && setSuccessful(true))
       .catch((_error) => {
         const e = _error as ErrorAuth;
         form.setFields(

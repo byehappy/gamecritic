@@ -162,14 +162,14 @@ export const AboutCard: React.FC<{ card: IAboutGame; change: boolean }> = ({
           title={"Выбрать игру"}
         >
           <img
-            src={valueGame?.background_image}
+            src={valueGame?.background_image ?? "https://mebeliero.ru/images/photos/medium/no_image.png"}
             alt={valueGame?.name}
             style={{ objectFit: "cover", cursor: "pointer",width:"100%" }}
           />
         </Popover>
       ) : (
         <img
-          src={valueGame?.background_image}
+          src={valueGame?.background_image ?? "https://mebeliero.ru/images/photos/medium/no_image.png"}
           alt={valueGame?.name}
           style={{ objectFit: "cover" }}
         />

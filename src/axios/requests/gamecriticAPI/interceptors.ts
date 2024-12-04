@@ -30,7 +30,7 @@ export const setupLoadingIntercepotrs = (dispatch: AppDispatch) => {
         dispatch(delLoading(JSON.stringify(saveConfig)));
       }
 
-      return _error;
+      return Promise.reject(_error);
     }
   );
 };
