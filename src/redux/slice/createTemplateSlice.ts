@@ -11,7 +11,7 @@ const initialState: CreateTemplateType = {
   filters: {
     genres: { visible: true, value: null },
     platforms: { visible: true, value: null },
-    date: { visible: true, value: null },
+    dates: { visible: true, value: null },
     tags: { visible: true, value: null },
   },
   pickGame: [],

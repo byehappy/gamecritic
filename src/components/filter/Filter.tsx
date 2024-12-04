@@ -15,7 +15,7 @@ interface FilterProps {
 export const Filter: React.FC<FilterProps> = ({
   handleChangeFiters,
   filters = {
-    date: { visible: true },
+    dates: { visible: true },
     genres: { visible: true },
     platforms: { visible: true },
     tags: { visible: true },
@@ -23,7 +23,7 @@ export const Filter: React.FC<FilterProps> = ({
 }) => {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
-      {filters?.date?.visible ? (
+      {filters?.dates?.visible ? (
         <DateFilter handleChangeFiters={handleChangeFiters} />
       ) : null}
       {filters?.genres?.visible ? (
@@ -35,7 +35,7 @@ export const Filter: React.FC<FilterProps> = ({
       {filters?.platforms?.visible ? (
         <PlatformFilter handleChangeFiters={handleChangeFiters} />
       ) : null}
-      {!filters?.date?.visible &&
+      {!filters?.dates?.visible &&
         !filters.genres?.visible &&
         !filters.platforms?.visible &&
         !filters.tags?.visible && <div>Фильтры выключены</div>}

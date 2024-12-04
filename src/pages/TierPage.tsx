@@ -112,7 +112,7 @@ function TierPage() {
     setTier(tierInfo);
     setFilterFlags((prev) => ({
       ...prev,
-      date: tierInfo.filter.date.value,
+      dates: tierInfo.filter.dates.value,
       genres: tierInfo.filter.genres.value,
       platforms: tierInfo.filter.platforms.value,
       tags: tierInfo.filter.tags.value,

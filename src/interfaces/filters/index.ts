@@ -1,7 +1,7 @@
 export type FilterValueType = string[] | string | null;
 export interface FilterFlags {
   search?: string;
-  date?: FilterValueType;
+  dates?: FilterValueType;
   genres?: FilterValueType;
   tags?: FilterValueType;
   platforms?: FilterValueType;
@@ -13,5 +13,5 @@ export interface FilterTierValue {
   genres?: FilterType;
   tags?: FilterType;
   platforms?: FilterType;
-  date?: FilterType;
+  dates?: FilterType;
 }

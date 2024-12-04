@@ -13,10 +13,10 @@ export const DateFilter: React.FC<{
   const { visible: visibleDate } = useAppSelector(
     (state) => state.createTemplate.filters.date
   );
-  const { date } = useAppSelector((state) => state.tierData.filters);
+  const { dates } = useAppSelector((state) => state.tierData.filters);
   const dispatch = useAppDispatch();
   const location = useLocation();
-  const valueArray = date?.value?.split(",");
+  const valueArray = dates?.value?.split(",");
   return (
     <Space wrap styles={{ item: { width: "100%" } }}>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -28,7 +28,7 @@ export const DateFilter: React.FC<{
               checked={visibleDate}
               onChange={() =>
                 dispatch(
-                  setFilter({ filter: "date", type: { visible: !visibleDate } })
+                  setFilter({ filter: "dates", type: { visible: !visibleDate } })
                 )
               }
               style={{ marginRight: ".1vw" }}
@@ -50,7 +50,7 @@ export const DateFilter: React.FC<{
             if (location.pathname === "/create-tierlist")
               dispatch(
                 setFilter({
-                  filter: "date",
+                  filter: "dates",
                   type: {
                     value: value.every((val) => val === "")
                       ? null
@@ -59,7 +59,7 @@ export const DateFilter: React.FC<{
                 })
               );
             handleChangeFiters(
-              "date",
+              "dates",
               value.every((val) => val === "") ? null : value.join(",")
             );
           }
