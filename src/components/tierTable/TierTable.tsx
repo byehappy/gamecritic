@@ -13,6 +13,7 @@ import { RowSettings } from "./rowSettings/RowSettings";
 import { useAppSelector, useAppDispatch } from "../../redux/hooks";
 import { setRows } from "../../redux/slice/tierDataSlice";
 import { SkeletonFactory } from "../../utils/skeleton/skeleton-factory";
+import { getTextColor } from "../../utils/textColorWithBg";
 
 const DroppableWrapper = styled.div<{ $isOver: boolean }>`
   background-color: ${(props) =>
@@ -107,7 +108,7 @@ export const TierTable: React.FC<{
                 wordBreak: "break-all",
               }}
             >
-              <span style={{ textAlign: "center", display: "inline-block" }}>
+              <span style={{ textAlign: "center", display: "inline-block",color:getTextColor(tier.color) }}>
                 {tier.name}
               </span>
             </div>

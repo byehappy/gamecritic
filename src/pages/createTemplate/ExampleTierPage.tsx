@@ -6,6 +6,7 @@ import Search from "antd/es/input/Search";
 import { FilterOutlined } from "@ant-design/icons";
 import { CardGame } from "../../components/card/CardGame";
 import { SkeletonFactory } from "../../utils/skeleton/skeleton-factory";
+import { getTextColor } from "../../utils/textColorWithBg";
 
 const Container = styled.div`
   display: flex;
@@ -59,7 +60,13 @@ export const ExampleTierPage: React.FC<{
                 wordBreak: "break-all",
               }}
             >
-              <span style={{ textAlign: "center", display: "inline-block" }}>
+              <span
+                style={{
+                  textAlign: "center",
+                  display: "inline-block",
+                  color: getTextColor(tier.color),
+                }}
+              >
                 {tier.name}
               </span>
             </div>
@@ -86,7 +93,12 @@ export const ExampleTierPage: React.FC<{
           trigger="click"
           title={"Фильтры"}
         >
-          <Button size="large" type="primary" icon={<FilterOutlined />}  disabled/>
+          <Button
+            size="large"
+            type="primary"
+            icon={<FilterOutlined />}
+            disabled
+          />
         </Popover>
       </div>
       <Row
