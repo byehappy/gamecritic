@@ -564,6 +564,7 @@ function TierPage() {
               filters={tier?.filter}
             />
           }
+          overlayInnerStyle={{width:"25vw"}}
           placement="bottom"
           trigger="click"
           title={"Фильтры"}
