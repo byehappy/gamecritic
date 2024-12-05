@@ -96,6 +96,7 @@ export const CatalogGamesPage = () => {
     if (userId) {
       if(userId === currentUser?.id){
         navigate("/catalog-games")
+        return;
       }
       getInfo(userId);
       getGames(userId);
@@ -139,7 +140,7 @@ export const CatalogGamesPage = () => {
 
   return (
     <>
-      {user && (
+      {(user) && (
         <UserInfoWrapper>
           <IconUser
             style={{ objectFit: "cover" }}

@@ -53,12 +53,14 @@ export const useToaster = () => {
     });
 
     setTimeout(() => {
-      setToasters((prev) => prev.slice(1));
+      setToasters((prev) =>
+        prev.filter((toaster) => toaster.id !== newToaster.id)
+      );
     }, TOAST_TIMEOUT);
   }, []);
   const addLoading = useCallback((reqIds: string[]) => {
     setToasters((prev) => {
-      const updateToasters = prev.filter((e) => reqIds.includes(e.id));
+      const updateToasters = prev.filter((e) => e.type !== "loading" || reqIds.includes(e.id));
       const newToasters: Toaster[] = reqIds
         .filter((id) => !prev.some((e) => e.id === id))
         .map((id) => ({
@@ -67,7 +69,7 @@ export const useToaster = () => {
           id: `loading-${id}`,
         }));
       const combineToasters = [...updateToasters, ...newToasters];
-      return combineToasters.slice(-10);
+      return combineToasters;
     });
   }, []);
 
@@ -133,7 +135,10 @@ const Toaster: React.FC<{
 }> = ({ toaster }) => {
   const glyph = typesIcon[toaster.type] || null;
   return (
-    <ToasterWrapper key={toaster.id} $isLoading={toaster.id.includes("loading")}>
+    <ToasterWrapper
+      key={toaster.id}
+      $isLoading={toaster.id.includes("loading")}
+    >
       <StyledMessage>
         {glyph} {toaster.content}
       </StyledMessage>
