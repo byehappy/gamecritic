@@ -1,4 +1,5 @@
 import { instanceAPI } from ".";
+import { FilterFlags } from "../../../interfaces/filters";
 
 export interface TopUsers {
   id: string;
@@ -33,3 +34,7 @@ export const getUserCount = async (
 ): Promise<{ gameCount: number }> => {
   return instanceAPI.get(`/count-games/${userId}`).then((res) => res.data);
 };
+
+export const getPassedGamesUser = (userId: string,params?:FilterFlags) => {
+  return instanceAPI.get(`/pass-games/user/${userId}`,{params});
+} 

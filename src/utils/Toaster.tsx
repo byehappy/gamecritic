@@ -57,17 +57,18 @@ export const useToaster = () => {
     }, TOAST_TIMEOUT);
   }, []);
   const addLoading = useCallback((reqIds: string[]) => {
-    setToasters((prev)=>{
-      const updateToasters = prev.filter((e)=> reqIds.includes(e.id))
-      const newToasters:Toaster[] = reqIds
-          .filter((id) => !prev.some((e) => e.id === id)) 
-          .map((id) => ({
-            type: "loading",
-            content: `Запрос обрабатывается...`,
-            id:`loading-${id}`,
-          }));
-          return[...updateToasters,...newToasters]
-    })
+    setToasters((prev) => {
+      const updateToasters = prev.filter((e) => reqIds.includes(e.id));
+      const newToasters: Toaster[] = reqIds
+        .filter((id) => !prev.some((e) => e.id === id))
+        .map((id) => ({
+          type: "loading",
+          content: `Запрос обрабатывается...`,
+          id: `loading-${id}`,
+        }));
+      const combineToasters = [...updateToasters, ...newToasters];
+      return combineToasters.slice(-10);
+    });
   }, []);
 
   useEffect(() => {
@@ -132,7 +133,7 @@ const Toaster: React.FC<{
 }> = ({ toaster }) => {
   const glyph = typesIcon[toaster.type] || null;
   return (
-    <ToasterWrapper $isLoading={toaster.id.includes("loading")}>
+    <ToasterWrapper key={toaster.id} $isLoading={toaster.id.includes("loading")}>
       <StyledMessage>
         {glyph} {toaster.content}
       </StyledMessage>
@@ -146,6 +147,10 @@ const StyledList = styled.div`
   right: 1vw;
   z-index: 100;
   border-radius: 5px;
+  display: flex;
+  gap: 2vh;
+  flex-direction: column-reverse;
+  max-width: 35vw;
   display: flex;
   gap: 2vh;
   flex-direction: column-reverse;

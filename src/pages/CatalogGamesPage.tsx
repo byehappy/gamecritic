@@ -1,8 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import {
   addPassedGame,
-  gamesRequest,
-  getPassedGame,
+  getPassedGamesUser,
   getUserCount,
   getUserInfo,
   UnpassedGame,
@@ -46,12 +45,11 @@ export const CatalogGamesPage = () => {
   const [loading, setLoading] = useState(false);
   const [games, setGames] = useState<IGameDis[] | null>(null);
   const [count, setCount] = useState<number | null>(null);
-  const [passedGameCount, setPassedGameCount] = useState(0)
+  const [passedGameCount, setPassedGameCount] = useState<number | null>(null)
   const [user, setUser] = useState<{
     name: string | undefined;
     description: string | undefined;
     init_image: string | undefined;
-    count:number;
   } | null>(null);
   const [filterFlags, setFilterFlags] = useState<FilterFlags>({
     page: DEFAULT_PAGE,
@@ -70,18 +68,9 @@ export const CatalogGamesPage = () => {
     async (id: string) => {
       setLoading(true);
       try {
-        const res = await gamesRequest(filterFlags).then((res) => res.data);
+        const res = await getPassedGamesUser(id,filterFlags).then((res) => res.data);
         setCount(res.count);
-        const games = res.results.map(
-          async (e) =>
-            await getPassedGame(e.id, id).then((passed) => ({
-              ...e,
-              disabled: !passed,
-            }))
-        );
-        const checkGames = await Promise.all(games);
-
-        setGames(checkGames);
+        setGames(res.arrayGames);
       } catch (error) {
         dispatch(setMessage({ error }));
       } finally {
@@ -95,7 +84,8 @@ export const CatalogGamesPage = () => {
       try {
         const resInfo = await getUserInfo(userId).then((res) => res.data);
         const {gameCount} = await getUserCount(userId)
-        setUser({...resInfo,count:gameCount});
+        setPassedGameCount(gameCount)
+        setUser({...resInfo});
       } catch (error) {
         dispatch(setMessage(error));
       }
@@ -112,7 +102,7 @@ export const CatalogGamesPage = () => {
     } else if (currentUser && !userId) {
       getGames(currentUser.id);
     }
-  }, [currentUser, getGames, getInfo, userId]);
+  }, [currentUser, getGames, getInfo, navigate, userId]);
   const handlePassedGame = async (game: IGameDis) => {
     if (!currentUser) {
       dispatch(setMessage({ error: "Ошибка" }));
@@ -128,7 +118,7 @@ export const CatalogGamesPage = () => {
         );
         const {gameCount} = await getUserCount(currentUser.id)
         setPassedGameCount(gameCount)
-        dispatch(setMessage({message:`Количество пройденных игр:${passedGameCount}`}));
+        dispatch(setMessage({message:`Количество пройденных игр:${gameCount}`}));
       } catch (error) {
         dispatch(setMessage({ error }));
       }
@@ -158,7 +148,7 @@ export const CatalogGamesPage = () => {
           <UserFormWrapper>
             <div>Никнейм: {user.name}</div>
             <div>Описание: {user.description}</div>
-            <div>Кол-во игр: {user.count}</div>
+            <div>Кол-во игр: {passedGameCount}</div>
           </UserFormWrapper>
         </UserInfoWrapper>
       )}

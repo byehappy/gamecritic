@@ -8,6 +8,7 @@ import uuid4 from "uuid4";
 import { SkeletonFactory } from "../utils/skeleton/skeleton-factory";
 import { UserTemplateCard } from "../components/userTemplateCard/UserTemplateCard";
 import {
+  DeleteTier,
   getUsersTiers,
   Tier,
   UserTier,
@@ -15,6 +16,8 @@ import {
 import { partArray } from "../utils/partedArray";
 import { UserCard } from "../components/userCard/UserCard";
 import { TopUsers } from "../axios/requests/gamecriticAPI/passGame.request";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { setMessage } from "../redux/slice/messageSlice";
 
 const CarouselWrapper = styled(Carousel)`
   margin: 2vh 0;
@@ -53,6 +56,8 @@ const HeaderTemplate = styled.div`
 `;
 
 export const HomePage = () => {
+  const dispatch = useAppDispatch();
+  const { user: currentUser } = useAppSelector((state) => state.auth);
   const [tiers, setTiers] = useState<Tier[][] | null>();
   const [usersTiers, setUsersTiers] = useState<UserTier[][] | null>();
   const [topUsers, setTopUsers] = useState<TopUsers[] | null>(null);
@@ -74,6 +79,15 @@ export const HomePage = () => {
     getTiers();
   }, [getTiers]);
 
+  const delTier = (tierId: string) => {
+    if (currentUser)
+      try {
+        DeleteTier(tierId, currentUser.id).then(() => getTiers());
+        dispatch(setMessage({ success: "Успешно удалено" }));
+      } catch (error) {
+        dispatch(setMessage(error));
+      }
+  };
   return (
     <>
       <IntroText>
@@ -105,6 +119,7 @@ export const HomePage = () => {
                     img={tier.imageSrc ?? ""}
                     name={tier.title}
                     id={tier.id}
+                    del={tier.author_id === currentUser?.id && delTier}
                   />
                 ))}
               </ContainerItems>

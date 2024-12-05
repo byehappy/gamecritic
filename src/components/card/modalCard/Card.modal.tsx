@@ -151,7 +151,7 @@ export const CardModal: React.FC<{
     "балла",
     "баллов",
   ]).text;
-  const handleZoomInImage = (src: string, alt: string) => {
+  const handleZoomInImage = () => {
     const zoomContainer = document.createElement("div");
     zoomContainer.id = "zoom-container";
     zoomContainer.style.position = "fixed";
@@ -178,14 +178,7 @@ export const CardModal: React.FC<{
         {screenshotsGame && (
           <>
             <div onMouseMove={handleMouseMove} ref={sliderRef}>
-              <SliderContainer
-                onClick={() => {
-                  handleZoomInImage(
-                    screenshotsGame[currentImageIndex].image,
-                    `Скриншот ${currentImageIndex + 1}`
-                  );
-                }}
-              >
+              <SliderContainer onClick={handleZoomInImage}>
                 <SliderImage
                   src={screenshotsGame[currentImageIndex].image}
                   alt={`Скриншот ${currentImageIndex + 1}`}
@@ -237,41 +230,48 @@ export const CardModal: React.FC<{
           >
             {game.description_raw}
           </div>
-          <div>
+          {(game.metacritic !== null || game.metacritic === 0) && (
             <div>
               <strong>Оценка на Metacritic:</strong> {game.metacritic}{" "}
               {textMetacritic}
             </div>
+          )}
+          {game.rating !== 0 && (
             <div style={{ display: "flex", alignItems: "center" }}>
-              <strong>Рейтинг:</strong>{" "}
-              <Rate allowHalf defaultValue={Number(game.rating)} disabled />
+              <strong style={{ marginRight: ".4vw" }}>Рейтинг:</strong>{" "}
+              <Tooltip title={`${game.rating} из 5`}>
+                <Rate allowHalf defaultValue={Number(game.rating)} disabled />
+              </Tooltip>
             </div>
-          </div>
-          <div>
+          )}
+          {game.released !== null ? (
             <div>
-              <strong>Дата релиза:</strong>
+              <strong>Дата релиза:</strong>{" "}
               {new Date(game.released).toLocaleDateString()}
             </div>
+          ) : (
             <div>
-              <strong>Среднее время игры:</strong> {game.playtime}{" "}
-              {textHoursPlay}
+              <strong>Дата релиза:</strong> В ближайшее время
             </div>
-            <div>
-              <strong style={{ display: "flex" }}>
-                Платформы:
-                <div style={{ display: "flex", gap: ".5vw" }}>
-                  {game.parent_platforms.map((platform) => (
-                    <span key={uuid4()}>
-                      {createElement(
-                        platformIcons[
-                          platform.platform.name as keyof typeof platformIcons
-                        ] || platformIcons.Global
-                      )}
-                    </span>
-                  ))}
-                </div>
-              </strong>
-            </div>
+          )}
+          <div>
+            <strong>Среднее время игры:</strong> {game.playtime} {textHoursPlay}
+          </div>
+          <div>
+            <strong style={{ display: "flex" }}>
+              Платформы:
+              <div style={{ display: "flex", gap: ".5vw", marginLeft: ".4vw" }}>
+                {game.parent_platforms.map((platform) => (
+                  <span key={uuid4()}>
+                    {createElement(
+                      platformIcons[
+                        platform.platform.name as keyof typeof platformIcons
+                      ] || platformIcons.Global
+                    )}
+                  </span>
+                ))}
+              </div>
+            </strong>
           </div>
         </div>
       </div>
