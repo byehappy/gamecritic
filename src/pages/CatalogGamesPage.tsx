@@ -15,7 +15,7 @@ import { Pagination } from "antd";
 import Search from "antd/es/input/Search";
 import { CardGame } from "../components/card/CardGame";
 import { SkeletonFactory } from "../utils/skeleton/skeleton-factory";
-import { useNavigate, useParams } from "react-router-dom";
+import { useBlocker, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 const UserInfoWrapper = styled.div`
   display: flex;
@@ -45,7 +45,7 @@ export const CatalogGamesPage = () => {
   const [loading, setLoading] = useState(false);
   const [games, setGames] = useState<IGameDis[] | null>(null);
   const [count, setCount] = useState<number | null>(null);
-  const [passedGameCount, setPassedGameCount] = useState<number | null>(null)
+  const [passedGameCount, setPassedGameCount] = useState<number | null>(null);
   const [user, setUser] = useState<{
     name: string | undefined;
     description: string | undefined;
@@ -55,6 +55,20 @@ export const CatalogGamesPage = () => {
     page: DEFAULT_PAGE,
     page_size: DEFAULT_PAGE_SIZE,
   });
+  const [bufferGames, setBufferGames] = useState<
+    { id: string | number; action: "add" | "remove" }[]
+  >([]);
+  const addToBuffer = useCallback(
+    (id: string | number, action: "add" | "remove") => {
+      if (bufferGames.find((e) => e.id === id)) {
+        const newBuffer = bufferGames.filter((e) => e.id !== id);
+        setBufferGames([...newBuffer]);
+      } else {
+        setBufferGames((prev) => [...prev, { id, action }]);
+      }
+    },
+    [bufferGames]
+  );
   const handleChangeFiters = (
     param: keyof FilterFlags,
     value: string | string[] | number | null
@@ -68,7 +82,9 @@ export const CatalogGamesPage = () => {
     async (id: string) => {
       setLoading(true);
       try {
-        const res = await getPassedGamesUser(id,filterFlags).then((res) => res.data);
+        const res = await getPassedGamesUser(id, filterFlags).then(
+          (res) => res.data
+        );
         setCount(res.count);
         setGames(res.arrayGames);
       } catch (error) {
@@ -83,9 +99,9 @@ export const CatalogGamesPage = () => {
     async (userId: string) => {
       try {
         const resInfo = await getUserInfo(userId).then((res) => res.data);
-        const {gameCount} = await getUserCount(userId)
-        setPassedGameCount(gameCount)
-        setUser({...resInfo});
+        const { gameCount } = await getUserCount(userId);
+        setPassedGameCount(gameCount);
+        setUser({ ...resInfo });
       } catch (error) {
         dispatch(setMessage(error));
       }
@@ -94,8 +110,8 @@ export const CatalogGamesPage = () => {
   );
   useEffect(() => {
     if (userId) {
-      if(userId === currentUser?.id){
-        navigate("/catalog-games")
+      if (userId === currentUser?.id) {
+        navigate("/catalog-games");
         return;
       }
       getInfo(userId);
@@ -111,41 +127,82 @@ export const CatalogGamesPage = () => {
     }
     if (game.disabled) {
       try {
-        await addPassedGame(game.id, currentUser.id);
         setGames((prev) =>
           prev!.map((e) =>
             e.id === game.id ? { ...e, disabled: false } : { ...e }
           )
         );
-        const {gameCount} = await getUserCount(currentUser.id)
-        setPassedGameCount(gameCount)
-        dispatch(setMessage({message:`Количество пройденных игр:${gameCount}`}));
+        addToBuffer(game.id, "add");
       } catch (error) {
         dispatch(setMessage({ error }));
       }
     } else if (!game.disabled) {
       try {
-        const result = await UnpassedGame(game.id, currentUser.id);
         setGames((prev) =>
           prev!.map((e) =>
             e.id === game.id ? { ...e, disabled: true } : { ...e }
           )
         );
-        dispatch(setMessage(result.data));
+        addToBuffer(game.id, "remove");
       } catch (error) {
         dispatch(setMessage({ error }));
       }
     }
   };
 
+  useEffect(() => {
+    if (bufferGames.length === 0 || !currentUser) return;
+    const timer = setTimeout(async () => {
+      try {
+        await Promise.all(
+          bufferGames.map((item) =>
+            item.action === "add"
+              ? addPassedGame(item.id, currentUser.id)
+              : UnpassedGame(item.id, currentUser.id)
+          )
+        );
+        setBufferGames([]);
+        const { gameCount } = await getUserCount(currentUser.id);
+        setPassedGameCount(gameCount);
+        dispatch(
+          setMessage({ message: `Количество пройденных игр:${gameCount}` })
+        );
+      } catch (error) {
+        dispatch(setMessage(error));
+      }
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [bufferGames, currentUser, dispatch]);
+  const blocker = useBlocker(bufferGames.length > 0);
+  const handleSaveData = useCallback(async () => {
+    if (bufferGames.length > 0 && currentUser) {
+      await Promise.all(
+        bufferGames.map((item) =>
+          item.action === "add"
+            ? addPassedGame(item.id, currentUser.id)
+            : UnpassedGame(item.id, currentUser.id)
+        )
+      );
+    }
+  }, [bufferGames, currentUser]);
+  useEffect(() => {
+    if (blocker.state === "blocked") {
+      handleSaveData();
+      blocker.proceed();
+    }
+  }, [blocker, handleSaveData]);
+  useEffect(() => {
+    window.addEventListener("beforeunload", handleSaveData);
+    return () => {
+      window.removeEventListener("beforeunload", handleSaveData);
+    };
+  }, [handleSaveData]);
+
   return (
     <>
-      {(user) && (
+      {user && (
         <UserInfoWrapper>
-          <IconUser
-            style={{ objectFit: "cover" }}
-            src={user.init_image}
-          />
+          <IconUser style={{ objectFit: "cover" }} src={user.init_image} />
           <UserFormWrapper>
             <div>Никнейм: {user.name}</div>
             <div>Описание: {user.description}</div>

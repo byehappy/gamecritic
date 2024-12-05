@@ -9,17 +9,13 @@ import { ToasterList, useToaster } from "./utils/Toaster";
 import { createPortal } from "react-dom";
 
 function App() {
-  const { addMessage, container, toasters,addLoading } = useToaster();
+  const { addMessage, container, toasters } = useToaster();
   const messages = useAppSelector((state) => state.message);
-  const loadingReq = useAppSelector(state=>state.loading)
   useEffect(() => {
     if (messages.error) addMessage(messages.error, "error");
     if (messages.success) addMessage(messages.success, "success");
     if (messages.message) addMessage(messages.message, "info");
   }, [addMessage, messages]);
-  useEffect(()=>{
-    addLoading(loadingReq)
-  },[addLoading, loadingReq])
   localStorage.setItem("theme", "light");
   return (
     <ConfigProvider>

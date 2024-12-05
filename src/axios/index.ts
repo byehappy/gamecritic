@@ -45,4 +45,3 @@ export {
   getUserCount,
   getPassedGamesUser
 } from "./requests/gamecriticAPI/passGame.request";
-export { setupLoadingIntercepotrs } from "./requests/gamecriticAPI/interceptors";

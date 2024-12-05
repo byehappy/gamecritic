@@ -140,7 +140,7 @@ export const CreateTierPage = () => {
       dispatch(setMessage({ error: message.error[0].msg }));
     }
   };
-  function handleKeyDown(event : any) {
+  function handleKeyDown(event: any) {
     if ((event as KeyboardEvent).key === "Enter") {
       event.preventDefault();
     }
@@ -225,6 +225,7 @@ export const CreateTierPage = () => {
               key={uuid4()}
               img={tierInfo.img}
               name={tierInfo.name}
+              del={false}
             />
           </div>
         </div>
@@ -407,4 +408,3 @@ export const CreateTierPage = () => {
     </div>
   );
 };
-//9дать возможность его редактировать в будущем

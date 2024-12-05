@@ -8,22 +8,14 @@ import {
 import uuid4 from "uuid4";
 import styled, { css, keyframes } from "styled-components";
 import { TOAST_TIMEOUT } from "./constans";
-import { Spin } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
 
-type MessageType = "error" | "info" | "warning" | "success" | "loading";
+type MessageType = "error" | "info" | "warning" | "success";
 
 const typesIcon: Record<MessageType, JSX.Element> = {
   error: <ErrorIcon />,
   warning: <WarningIcon />,
   info: <InfoIcon />,
   success: <SuccessIcon />,
-  loading: (
-    <Spin
-      indicator={<LoadingOutlined spin style={{ fontSize: "1.5rem" }} />}
-      size="small"
-    />
-  ),
 };
 
 type Toaster = {
@@ -58,20 +50,6 @@ export const useToaster = () => {
       );
     }, TOAST_TIMEOUT);
   }, []);
-  const addLoading = useCallback((reqIds: string[]) => {
-    setToasters((prev) => {
-      const updateToasters = prev.filter((e) => e.type !== "loading" || reqIds.includes(e.id));
-      const newToasters: Toaster[] = reqIds
-        .filter((id) => !prev.some((e) => e.id === id))
-        .map((id) => ({
-          type: "loading",
-          content: `Запрос обрабатывается...`,
-          id: `loading-${id}`,
-        }));
-      const combineToasters = [...updateToasters, ...newToasters];
-      return combineToasters;
-    });
-  }, []);
 
   useEffect(() => {
     if (toasters.length === 0 && container) {
@@ -80,7 +58,7 @@ export const useToaster = () => {
     }
   }, [toasters, container]);
 
-  return { addMessage, container, toasters, addLoading };
+  return { addMessage, container, toasters };
 };
 
 const fadeIn = keyframes`
@@ -103,7 +81,7 @@ const fadeOut = keyframes`
     transform:translateX(100%);
   }
 `;
-const ToasterWrapper = styled.div<{ $isLoading: boolean }>`
+const ToasterWrapper = styled.div`
   width: fit-content;
   margin-left: auto;
   white-space: normal;
@@ -111,12 +89,8 @@ const ToasterWrapper = styled.div<{ $isLoading: boolean }>`
   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
   padding: 0.5em;
   background: white;
-  ${(props) =>
-    !props.$isLoading &&
-    css`
-      animation: ${fadeIn} 0.5s ease-in,
-        ${fadeOut} 0.5s ease-out ${TOAST_TIMEOUT - 500}ms;
-    `}
+  animation: ${fadeIn} 0.5s ease-in,
+    ${fadeOut} 0.5s ease-out ${TOAST_TIMEOUT - 500}ms;
 `;
 
 const StyledMessage = styled.div`
@@ -135,10 +109,7 @@ const Toaster: React.FC<{
 }> = ({ toaster }) => {
   const glyph = typesIcon[toaster.type] || null;
   return (
-    <ToasterWrapper
-      key={toaster.id}
-      $isLoading={toaster.id.includes("loading")}
-    >
+    <ToasterWrapper key={toaster.id}>
       <StyledMessage>
         {glyph} {toaster.content}
       </StyledMessage>

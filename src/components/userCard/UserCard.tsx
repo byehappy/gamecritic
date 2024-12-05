@@ -5,7 +5,7 @@ import { TopUsers } from "../../axios/requests/gamecriticAPI/passGame.request";
 const UserWrapper = styled.div`
   width: 10em;
   height: 20vh;
-  background-color: gray;
+  background-color: #53377aaa;
   padding: 1%;
   border-radius: 1em;
   display: flex;

@@ -6,12 +6,13 @@ import {
   getUserRows,
   updateUserRows,
 } from "../axios";
-import { Button, FloatButton, Pagination, Popover } from "antd";
+import { Button, FloatButton, Pagination, Popover, Spin } from "antd";
 import Search from "antd/es/input/Search";
 import { CardList } from "../components/cardList/CardList";
 import {
   DeleteOutlined,
   FilterOutlined,
+  LoadingOutlined,
   SaveOutlined,
 } from "@ant-design/icons";
 import { Filter } from "../components/filter/Filter";
@@ -49,6 +50,7 @@ import { AxiosError } from "axios";
 
 function TierPage() {
   const { user: currentUser } = useAppSelector((state) => state.auth);
+  const [saving,setSaving] = useState(false);
   const { rows } = useAppSelector((state) => state.tierData);
   const rowsRef = useRef("");
   const [dirty, setDirty] = useState(false);
@@ -446,6 +448,7 @@ function TierPage() {
       return;
     }
     if (currentUser) {
+      setSaving(true)
       const canvas = await html2canvas(document.getElementById("table")!, {
         useCORS: false,
         proxy: "http://localhost:3001/proxy",
@@ -484,6 +487,8 @@ function TierPage() {
         if (!localStorage.getItem("refreshToken")) {
           dispatch(logout());
         }
+      } finally {
+        setSaving(false)
       }
     } else {
       dispatch(
@@ -590,9 +595,9 @@ function TierPage() {
       </DragOverlay>
       <FloatButton
         style={{ zIndex: 5 }}
-        icon={<SaveOutlined />}
+        icon={!saving ? <SaveOutlined /> : <Spin indicator={<LoadingOutlined spin />} size="small" />}
         tooltip={<div>Сохранить</div>}
-        onClick={handleSaveRows}
+        onClick={!saving ? handleSaveRows : undefined}
       />
     </DndContext>
   );
