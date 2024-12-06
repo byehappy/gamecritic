@@ -203,15 +203,7 @@ export const CreateTierPage = () => {
                 }
               />
             </Form.Item>
-            <Form.Item
-              name="img"
-              rules={[
-                {
-                  required: true,
-                  message: "Введите Url-ссылку на картинку",
-                },
-              ]}
-            >
+            <Form.Item name="img">
               <Input
                 placeholder="Url-ссылка на картинку"
                 onChange={(e) =>

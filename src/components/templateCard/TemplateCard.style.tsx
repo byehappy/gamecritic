@@ -1,8 +1,6 @@
 import styled from "styled-components";
 
 export const Item = styled.div<{ $IsDisabled: boolean }>`
-  width: 10em;
-  max-width:130px;
   position: relative;
   flex: none;
   height: 20vh;

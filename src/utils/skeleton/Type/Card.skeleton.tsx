@@ -9,7 +9,7 @@ const CardWrapper = styled.div<{ $size: string }>`
   background: linear-gradient(to right, #f6f6f6 8%, #f0f0f0 18%, #f6f6f6 33%);
   background-size: 1200px 100%;
   height: ${(props) => (props.$size === "large" ? "15rem" : "10rem")};
-  width: 7vw;
+  width: 130px;
   @keyframes slider {
     0% {
       background-position: -1200px 0;

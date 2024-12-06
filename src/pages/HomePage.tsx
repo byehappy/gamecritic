@@ -27,13 +27,27 @@ const CarouselWrapper = styled(Carousel)`
     color: black;
   }
 `;
-const ContainerItems = styled.div`
-  display: flex;
+const ContainerTemplateItems = styled.div`
+  display: grid;
+  grid-template-columns:repeat(auto-fill,minmax(8vw,1fr));
   gap: 1vw;
   height: 100%;
   padding: 0 1vw;
 `;
-
+const ContainerUsersTemplateItems = styled.div`
+  display: grid;
+  grid-template-columns:repeat(auto-fill,minmax(20%,1fr));
+  gap: 1vw;
+  height: 100%;
+  padding: 0 1vw;
+`;
+const ContainerTopUsersItems = styled.div`
+  display: flex;
+  gap: 1vw;
+  height: 100%;
+  padding: 0 1vw;
+  overflow:overlay;
+`;
 const IntroText = styled.h1`
   display: flex;
   flex-direction: column;
@@ -63,7 +77,7 @@ export const HomePage = () => {
   const [topUsers, setTopUsers] = useState<TopUsers[] | null>(null);
   const getTiers = useCallback(() => {
     getAllTiers().then((res) => {
-      const partedArray = partArray(res, 12);
+      const partedArray = partArray(res, 8);
       setTiers(partedArray);
     });
     getUsersTiers().then((res) => {
@@ -112,7 +126,7 @@ export const HomePage = () => {
           )}
           {tiers?.map((part) => (
             <div key={uuid4()}>
-              <ContainerItems>
+              <ContainerTemplateItems>
                 {part.map((tier) => (
                   <TemplateCard
                     key={uuid4()}
@@ -122,7 +136,7 @@ export const HomePage = () => {
                     del={tier.author_id === currentUser?.id && delTier}
                   />
                 ))}
-              </ContainerItems>
+              </ContainerTemplateItems>
             </div>
           ))}
         </CarouselWrapper>
@@ -141,7 +155,7 @@ export const HomePage = () => {
           )}
           {usersTiers?.map((part) => (
             <div key={uuid4()}>
-              <ContainerItems>
+              <ContainerUsersTemplateItems>
                 {part.map((tier) => (
                   <UserTemplateCard
                     key={uuid4()}
@@ -153,7 +167,7 @@ export const HomePage = () => {
                     userImage={tier.user.image}
                   />
                 ))}
-              </ContainerItems>
+              </ContainerUsersTemplateItems>
             </div>
           ))}
         </CarouselWrapper>
@@ -162,7 +176,7 @@ export const HomePage = () => {
         <HeaderTemplate>
           <h1>Рекорды по пройденным играм</h1>
         </HeaderTemplate>
-        <CarouselWrapper arrows infinite={false} dots={false}>
+        <CarouselWrapper arrows infinite={false} dots={false} draggable={false}>
           {!topUsers && (
             <div>
               <div style={{ display: "flex" }}>
@@ -171,11 +185,11 @@ export const HomePage = () => {
             </div>
           )}
           <div>
-            <ContainerItems>
+            <ContainerTopUsersItems>
               {topUsers?.map((e) => (
                 <UserCard user={e} key={e.id}/>
               ))}
-            </ContainerItems>
+            </ContainerTopUsersItems>
           </div>
         </CarouselWrapper>
       </div>

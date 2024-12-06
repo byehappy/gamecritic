@@ -20,8 +20,8 @@ const DroppableWrapper = styled.div<{ $isOver: boolean }>`
     props.$isOver ? "#dfdfdf" : "rgba(0, 0, 0,0.04)"};
   min-height: 12rem;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 0.55vh;
+  grid-template-columns: repeat(auto-fill, minmax(129px, 1fr));
+  gap: 0.5vh;
   width: 100%;
 `;
 

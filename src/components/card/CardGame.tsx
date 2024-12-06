@@ -67,7 +67,7 @@ export const CardGame: React.FC<{
     opacity: isDragging || game.disabled ? "0.5" : "1",
     boxShadow: isDragging ? "0px 0px 9px 1px #000000" : "none",
     overflow: "hidden",
-    maxWidth: "130px",
+    width:"130px",
     border: "none",
     cursor: cursorValue ?? cursor,
     maxHeight: "12rem",
