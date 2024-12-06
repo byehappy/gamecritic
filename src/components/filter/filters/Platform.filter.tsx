@@ -51,7 +51,7 @@ export const PlatformFilter: React.FC<{
     <Space wrap styles={{ item: { width: "100%" } }}>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         Платформы:
-        {location.pathname === "/create-tierlist" && (
+        {(location.pathname === "/create-tierlist" ||location.pathname.includes("/update-tierlist")) && (
           <div>
             <Switch
               size="small"
@@ -86,7 +86,7 @@ export const PlatformFilter: React.FC<{
         )}
         onChange={(value) => {
           if (handleChangeFiters !== undefined) {
-            if (location.pathname === "/create-tierlist")
+            if ((location.pathname === "/create-tierlist" ||location.pathname.includes("/update-tierlist")))
               dispatch(
                 setFilter({
                   filter: "platforms",

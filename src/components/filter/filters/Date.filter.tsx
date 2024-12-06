@@ -21,7 +21,7 @@ export const DateFilter: React.FC<{
     <Space wrap styles={{ item: { width: "100%" } }}>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         Дата выхода игры:
-        {location.pathname === "/create-tierlist" && (
+        {(location.pathname === "/create-tierlist" ||location.pathname.includes("/update-tierlist")) && (
           <div>
             <Switch
               size="small"
@@ -47,7 +47,7 @@ export const DateFilter: React.FC<{
         }
         onChange={(_, value) => {
           if (handleChangeFiters !== undefined) {
-            if (location.pathname === "/create-tierlist")
+            if ((location.pathname === "/create-tierlist" ||location.pathname.includes("/update-tierlist")))
               dispatch(
                 setFilter({
                   filter: "dates",

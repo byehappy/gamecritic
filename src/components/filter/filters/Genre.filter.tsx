@@ -38,7 +38,7 @@ export const GenreFilter: React.FC<{
     <Space wrap styles={{ item: { width: "100%" } }}>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         Жанр:
-        {location.pathname === "/create-tierlist" && (
+        {(location.pathname === "/create-tierlist" ||location.pathname.includes("/update-tierlist")) && (
           <div>
             <Switch
               size="small"
@@ -67,7 +67,7 @@ export const GenreFilter: React.FC<{
         defaultValue={location.pathname !== "/create-tierlist" ? valueArray : null}
         onChange={(value) => {
           if (handleChangeFiters !== undefined) {
-            if (location.pathname === "/create-tierlist")
+            if ((location.pathname === "/create-tierlist" ||location.pathname.includes("/update-tierlist")))
               dispatch(
                 setFilter({
                   filter: "genres",

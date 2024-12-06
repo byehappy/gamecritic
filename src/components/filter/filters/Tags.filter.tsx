@@ -39,7 +39,7 @@ export const TagFilter: React.FC<{
     <Space wrap styles={{ item: { width: "100%" } }}>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         Тэги:
-        {location.pathname === "/create-tierlist" && (
+        {(location.pathname === "/create-tierlist" || location.pathname.includes("/update-tierlist")) && (
           <div>
             <Switch
               size="small"
@@ -65,7 +65,7 @@ export const TagFilter: React.FC<{
         options={tags}
         onChange={(value) => {
           if (handleChangeFiters !== undefined) {
-            if (location.pathname === "/create-tierlist")
+            if ((location.pathname === "/create-tierlist" ||location.pathname.includes("/update-tierlist")))
               dispatch(
                 setFilter({
                   filter: "tags",

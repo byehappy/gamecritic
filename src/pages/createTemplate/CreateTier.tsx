@@ -19,7 +19,7 @@ import { CarouselRef } from "antd/es/carousel";
 import { FilterFlags } from "../../interfaces/filters";
 import { DEFAULT_PAGE } from "../../utils/constans";
 import { CardGame } from "../../components/card/CardGame";
-import { gamesRequest } from "../../axios";
+import { gamesRequest, getTierById, UpdateTier } from "../../axios";
 import { IGame } from "../../interfaces/games";
 import { SkeletonFactory } from "../../utils/skeleton/skeleton-factory";
 import Search from "antd/es/input/Search";
@@ -32,6 +32,8 @@ import { UploadTier } from "../../axios/index";
 import { setMessage } from "../../redux/slice/messageSlice";
 import { AxiosError } from "axios";
 import { ErrorAuth } from "../../redux/slice/authSlice";
+import { useNavigate, useParams } from "react-router-dom";
+import { setFilters } from "../../redux/slice/tierDataSlice";
 const StyledForm = styled(Form)`
   .ant-form-item {
     margin-bottom: 0;
@@ -56,20 +58,19 @@ const DEFAULT_ROWS = {
   ],
 };
 export const CreateTierPage = () => {
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const { tierId } = useParams();
   const { user: currentUser } = useAppSelector((state) => state.auth);
-  const [tierInfo, setTierInfo] = useState({
-    name: "Ваш шаблон",
-    img: "",
-  });
   const [visibleForm, setVisibleForm] = useState(true);
-  const createTemlate = useAppSelector((state) => state.createTemplate);
+  const createTemplate = useAppSelector((state) => state.createTemplate);
   const carouselRef: RefObject<CarouselRef> = createRef<CarouselRef>();
   const [activeButton, setActiveButton] = useState("filter");
   const [totalCount, setTotalCount] = useState<number>(1);
   const [loadingGames, setLoadingGames] = useState(true);
   const [formValues, setFormValues] = useState({
     rows: DEFAULT_ROWS.rows,
-    name: "",
+    name: "Ваш шаблон",
     img: "",
   });
   const [filterFlags, setFilterFlags] = useState({
@@ -79,7 +80,42 @@ export const CreateTierPage = () => {
   const [games, setGames] = useState<IGame[]>();
   const dispatch = useAppDispatch();
   const [form] = useForm();
-
+  const [defaultValue, setDefaultValue] = useState({
+    rows: DEFAULT_ROWS.rows,
+    name: "Ваш шаблон",
+    img: "",
+  });
+  const getTierInfo = useCallback(async () => {
+    const res = await getTierById(tierId!).then((res) => res.data);
+    if (currentUser?.id !== res.author_id) {
+      dispatch(setMessage({ error: "Вы не автор данного шаблона" }));
+      navigate("/");
+      return;
+    }
+    setDefaultValue({ rows: res.rows, name: res.title, img: res.imageSrc! });
+    setFormValues({
+      rows: res.rows,
+      name: res.title,
+      img: res.imageSrc ?? "",
+    });
+    dispatch(setFilters(res.filters));
+    setFilterFlags((prev) => ({
+      ...prev,
+      dates: res.filters.dates.value,
+      genres: res.filters.genres.value,
+      tags: res.filters.tags.value,
+      platforms: res.filters.platforms.value,
+    }));
+    setLoading(false);
+  }, [currentUser?.id, dispatch, navigate, tierId]);
+  useEffect(() => {
+    if (tierId && currentUser) {
+      setLoading(true);
+      getTierInfo();
+    } else {
+      setLoading(false);
+    }
+  }, [currentUser, getTierInfo, tierId]);
   const handleChangeFiters = (
     param: keyof FilterFlags,
     value: string | string[] | number | null
@@ -121,19 +157,37 @@ export const CreateTierPage = () => {
   const finishForm = async () => {
     if (!currentUser) return;
     try {
-      const result = await UploadTier({
-        author_id: currentUser.id,
-        title: formValues.name,
-        rows: formValues.rows,
-        filters: createTemlate.filters,
-        imageSrc: formValues.img,
-        pickGame: createTemlate.pickGame.map((e) => e.id),
-      });
-      dispatch(
-        setMessage({
-          success: result.data.message,
-        })
-      );
+      if (tierId) {
+        const result = await UpdateTier(
+          {
+            title: formValues.name,
+            rows: formValues.rows,
+            filters: createTemplate.filters,
+            imageSrc: formValues.img,
+            pickGame: createTemplate.pickGame.map((e) => e.id),
+          },
+          tierId
+        );
+        dispatch(
+          setMessage({
+            success: result.data.message,
+          })
+        );
+      } else {
+        const result = await UploadTier({
+          author_id: currentUser.id,
+          title: formValues.name,
+          rows: formValues.rows,
+          filters: createTemplate.filters,
+          imageSrc: formValues.img,
+          pickGame: createTemplate.pickGame.map((e) => e.id),
+        });
+        dispatch(
+          setMessage({
+            success: result.data.message,
+          })
+        );
+      }
     } catch (e) {
       const error = e as AxiosError;
       const message = error.response?.data as ErrorAuth;
@@ -145,249 +199,253 @@ export const CreateTierPage = () => {
       event.preventDefault();
     }
   }
+
   return (
     <div>
-      <StyledForm
-        onKeyDown={handleKeyDown}
-        form={form}
-        initialValues={DEFAULT_ROWS}
-        onSubmitCapture={finishForm}
-        onValuesChange={saveChangeValues}
-        style={{ display: visibleForm ? "block" : "none" }}
-      >
-        <div
-          style={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-            marginTop: "1vw",
-          }}
+      {loading ? (
+        <h1 style={{ margin: "1vw auto", width: "100%", textAlign: "center" }}>
+          Загрузка формы...
+        </h1>
+      ) : null}
+      {!loading && (
+        <StyledForm
+          onKeyDown={handleKeyDown}
+          form={form}
+          initialValues={!loading && defaultValue}
+          onFinish={finishForm}
+          onValuesChange={saveChangeValues}
+          style={{ display: visibleForm ? "block" : "none" }}
         >
-          <Form.Item shouldUpdate>
-            {() => (
-              <Button
-                htmlType="submit"
-                disabled={
-                  form.getFieldsError().some(({ errors }) => errors.length) ||
-                  !form.isFieldsTouched()
-                }
-              >
-                Сохранить
-              </Button>
-            )}
-          </Form.Item>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: "1vw",
-            margin: "5vh 0",
-          }}
-        >
-          <div style={{ display: "flex", flexDirection: "column", gap: "1vh" }}>
-            <Form.Item
-              name={"name"}
-              rules={[
-                {
-                  required: true,
-                  message: "Введите название шаблона",
-                },
-              ]}
-            >
-              <Input
-                placeholder="Название шаблона"
-                onChange={(e) =>
-                  setTierInfo((prev) => ({ ...prev, name: e.target.value }))
-                }
-              />
-            </Form.Item>
-            <Form.Item name="img">
-              <Input
-                placeholder="Url-ссылка на картинку"
-                onChange={(e) =>
-                  setTierInfo((prev) => ({ ...prev, img: e.target.value }))
-                }
-              />
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "1vw",
+            }}
+          >
+            <Form.Item shouldUpdate>
+              {() => (
+                <Button
+                  htmlType="submit"
+                  disabled={
+                    tierId
+                      ? false
+                      : form
+                          .getFieldsError()
+                          .some(({ errors }) => errors.length) ||
+                        !form.isFieldsTouched()
+                  }
+                >
+                  Сохранить
+                </Button>
+              )}
             </Form.Item>
           </div>
-          <div style={{ width: "10%" }}>
-            <TemplateCard
-              key={uuid4()}
-              img={tierInfo.img}
-              name={tierInfo.name}
-              del={false}
-            />
-          </div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            gap: "1vw",
-            justifyContent: "space-around",
-          }}
-        >
-          <div style={{ width: "50%" }}>
-            <h1 style={{ marginLeft: "1%" }}>Строки таблицы</h1>
-            <Form.List name={"rows"}>
-              {(rows, { add, remove }) => {
-                return (
-                  <Table
-                    dataSource={rows}
-                    pagination={false}
-                    footer={() => {
-                      return (
-                        <Form.Item>
-                          <Button
-                            type="text"
-                            onClick={() =>
-                              add({ color: "#1677FF", id: uuid4() })
-                            }
-                          >
-                            <PlusOutlined /> Добавить строку
-                          </Button>
-                        </Form.Item>
-                      );
-                    }}
-                  >
-                    <Column
-                      dataIndex={"name"}
-                      title={"Название"}
-                      onCell={() => ({ style: { padding: "1vh 1vw" } })}
-                      render={(_value, _row, index) => {
-                        return (
-                          <Form.Item name={[index, "name"]}>
-                            <Input placeholder="Название строки" />
-                          </Form.Item>
-                        );
-                      }}
-                    />
-                    <Column
-                      dataIndex={"color"}
-                      title={"Цвет"}
-                      onCell={() => ({ style: { padding: "0 1vw" } })}
-                      render={(_value, _row, index) => {
-                        return (
-                          <Form.Item name={[index, "color"]} shouldUpdate>
-                            <ColorPicker
-                              onChange={(color) =>
-                                form.setFieldValue(
-                                  ["rows", index, "color"],
-                                  color.toHexString()
-                                )
-                              }
-                            />
-                          </Form.Item>
-                        );
-                      }}
-                    />
-                    <Column
-                      title={"Взаимодействие"}
-                      onCell={() => ({ style: { padding: "0 1vw" } })}
-                      render={(_, row) => {
-                        return (
-                          <Button
-                            icon={<MinusOutlined />}
-                            shape={"circle"}
-                            onClick={() => remove(row.name)}
-                          />
-                        );
-                      }}
-                    />
-                  </Table>
-                );
-              }}
-            </Form.List>
-          </div>
-          <div>
-            <div style={{ display: "flex", gap: "1vw" }}>
-              <HeaderButton
-                type="button"
-                $isActive={activeButton === "filter"}
-                onClick={() => {
-                  setActiveButton("filter");
-                  carouselRef.current?.goTo(0);
-                }}
-              >
-                <h1 style={{ marginBottom: "1vh" }}>Фильтры к играм</h1>
-              </HeaderButton>
-              <HeaderButton
-                type="button"
-                $isActive={activeButton === "ownGames"}
-                onClick={() => {
-                  setActiveButton("ownGames");
-                  carouselRef.current?.goTo(1);
-                }}
-              >
-                <h1 style={{ marginBottom: "1vh" }}>Свои игры</h1>
-              </HeaderButton>
-            </div>
-            <Carousel
-              infinite={false}
-              dots={false}
-              style={{ width: "31vw" }}
-              ref={carouselRef}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "1vw",
+              margin: "5vh 0",
+            }}
+          >
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "1vh" }}
             >
-              <Form.Item name={"filter"}>
-                <Filter handleChangeFiters={handleChangeFiters} />
+              <Form.Item
+                name={"name"}
+                rules={[
+                  {
+                    required: true,
+                    message: "Введите название шаблона",
+                  },
+                ]}
+              >
+                <Input placeholder="Название шаблона" />
               </Form.Item>
-              <Form.Item name={"pickGame"}>
-                <div>
-                  <Search
-                    placeholder="Введите название игры"
-                    size="large"
-                    onSearch={(value) => {
-                      handleChangeFiters("page", 1);
-                      handleChangeFiters("search", value);
-                    }}
-                  />
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: " repeat(auto-fill,130px)",
-                      gap: ".1rem",
-                      marginTop: ".25vh",
-                    }}
-                  >
-                    {loadingGames
-                      ? SkeletonFactory(filterFlags.page_size, "Card-small")
-                      : games?.map((game) => {
-                          return (
-                            <CardGame
-                              key={game.id}
-                              game={{
-                                ...game,
-                                disabled: !createTemlate.pickGame.find(
-                                  (pickGame) => pickGame.id === game.id
-                                ),
-                              }}
-                              id={game.id}
-                              size="small"
-                              onCardClick={() =>
-                                dispatch(toggleGameSelection(game))
+              <Form.Item name="img">
+                <Input placeholder="Url-ссылка на картинку" />
+              </Form.Item>
+            </div>
+            <div style={{ width: "10%" }}>
+              <TemplateCard
+                key={uuid4()}
+                img={formValues.img}
+                name={formValues.name}
+                del={false}
+              />
+            </div>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              gap: "1vw",
+              justifyContent: "space-around",
+            }}
+          >
+            <div style={{ width: "50%" }}>
+              <h1 style={{ marginLeft: "1%" }}>Строки таблицы</h1>
+              <Form.List name={"rows"}>
+                {(rows, { add, remove }) => {
+                  return (
+                    <Table
+                      dataSource={rows}
+                      pagination={false}
+                      footer={() => {
+                        return (
+                          <Form.Item>
+                            <Button
+                              type="text"
+                              onClick={() =>
+                                add({ color: "#1677FF", id: uuid4() })
                               }
+                            >
+                              <PlusOutlined /> Добавить строку
+                            </Button>
+                          </Form.Item>
+                        );
+                      }}
+                    >
+                      <Column
+                        dataIndex={"name"}
+                        title={"Название"}
+                        onCell={() => ({ style: { padding: "1vh 1vw" } })}
+                        render={(_value, _row, index) => {
+                          return (
+                            <Form.Item name={[index, "name"]}>
+                              <Input placeholder="Название строки" />
+                            </Form.Item>
+                          );
+                        }}
+                      />
+                      <Column
+                        dataIndex={"color"}
+                        title={"Цвет"}
+                        onCell={() => ({ style: { padding: "0 1vw" } })}
+                        render={(_value, _row, index) => {
+                          return (
+                            <Form.Item name={[index, "color"]} shouldUpdate>
+                              <ColorPicker
+                                onChange={(color) =>
+                                  form.setFieldValue(
+                                    ["rows", index, "color"],
+                                    color.toHexString()
+                                  )
+                                }
+                              />
+                            </Form.Item>
+                          );
+                        }}
+                      />
+                      <Column
+                        title={"Взаимодействие"}
+                        onCell={() => ({ style: { padding: "0 1vw" } })}
+                        render={(_, row) => {
+                          return (
+                            <Button
+                              icon={<MinusOutlined />}
+                              shape={"circle"}
+                              onClick={() => remove(row.name)}
                             />
                           );
-                        })}
+                        }}
+                      />
+                    </Table>
+                  );
+                }}
+              </Form.List>
+            </div>
+            <div>
+              <div style={{ display: "flex", gap: "1vw" }}>
+                <HeaderButton
+                  type="button"
+                  $isActive={activeButton === "filter"}
+                  onClick={() => {
+                    setActiveButton("filter");
+                    carouselRef.current?.goTo(0);
+                  }}
+                >
+                  <h1 style={{ marginBottom: "1vh" }}>Фильтры к играм</h1>
+                </HeaderButton>
+                <HeaderButton
+                  type="button"
+                  $isActive={activeButton === "ownGames"}
+                  onClick={() => {
+                    setActiveButton("ownGames");
+                    carouselRef.current?.goTo(1);
+                  }}
+                >
+                  <h1 style={{ marginBottom: "1vh" }}>Свои игры</h1>
+                </HeaderButton>
+              </div>
+              <Carousel
+                infinite={false}
+                dots={false}
+                style={{ width: "31vw" }}
+                ref={carouselRef}
+              >
+                <Form.Item name={"filter"}>
+                  <Filter handleChangeFiters={handleChangeFiters} />
+                </Form.Item>
+                <Form.Item name={"pickGame"}>
+                  <div>
+                    <Search
+                      placeholder="Введите название игры"
+                      size="large"
+                      onSearch={(value) => {
+                        handleChangeFiters("page", 1);
+                        handleChangeFiters("search", value);
+                      }}
+                    />
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: " repeat(auto-fill,130px)",
+                        gap: ".1rem",
+                        marginTop: ".25vh",
+                      }}
+                    >
+                      {loadingGames
+                        ? SkeletonFactory(filterFlags.page_size, "Card-small")
+                        : games?.map((game) => {
+                            return (
+                              <CardGame
+                                key={game.id}
+                                game={{
+                                  ...game,
+                                  disabled: !createTemplate.pickGame.find(
+                                    (pickGame) => pickGame.id === game.id
+                                  ),
+                                }}
+                                id={game.id}
+                                size="small"
+                                onCardClick={() =>
+                                  dispatch(toggleGameSelection(game))
+                                }
+                              />
+                            );
+                          })}
+                    </div>
+                    <Pagination
+                      style={{ marginTop: "1vw" }}
+                      defaultCurrent={1}
+                      defaultPageSize={10}
+                      total={totalCount}
+                      onChange={(page, pageSize) => {
+                        handleChangeFiters("page", page);
+                        handleChangeFiters("page_size", pageSize);
+                      }}
+                      pageSizeOptions={[10]}
+                    />
                   </div>
-                  <Pagination
-                    style={{ marginTop: "1vw" }}
-                    defaultCurrent={1}
-                    defaultPageSize={10}
-                    total={totalCount}
-                    onChange={(page, pageSize) => {
-                      handleChangeFiters("page", page);
-                      handleChangeFiters("page_size", pageSize);
-                    }}
-                    pageSizeOptions={[10]}
-                  />
-                </div>
-              </Form.Item>
-            </Carousel>
+                </Form.Item>
+              </Carousel>
+            </div>
           </div>
-        </div>
-      </StyledForm>
+        </StyledForm>
+      )}
       <div style={{ display: visibleForm ? "none" : "block" }}>
         <ExampleTierPage formValues={formValues} />
       </div>

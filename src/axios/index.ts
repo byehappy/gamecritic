@@ -23,6 +23,7 @@ export {
   UploadTier,
   getAuthorTiersSize,
   getAuthorTiers,
+  UpdateTier
 } from "./requests/gamecriticAPI/tierData.requests";
 export {
   getFavoriteGames,

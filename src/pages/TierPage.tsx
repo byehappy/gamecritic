@@ -11,9 +11,11 @@ import Search from "antd/es/input/Search";
 import { CardList } from "../components/cardList/CardList";
 import {
   DeleteOutlined,
+  EditOutlined,
   FilterOutlined,
   LoadingOutlined,
   SaveOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
 import { Filter } from "../components/filter/Filter";
 import { TierTable } from "../components/tierTable/TierTable";
@@ -50,7 +52,7 @@ import { AxiosError } from "axios";
 
 function TierPage() {
   const { user: currentUser } = useAppSelector((state) => state.auth);
-  const [saving,setSaving] = useState(false);
+  const [saving, setSaving] = useState(false);
   const { rows } = useAppSelector((state) => state.tierData);
   const rowsRef = useRef("");
   const [dirty, setDirty] = useState(false);
@@ -448,7 +450,7 @@ function TierPage() {
       return;
     }
     if (currentUser) {
-      setSaving(true)
+      setSaving(true);
       const canvas = await html2canvas(document.getElementById("table")!, {
         useCORS: false,
         proxy: "http://localhost:3001/proxy",
@@ -466,7 +468,7 @@ function TierPage() {
             success: "Успешно сохранено",
           })
         );
-        rowsRef.current = res.data.rows
+        rowsRef.current = res.data.rows;
         setDirty(false);
       } catch (e) {
         const error = e as AxiosError;
@@ -488,7 +490,7 @@ function TierPage() {
           dispatch(logout());
         }
       } finally {
-        setSaving(false)
+        setSaving(false);
       }
     } else {
       dispatch(
@@ -516,20 +518,46 @@ function TierPage() {
       >
         {tier?.name}{" "}
         {currentUser && tier && currentUser.id === tier.authorId && (
-          <Button
-            onClick={() => {
-              try {
-                DeleteTier(tier.id, currentUser.id);
-                dispatch(setMessage({ success: "Успешно удалено" }));
-                navigate("/");
-              } catch (error) {
-                dispatch(setMessage(error));
-              }
-            }}
-            style={{ background: "red" }}
+          <Popover
+            trigger={"click"}
+            placement="bottom"
+            arrow={false}
+            content={
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: ".5em",
+                  alignItems: "center",
+                }}
+              >
+                <Button onClick={()=>navigate(`/update-tierlist/${tier.id}`)} icon={<EditOutlined />}>Редактировать</Button>
+                <Button
+                  onClick={() => {
+                    try {
+                      DeleteTier(tier.id, currentUser.id);
+                      dispatch(setMessage({ success: "Успешно удалено" }));
+                      navigate("/");
+                    } catch (error) {
+                      dispatch(setMessage(error));
+                    }
+                  }}
+                  style={{width:"100%"}}
+                  icon={<DeleteOutlined />}
+                  type="primary"
+                  danger
+                >
+                  Удалить
+                </Button>
+              </div>
+            }
           >
-            <DeleteOutlined style={{ color: "white", fontSize: "1rem" }} />
-          </Button>
+            <Button
+              icon={<SettingOutlined />}
+              size="large"
+              style={{ float: "right" }}
+            />
+          </Popover>
         )}
       </h1>
       <div id="table">
@@ -564,7 +592,7 @@ function TierPage() {
               filters={tier?.filter}
             />
           }
-          overlayInnerStyle={{width:"25vw"}}
+          overlayInnerStyle={{ width: "25vw" }}
           placement="bottom"
           trigger="click"
           title={"Фильтры"}
@@ -596,7 +624,13 @@ function TierPage() {
       </DragOverlay>
       <FloatButton
         style={{ zIndex: 5 }}
-        icon={!saving ? <SaveOutlined /> : <Spin indicator={<LoadingOutlined spin />} size="small" />}
+        icon={
+          !saving ? (
+            <SaveOutlined />
+          ) : (
+            <Spin indicator={<LoadingOutlined spin />} size="small" />
+          )
+        }
         tooltip={<div>Сохранить</div>}
         onClick={!saving ? handleSaveRows : undefined}
       />
