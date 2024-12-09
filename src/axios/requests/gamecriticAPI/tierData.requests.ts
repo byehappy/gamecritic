@@ -83,3 +83,7 @@ export const UploadTier = async (tier: Omit<Tier, "id">) => {
 export const UpdateTier = async (tier: Omit<Tier, "id" | "author_id">,tierId:string) => {
   return await instanceAPI.put(`/update-tierlist/${tierId}`, { ...tier });
 };
+
+export const DeleteUserTier = async (tierId: string, userId: string) => {
+  return await instanceAPI.delete(`/restart/tier-list/${tierId}/${userId}`);
+};

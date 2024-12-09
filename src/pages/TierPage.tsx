@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   DeleteTier,
+  DeleteUserTier,
   gamesRequest,
   getTierById,
   getUserRows,
@@ -14,6 +15,7 @@ import {
   EditOutlined,
   FilterOutlined,
   LoadingOutlined,
+  RollbackOutlined,
   SaveOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
@@ -91,6 +93,11 @@ function TierPage() {
     })
   );
   const navigate = useNavigate();
+  useEffect(()=>{
+    if(currentUser?.id === paramsUserId){
+      navigate(`/tier-list/${tierType}`)
+    }
+  },[currentUser, navigate, paramsUserId, tierType])
   useBeforeUnloadSave(
     tierData.rows.map((row) => ({
       ...row,
@@ -436,7 +443,7 @@ function TierPage() {
       ...row,
       games: row.games.map((game) => game.id),
     }));
-    if (!dirty) {
+    if (!dirty && currentUser) {
       dispatch(
         setMessage({
           message: "Изменений не обнаружено",
@@ -515,7 +522,7 @@ function TierPage() {
         }}
       >
         {tier?.name}{" "}
-        {currentUser && tier && currentUser.id === tier.authorId && (
+        {tier && !paramsUserId && (
           <Popover
             trigger={"click"}
             placement="bottom"
@@ -529,23 +536,71 @@ function TierPage() {
                   alignItems: "center",
                 }}
               >
-                <Button onClick={()=>navigate(`/update-tierlist/${tier.id}`)} icon={<EditOutlined />}>Редактировать</Button>
+                {currentUser && currentUser.id === tier.authorId && (
+                  <>
+                    <Button
+                      onClick={() => navigate(`/update-tierlist/${tier.id}`)}
+                      icon={<EditOutlined />}
+                      style={{ width: "12em" }}
+                    >
+                      Редактировать
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        try {
+                          DeleteTier(tier.id, currentUser.id);
+                          dispatch(setMessage({ success: "Успешно удалено" }));
+                          navigate("/");
+                        } catch (error) {
+                          dispatch(setMessage(error));
+                        }
+                      }}
+                      style={{ width: "100%" }}
+                      icon={<DeleteOutlined />}
+                      type="primary"
+                      danger
+                    >
+                      Удалить
+                    </Button>
+                  </>
+                )}
                 <Button
                   onClick={() => {
                     try {
-                      DeleteTier(tier.id, currentUser.id);
-                      dispatch(setMessage({ success: "Успешно удалено" }));
-                      navigate("/");
+                      if (currentUser) {
+                        DeleteUserTier(tier.id, currentUser.id).then(() => {
+                          loadGamesStorage();
+                          getGames();
+                        });
+                      } else {
+                        sessionStorage.removeItem(tier.id);
+                        setLoadingTray(true);
+                        loadGamesStorage();
+                        gamesRequest({
+                          ...filterFlags,
+                        }).then((response) => {
+                          const resGames = response.data.results;
+                          const count = response.data.count;
+                          dispatch(setTrayGames(resGames));
+                          setTotalCount(count);
+                          setLoadingTray(false);
+                        });
+                      }
+                      dispatch(setMessage({ success: "Сброс выполнен" }));
                     } catch (error) {
                       dispatch(setMessage(error));
                     }
                   }}
-                  style={{width:"100%"}}
-                  icon={<DeleteOutlined />}
+                  style={{
+                    width: "12em",
+                    textWrap: "wrap",
+                    height: "min-content",
+                  }}
+                  icon={<RollbackOutlined />}
                   type="primary"
                   danger
                 >
-                  Удалить
+                  Сбросить по умолчанию
                 </Button>
               </div>
             }
