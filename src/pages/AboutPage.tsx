@@ -46,6 +46,10 @@ export const AboutePage = () => {
     description: string | undefined;
     init_image: string | undefined;
   }>({ name: undefined, description: undefined, init_image: undefined });
+  const [editInfo, setEditInfo] = useState<{
+    name: string | undefined;
+    description: string | undefined;
+  }>({ name: undefined, description: undefined });
   const handleSave = async () => {
     const canvas = editor.current?.getImageScaledToCanvas();
     if (!canvas) return;
@@ -54,11 +58,16 @@ export const AboutePage = () => {
     if (!currentUser) return;
     try {
       const result = await uploadUserInfo(currentUser.id, {
-        name: userInfo.name,
-        about_text: userInfo.description,
+        name: editInfo.name,
+        about_text: editInfo.description,
         img_icon: img,
       });
       dispatch(setMessage({ success: result.data.success }));
+      setUserInfo((prev) => ({
+        ...prev,
+        name: editInfo.name,
+        description: editInfo.description,
+      }));
       dispatch(setImageIcon(result.data.image_icon));
     } catch (error) {
       dispatch(setMessage(error));
@@ -97,6 +106,11 @@ export const AboutePage = () => {
     setLoading(false);
   }, [currentUser, dispatch, getInfo, navigate, userId]);
 
+  useEffect(()=>{
+    if (!edit){
+      setEditInfo({name:userInfo.name,description:userInfo.description})
+    }
+  },[edit, userInfo.description, userInfo.name])
   return (
     <>
       <UserInfoWrapper>
@@ -123,9 +137,9 @@ export const AboutePage = () => {
                   userInfo.name
                 ) : (
                   <Input
-                    value={userInfo.name ?? ""}
+                    value={editInfo.name ?? ""}
                     onChange={(e) =>
-                      setUserInfo((prev) => ({ ...prev, name: e.target.value }))
+                      setEditInfo((prev) => ({ ...prev, name: e.target.value }))
                     }
                     required
                   />
@@ -137,9 +151,9 @@ export const AboutePage = () => {
                   userInfo.description
                 ) : (
                   <Input
-                    value={userInfo.description ?? ""}
+                    value={editInfo.description ?? ""}
                     onChange={(e) =>
-                      setUserInfo((prev) => ({
+                      setEditInfo((prev) => ({
                         ...prev,
                         description: e.target.value,
                       }))
