@@ -46,7 +46,7 @@ export const RowSettings: React.FC<{
     const newId = uuid4();
     const newTier = {
       id: newId,
-      tier: "Новое",
+      name: "Новое",
       games: [],
       color: "#1677FF",
     };
@@ -79,7 +79,7 @@ export const RowSettings: React.FC<{
           tier.id === id
             ? {
                 ...tier,
-                tier: tierName ?? tier.name,
+                name: tierName ?? tier.name,
                 color,
                 games: deleteGames ? [] : tier.games,
               }

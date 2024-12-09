@@ -138,11 +138,6 @@ function TierPage() {
       );
     }
   }, [loadingRows, rows, tierData.rows]);
-  useEffect(() => {
-    if (dirty && paramsUserId && !loadingRows) {
-      navigate(`/tier-list/${tierType}`);
-    }
-  }, [dirty, loadingRows, navigate, paramsUserId, tierType]);
   const loadGamesStorage = useCallback(async () => {
     let tiers;
     if (paramsUserId) {
@@ -470,6 +465,9 @@ function TierPage() {
         );
         rowsRef.current = res.data.rows;
         setDirty(false);
+        if (paramsUserId && !loadingRows) {
+          navigate(`/tier-list/${tierType}`);
+        }
       } catch (e) {
         const error = e as AxiosError;
         if (

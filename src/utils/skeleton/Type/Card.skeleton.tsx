@@ -10,6 +10,7 @@ const CardWrapper = styled.div<{ $size: string }>`
   background-size: 1200px 100%;
   height: ${(props) => (props.$size === "large" ? "15rem" : "10rem")};
   width: 130px;
+  max-height:192px;
   @keyframes slider {
     0% {
       background-position: -1200px 0;
