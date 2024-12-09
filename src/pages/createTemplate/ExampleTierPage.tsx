@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { Button, Col, Popover, Row } from "antd";
-import { Filter } from "../../components/filter/Filter";
+import { Button, Col, Row } from "antd";
 import Search from "antd/es/input/Search";
 import { FilterOutlined } from "@ant-design/icons";
 import { CardGame } from "../../components/card/CardGame";

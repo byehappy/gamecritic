@@ -14,13 +14,14 @@ export const ModalOverlay = styled.div`
   
 `
 
-export const ModalWindow = styled.div`
+export const ModalWindow = styled.div<{$widthMin:boolean}>`
   background: white;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   min-width: 25rem;
   max-width:70vw;
   padding: 1em;
+  width:${(props)=> props.$widthMin ?  "min-content" : "auto"};
 `
 export const ModalHeader = styled.div<{$haveHeader:boolean}>`
   display:flex;

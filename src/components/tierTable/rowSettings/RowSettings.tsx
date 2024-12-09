@@ -6,6 +6,7 @@ import uuid4 from "uuid4";
 import { IGameDis } from "../../../interfaces/games";
 import { useAppSelector, useAppDispatch } from "../../../redux/hooks";
 import { setRows, setTrayGames } from "../../../redux/slice/tierDataSlice";
+import { ExampleRow } from "../../exampleRow/ExampleRow";
 
 export const RowSettings: React.FC<{
   id: string;
@@ -13,13 +14,7 @@ export const RowSettings: React.FC<{
   index: number;
   isOpen: boolean;
   onClose: () => void;
-}> = ({
-  id,
-  tier,
-  index,
-  isOpen,
-  onClose
-}) => {
+}> = ({ id, tier, index, isOpen, onClose }) => {
   const tierData = useAppSelector((state) => state.tierData);
   const dispatch = useAppDispatch();
   function enabledGamesInTray(
@@ -110,38 +105,64 @@ export const RowSettings: React.FC<{
     onClose();
   };
   return (
-    <Modal key={`${id}-modal`} isOpen={isOpen} onClose={onClose}>
-      <div style={{ marginBottom: "1rem" }}>
-        <Input
-          placeholder="Название tier"
-          value={settingsRow.tierName}
-          onChange={(e) =>
-            setSettingsRow((prev) => ({ ...prev, tierName: e.target.value }))
-          }
-        />
-      </div>
-      <div
-        style={{ marginBottom: "1rem", display: "flex", alignItems: "center" }}
-      >
-        Цвет:
-        <ColorPicker
-          value={settingsRow.color}
-          onChange={(color) =>
-            setSettingsRow((prev) => ({ ...prev, color: color.toHexString() }))
-          }
-        />
-      </div>
-      <div style={{ marginBottom: "1rem" }}>
-        <Checkbox
-          onChange={(e) =>
-            setSettingsRow((prev) => ({
-              ...prev,
-              deleteGames: e.target.checked,
-            }))
-          }
+    <Modal
+      key={`${id}-modal`}
+      isOpen={isOpen}
+      onClose={onClose}
+      widthMin={true}
+    >
+      <div style={{ display: "flex", marginBottom: "1vh" }}>
+        <div
+          style={{
+            width: "50%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-evenly",
+          }}
         >
-          Очистить игры
-        </Checkbox>
+          <Input
+            placeholder="Название"
+            value={settingsRow.tierName}
+            onChange={(e) =>
+              setSettingsRow((prev) => ({
+                ...prev,
+                tierName: e.target.value,
+              }))
+            }
+          />
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            Цвет:
+            <ColorPicker
+              value={settingsRow.color}
+              onChange={(color) =>
+                setSettingsRow((prev) => ({
+                  ...prev,
+                  color: color.toHexString(),
+                }))
+              }
+            />
+          </div>
+          <Checkbox
+            onChange={(e) =>
+              setSettingsRow((prev) => ({
+                ...prev,
+                deleteGames: e.target.checked,
+              }))
+            }
+          >
+            Очистить игры
+          </Checkbox>
+        </div>
+        <div
+          style={{ width: "50%", display: "flex", justifyContent: "center" }}
+        >
+          <ExampleRow name={settingsRow.tierName} color={settingsRow.color} />
+        </div>
       </div>
       <div style={{ display: "flex", gap: "2vh 0", flexDirection: "column" }}>
         <Button type="primary" onClick={handleSave}>

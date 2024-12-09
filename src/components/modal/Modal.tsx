@@ -9,7 +9,8 @@ export const Modal: React.FC<{
   onClose: () => void;
   children: ReactNode;
   header?: ReactNode;
-}> = ({ isOpen, onClose, children,header }) => {
+  widthMin?: boolean;
+}> = ({ isOpen, onClose, children, header, widthMin = false }) => {
   const ref = useRef() as React.MutableRefObject<HTMLDivElement>;
   const checkKeyEscape = useCallback(
     (event: KeyboardEvent) => {
@@ -34,27 +35,27 @@ export const Modal: React.FC<{
     if (isOpen) {
       document.body.addEventListener("keydown", checkKeyEscape);
       document.addEventListener("mousedown", checkOutside);
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     }
     if (!isOpen) {
       document.body.removeEventListener("keydown", checkKeyEscape);
       document.removeEventListener("mousedown", checkOutside);
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
     return () => {
       document.body.removeEventListener("keydown", checkKeyEscape);
       document.removeEventListener("mousedown", checkOutside);
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [checkKeyEscape, checkOutside, isOpen]);
 
   return createPortal(
     isOpen ? (
       <ModalOverlay>
-        <ModalWindow ref={ref}>
+        <ModalWindow ref={ref} $widthMin={widthMin}>
           <ModalHeader $haveHeader={header !== undefined}>
             {header}
-              <CloseOutlined onClick={onClose} />
+            <CloseOutlined onClick={onClose} />
           </ModalHeader>
           {children}
         </ModalWindow>

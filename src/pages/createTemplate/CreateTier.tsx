@@ -34,6 +34,7 @@ import { AxiosError } from "axios";
 import { ErrorAuth } from "../../redux/slice/authSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import { setFilters } from "../../redux/slice/tierDataSlice";
+import { ExampleRow } from "../../components/exampleRow/ExampleRow";
 const StyledForm = styled(Form)`
   .ant-form-item {
     margin-bottom: 0;
@@ -42,10 +43,11 @@ const StyledForm = styled(Form)`
     background: none;
   }
 `;
-const HeaderButton = styled.button<{ $isActive: boolean }>`
+const HeaderButton = styled(Button)<{ $isActive: boolean }>`
   border: none;
   background: none;
   cursor: pointer;
+  padding:0;
   color: ${(props) => (props.$isActive ? "black" : "grey")};
 `;
 const DEFAULT_ROWS = {
@@ -310,43 +312,59 @@ export const CreateTierPage = () => {
                     >
                       <Column
                         dataIndex={"name"}
-                        title={"Название"}
+                        title={"Имя и цвет строки"}
                         onCell={() => ({ style: { padding: "1vh 1vw" } })}
                         render={(_value, _row, index) => {
                           return (
-                            <Form.Item name={[index, "name"]}>
-                              <Input placeholder="Название строки" />
-                            </Form.Item>
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: "1vw",
+                              }}
+                            >
+                              <Form.Item name={[index, "name"]}>
+                                <Input placeholder="Название строки" />
+                              </Form.Item>
+                              <Form.Item name={[index, "color"]} shouldUpdate>
+                                <ColorPicker
+                                  showText
+                                  onChange={(color) =>
+                                    form.setFieldValue(
+                                      ["rows", index, "color"],
+                                      color.toHexString()
+                                    )
+                                  }
+                                />
+                              </Form.Item>
+                            </div>
                           );
                         }}
                       />
                       <Column
-                        dataIndex={"color"}
-                        title={"Цвет"}
-                        onCell={() => ({ style: { padding: "0 1vw" } })}
+                        title="Пример"
+                        onCell={() => ({ style: { width: "15vw" } })}
                         render={(_value, _row, index) => {
                           return (
-                            <Form.Item name={[index, "color"]} shouldUpdate>
-                              <ColorPicker
-                                onChange={(color) =>
-                                  form.setFieldValue(
-                                    ["rows", index, "color"],
-                                    color.toHexString()
-                                  )
-                                }
-                              />
-                            </Form.Item>
+                            <ExampleRow
+                              name={form.getFieldValue(["rows", index, "name"])}
+                              color={form.getFieldValue([
+                                "rows",
+                                index,
+                                "color",
+                              ])}
+                            />
                           );
                         }}
                       />
                       <Column
                         title={"Взаимодействие"}
-                        onCell={() => ({ style: { padding: "0 1vw" } })}
                         render={(_, row) => {
                           return (
                             <Button
                               icon={<MinusOutlined />}
                               shape={"circle"}
+                              size="large"
                               onClick={() => remove(row.name)}
                             />
                           );
@@ -360,7 +378,7 @@ export const CreateTierPage = () => {
             <div>
               <div style={{ display: "flex", gap: "1vw" }}>
                 <HeaderButton
-                  type="button"
+                  type="text"
                   $isActive={activeButton === "filter"}
                   onClick={() => {
                     setActiveButton("filter");
@@ -370,7 +388,7 @@ export const CreateTierPage = () => {
                   <h1 style={{ marginBottom: "1vh" }}>Фильтры к играм</h1>
                 </HeaderButton>
                 <HeaderButton
-                  type="button"
+                  type="text"
                   $isActive={activeButton === "ownGames"}
                   onClick={() => {
                     setActiveButton("ownGames");

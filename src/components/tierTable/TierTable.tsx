@@ -3,11 +3,7 @@ import { CardGame } from "../card/CardGame";
 import { rectSortingStrategy, SortableContext } from "@dnd-kit/sortable";
 import styled from "styled-components";
 import { Col } from "antd";
-import {
-  UpOutlined,
-  DownOutlined,
-  SettingOutlined,
-} from "@ant-design/icons";
+import { UpOutlined, DownOutlined, SettingOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { RowSettings } from "./rowSettings/RowSettings";
 import { useAppSelector, useAppDispatch } from "../../redux/hooks";
@@ -75,7 +71,7 @@ const RowHeader = styled(Col)`
 export const TierTable: React.FC<{
   loading: boolean;
 }> = ({ loading }) => {
-  const {user:currentUser} = useAppSelector(state => state.auth)
+  const { user: currentUser } = useAppSelector((state) => state.auth);
   const [isOpenTierId, setIsOpenTierId] = useState<string | null>();
   const rowsData = useAppSelector((state) => state.tierData.rows);
   const dispatch = useAppDispatch();
@@ -108,7 +104,19 @@ export const TierTable: React.FC<{
                 wordBreak: "break-all",
               }}
             >
-              <span style={{ textAlign: "center", display: "inline-block",color:getTextColor(tier.color) }}>
+              <span
+                style={{
+                  textAlign: "center",
+                  display: "inline-block",
+                  textOverflow: "ellipsis",
+                  wordWrap: "break-word",
+                  overflow: "hidden",
+                  maxHeight: "4.8em",
+                  lineHeight: "1.2em",
+                  color: getTextColor(tier.color),
+                  padding:"0 1em"
+                }}
+              >
                 {tier.name}
               </span>
             </div>
@@ -120,22 +128,24 @@ export const TierTable: React.FC<{
               })}
             </DroppableCell>
           </SortableContext>
-          {currentUser && <FilterRow>
-            <SettingOutlined
-              style={{ fontSize: "3rem" }}
-              onClick={() => setIsOpenTierId(tier.id)}
-            />
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <UpOutlined
-                style={{ fontSize: "2rem" }}
-                onClick={() => changeIndex(index, "up")}
+          {currentUser && (
+            <FilterRow>
+              <SettingOutlined
+                style={{ fontSize: "3rem" }}
+                onClick={() => setIsOpenTierId(tier.id)}
               />
-              <DownOutlined
-                style={{ fontSize: "2rem" }}
-                onClick={() => changeIndex(index, "down")}
-              />
-            </div>
-          </FilterRow>}
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <UpOutlined
+                  style={{ fontSize: "2rem" }}
+                  onClick={() => changeIndex(index, "up")}
+                />
+                <DownOutlined
+                  style={{ fontSize: "2rem" }}
+                  onClick={() => changeIndex(index, "down")}
+                />
+              </div>
+            </FilterRow>
+          )}
           {isOpenTierId === tier.id ? (
             <RowSettings
               id={tier.id}
