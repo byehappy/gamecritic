@@ -1,6 +1,12 @@
-import { Flex, Rate, Spin, Tooltip } from "antd";
+import { Button, Flex, Rate, Spin, Tooltip } from "antd";
 import { Modal } from "../../modal/Modal";
-import { LoadingOutlined, StarFilled, StarOutlined } from "@ant-design/icons";
+import {
+  LeftCircleOutlined,
+  LoadingOutlined,
+  RightCircleOutlined,
+  StarFilled,
+  StarOutlined,
+} from "@ant-design/icons";
 import {
   gameRequest,
   gameScreenshots,
@@ -22,7 +28,13 @@ import {
   delFavoriteGame,
 } from "../../../axios";
 import { platformIcons } from "../../../assets/icons/platfroms";
-import { SliderContainer, SliderImage, DotsContainer, Dot } from "./card.style";
+import {
+  SliderContainer,
+  SliderImage,
+  DotsContainer,
+  Dot,
+  PortalWrapper,
+} from "./card.style";
 import { useWordDeclination } from "../../../utils/hooks/useWorldDeclination";
 import { createPortal } from "react-dom";
 
@@ -154,23 +166,8 @@ export const CardModal: React.FC<{
   const handleZoomInImage = () => {
     const zoomContainer = document.createElement("div");
     zoomContainer.id = "zoom-container";
-    zoomContainer.style.position = "fixed";
-    zoomContainer.style.top = "0";
-    zoomContainer.style.left = "0";
-    zoomContainer.style.width = " 100%";
-    zoomContainer.style.height = " 100%";
-    zoomContainer.style.background = " rgba(0, 0, 0, 0.5)";
-    zoomContainer.style.display = " flex";
-    zoomContainer.style.justifyContent = " center";
-    zoomContainer.style.alignItems = "center";
-    zoomContainer.style.zIndex = "101";
-    zoomContainer.style.cursor = "zoom-out";
     document.body.appendChild(zoomContainer);
     setPortalContainer(zoomContainer);
-    zoomContainer.onclick = () => {
-      document.body.removeChild(zoomContainer);
-      setPortalContainer(null);
-    };
   };
   const gameInfo = game ? (
     <div>
@@ -195,11 +192,48 @@ export const CardModal: React.FC<{
             </div>
             {portalContainer &&
               createPortal(
-                <img
-                  style={{ width: "75%" }}
-                  src={screenshotsGame[currentImageIndex].image}
-                  alt={`Скриншот ${currentImageIndex + 1}`}
-                />,
+                <PortalWrapper
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    document.body.removeChild(portalContainer);
+                    setPortalContainer(null);
+                  }}
+                >
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (currentImageIndex > 0)
+                        setCurrentImageIndex((prev) => --prev);
+                    }}
+                    icon={<LeftCircleOutlined style={{ fontSize: "5rem" }} />}
+                    size="large"
+                    style={{
+                      width: "fit-content",
+                      background: "none",
+                      border: "none",
+                      color: "white",
+                    }}
+                  />
+                  <img
+                    src={screenshotsGame[currentImageIndex].image}
+                    alt={`Скриншот ${currentImageIndex + 1}`}
+                  />
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (currentImageIndex < screenshotsGame.length -1)
+                        setCurrentImageIndex((prev) => ++prev);
+                    }}
+                    icon={<RightCircleOutlined style={{ fontSize: "5rem" }} />}
+                    size="large"
+                    style={{
+                      width: "fit-content",
+                      background: "none",
+                      border: "none",
+                      color: "white",
+                    }}
+                  />
+                </PortalWrapper>,
                 portalContainer
               )}
           </>
