@@ -5,11 +5,10 @@ import { ConfigProvider } from "antd";
 import ThemeProvider from "./utils/theme-provider";
 import { useAppSelector } from "./redux/hooks";
 import { useEffect } from "react";
-import { ToasterList, useToaster } from "./utils/Toaster";
-import { createPortal } from "react-dom";
+import { useToaster } from "./utils/hooks/useToaster";
 
 function App() {
-  const { addMessage, container, toasters } = useToaster();
+  const { addMessage } = useToaster();
   const messages = useAppSelector((state) => state.message);
   useEffect(() => {
     if (messages.error) addMessage(messages.error, "error");
@@ -22,8 +21,6 @@ function App() {
       <ThemeProvider>
         <RouterProvider router={router} fallbackElement={<p>Загрузка...</p>} />
         <GlobalStyle />
-        {container &&
-          createPortal(<ToasterList toasters={toasters} />, container)}
       </ThemeProvider>
     </ConfigProvider>
   );

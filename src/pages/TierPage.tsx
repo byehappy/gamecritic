@@ -51,6 +51,8 @@ import { setMessage } from "../redux/slice/messageSlice";
 import { logout } from "../redux/slice/authSlice";
 import html2canvas from "html2canvas";
 import { AxiosError } from "axios";
+import { TimeoutRequest } from "../utils/cancelableReq";
+import { useToaster } from "../utils/hooks/useToaster";
 
 function TierPage() {
   const { user: currentUser } = useAppSelector((state) => state.auth);
@@ -85,6 +87,7 @@ function TierPage() {
     page_size: DEFAULT_PAGE_SIZE,
   });
   const [activeGame, setActiveGame] = useState<IGameDis | null>(null);
+  const { addCancelable } = useToaster();
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -93,11 +96,11 @@ function TierPage() {
     })
   );
   const navigate = useNavigate();
-  useEffect(()=>{
-    if(currentUser?.id === paramsUserId){
-      navigate(`/tier-list/${tierType}`)
+  useEffect(() => {
+    if (currentUser?.id === paramsUserId) {
+      navigate(`/tier-list/${tierType}`);
     }
-  },[currentUser, navigate, paramsUserId, tierType])
+  }, [currentUser, navigate, paramsUserId, tierType]);
   useBeforeUnloadSave(
     tierData.rows.map((row) => ({
       ...row,
@@ -568,9 +571,15 @@ function TierPage() {
                   onClick={() => {
                     try {
                       if (currentUser) {
-                        DeleteUserTier(tier.id, currentUser.id).then(() => {
-                          loadGamesStorage();
-                          getGames();
+                        const { request, cancel } = TimeoutRequest(() =>
+                          DeleteUserTier(tier.id, currentUser.id).then(() => {
+                            loadGamesStorage();
+                            getGames();
+                          })
+                        );
+                        addCancelable(() => cancel());
+                        request.then(() => {
+                          dispatch(setMessage({ success: "Сброс выполнен" }));
                         });
                       } else {
                         sessionStorage.removeItem(tier.id);
@@ -584,9 +593,9 @@ function TierPage() {
                           dispatch(setTrayGames(resGames));
                           setTotalCount(count);
                           setLoadingTray(false);
+                          dispatch(setMessage({ success: "Сброс выполнен" }));
                         });
                       }
-                      dispatch(setMessage({ success: "Сброс выполнен" }));
                     } catch (error) {
                       dispatch(setMessage(error));
                     }
