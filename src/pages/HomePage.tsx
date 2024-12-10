@@ -18,6 +18,8 @@ import { UserCard } from "../components/userCard/UserCard";
 import { TopUsers } from "../axios/requests/gamecriticAPI/passGame.request";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setMessage } from "../redux/slice/messageSlice";
+import { TimeoutRequest } from "../utils/cancelableReq";
+import { useToaster } from "../utils/hooks/useToaster";
 
 const CarouselWrapper = styled(Carousel)`
   margin: 2vh 0;
@@ -29,14 +31,14 @@ const CarouselWrapper = styled(Carousel)`
 `;
 const ContainerTemplateItems = styled.div`
   display: grid;
-  grid-template-columns:repeat(auto-fill,minmax(8vw,1fr));
+  grid-template-columns: repeat(auto-fill, minmax(8vw, 1fr));
   gap: 1vw;
   height: 100%;
   padding: 0 1vw;
 `;
 const ContainerUsersTemplateItems = styled.div`
   display: grid;
-  grid-template-columns:repeat(auto-fill,minmax(20%,1fr));
+  grid-template-columns: repeat(auto-fill, minmax(20%, 1fr));
   gap: 1vw;
   height: 100%;
   padding: 0 1vw;
@@ -46,7 +48,7 @@ const ContainerTopUsersItems = styled.div`
   gap: 1vw;
   height: 100%;
   padding: 0 1vw;
-  overflow:overlay;
+  overflow: overlay;
 `;
 const IntroText = styled.h1`
   display: flex;
@@ -70,6 +72,7 @@ const HeaderTemplate = styled.div`
 `;
 
 export const HomePage = () => {
+  const { addCancelable } = useToaster();
   const dispatch = useAppDispatch();
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const [tiers, setTiers] = useState<Tier[][] | null>();
@@ -96,8 +99,13 @@ export const HomePage = () => {
   const delTier = (tierId: string) => {
     if (currentUser)
       try {
-        DeleteTier(tierId, currentUser.id).then(() => getTiers());
-        dispatch(setMessage({ success: "Успешно удалено" }));
+        const { request, cancel, resume, pause } = TimeoutRequest(() =>
+          DeleteTier(tierId, currentUser.id).then(() => getTiers())
+        );
+        addCancelable(cancel, resume, pause);
+        request.then(() => {
+          dispatch(setMessage({ success: "Успешно удалено" }));
+        });
       } catch (error) {
         dispatch(setMessage(error));
       }
@@ -187,7 +195,7 @@ export const HomePage = () => {
           <div>
             <ContainerTopUsersItems>
               {topUsers?.map((e) => (
-                <UserCard user={e} key={e.id}/>
+                <UserCard user={e} key={e.id} />
               ))}
             </ContainerTopUsersItems>
           </div>

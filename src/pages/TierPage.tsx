@@ -551,9 +551,17 @@ function TierPage() {
                     <Button
                       onClick={() => {
                         try {
-                          DeleteTier(tier.id, currentUser.id);
-                          dispatch(setMessage({ success: "Успешно удалено" }));
-                          navigate("/");
+                          const { request, cancel, resume, pause } =
+                            TimeoutRequest(() =>
+                              DeleteTier(tier.id, currentUser.id)
+                            );
+                            addCancelable(cancel, resume, pause);
+                          request.then(() => {
+                            dispatch(
+                              setMessage({ success: "Успешно удалено" })
+                            );
+                            navigate("/");
+                          });
                         } catch (error) {
                           dispatch(setMessage(error));
                         }
@@ -571,13 +579,14 @@ function TierPage() {
                   onClick={() => {
                     try {
                       if (currentUser) {
-                        const { request, cancel } = TimeoutRequest(() =>
-                          DeleteUserTier(tier.id, currentUser.id).then(() => {
-                            loadGamesStorage();
-                            getGames();
-                          })
-                        );
-                        addCancelable(() => cancel());
+                        const { request, cancel, resume, pause } =
+                          TimeoutRequest(() =>
+                            DeleteUserTier(tier.id, currentUser.id).then(() => {
+                              loadGamesStorage();
+                              getGames();
+                            })
+                          );
+                        addCancelable(cancel, resume, pause);
                         request.then(() => {
                           dispatch(setMessage({ success: "Сброс выполнен" }));
                         });
