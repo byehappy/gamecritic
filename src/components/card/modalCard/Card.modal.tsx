@@ -211,8 +211,9 @@ export const CardModal: React.FC<{
                       width: "fit-content",
                       background: "none",
                       border: "none",
-                      color: "white",
+                      color: currentImageIndex === 0 ? "gray" : "white",
                     }}
+                    disabled={currentImageIndex === 0}
                   />
                   <img
                     src={screenshotsGame[currentImageIndex].image}
@@ -221,7 +222,7 @@ export const CardModal: React.FC<{
                   <Button
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (currentImageIndex < screenshotsGame.length -1)
+                      if (currentImageIndex < screenshotsGame.length - 1)
                         setCurrentImageIndex((prev) => ++prev);
                     }}
                     icon={<RightCircleOutlined style={{ fontSize: "5rem" }} />}
@@ -230,8 +231,12 @@ export const CardModal: React.FC<{
                       width: "fit-content",
                       background: "none",
                       border: "none",
-                      color: "white",
+                      color:
+                        currentImageIndex === screenshotsGame.length - 1
+                          ? "gray"
+                          : "white",
                     }}
+                    disabled={currentImageIndex === screenshotsGame.length - 1}
                   />
                 </PortalWrapper>,
                 portalContainer
