@@ -6,6 +6,7 @@ export const Item = styled.div<{ $IsDisabled: boolean }>`
   height: 20vh;
   transition: transform 0.3s ease-in-out;
   pointer-events: ${(props) => props.$IsDisabled && "none"};
+  opacity:${(props) => props.$IsDisabled && "0.5"};
   img {
     object-fit: cover;
     width: 100%;

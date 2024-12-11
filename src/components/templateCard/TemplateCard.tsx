@@ -8,7 +8,8 @@ export const TemplateCard: React.FC<{
   name: string;
   id?: string;
   del: false | ((tierId: string) => void);
-}> = ({ img, name, id, del }) => {
+  disable?:boolean;
+}> = ({ img, name, id, del,disable = false }) => {
   let itemImg, itemName;
   if (name !== "" && name !== null) {
     itemName = name;
@@ -21,7 +22,7 @@ export const TemplateCard: React.FC<{
     itemImg = "https://mebeliero.ru/images/photos/medium/no_image.png";
   }
   return (
-    <Item $IsDisabled={!id}>
+    <Item $IsDisabled={!id || disable}>
       {id && del && (
         <Button
           onClick={() => del(id)}

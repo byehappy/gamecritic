@@ -174,8 +174,11 @@ export const ToasterContext = createContext<{
   addCancelable: (
     cancel: () => void,
     resume: () => void,
-    pause: () => void
+    pause: () => void,
+    message?: string
   ) => void;
+  reqIds: string[];
+  setReqIds: React.Dispatch<React.SetStateAction<string[]>>;
 } | null>(null);
 
 export const ToasterProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -183,6 +186,7 @@ export const ToasterProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [toasters, setToasters] = useState<Toaster[]>([]);
   const [container, setContainer] = useState<HTMLDivElement | null>();
+  const [reqIds, setReqIds] = useState<string[]>([]);
 
   useEffect(() => {
     if (
@@ -223,7 +227,12 @@ export const ToasterProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const addCancelable = useCallback(
-    (cancel: () => void, resume: () => void, pause: () => void) => {
+    (
+      cancel: () => void,
+      resume: () => void,
+      pause: () => void,
+      message?: string
+    ) => {
       const timeoutId = setTimeout(() => {
         setToasters((prev) =>
           prev.filter((toaster) => toaster.id !== newToaster.id)
@@ -231,7 +240,7 @@ export const ToasterProvider: React.FC<{ children: React.ReactNode }> = ({
       }, TOAST_TIMEOUT);
       const newToaster: Toaster = {
         type: "warning",
-        content: "Отменить действие?",
+        content: message ?? "Отменить действие?",
         cancel: () => {
           cancel();
           setToasters((prev) =>
@@ -259,8 +268,8 @@ export const ToasterProvider: React.FC<{ children: React.ReactNode }> = ({
     []
   );
   const ToasterProperties = useMemo(
-    () => ({ toasters, addMessage, addCancelable }),
-    [addCancelable, addMessage, toasters]
+    () => ({ toasters, addMessage, addCancelable, reqIds, setReqIds }),
+    [addCancelable, addMessage, reqIds, toasters]
   );
   useEffect(() => {
     if (toasters.length === 0 && container) {

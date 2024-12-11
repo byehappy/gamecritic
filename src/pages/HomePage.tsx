@@ -72,7 +72,7 @@ const HeaderTemplate = styled.div`
 `;
 
 export const HomePage = () => {
-  const { addCancelable } = useToaster();
+  const { addCancelable, setReqIds, reqIds } = useToaster();
   const dispatch = useAppDispatch();
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const [tiers, setTiers] = useState<Tier[][] | null>();
@@ -99,13 +99,14 @@ export const HomePage = () => {
   const delTier = (tierId: string) => {
     if (currentUser)
       try {
+        setReqIds((prev) => [...prev, tierId]);
         const { request, cancel, resume, pause } = TimeoutRequest(() =>
           DeleteTier(tierId, currentUser.id).then(() => getTiers())
         );
         addCancelable(cancel, resume, pause);
-        request.then(() => {
-          dispatch(setMessage({ success: "Успешно удалено" }));
-        });
+        request.finally(() =>
+          setReqIds((prev) => prev.filter((id) => id !== tierId))
+        );
       } catch (error) {
         dispatch(setMessage(error));
       }
@@ -137,11 +138,12 @@ export const HomePage = () => {
               <ContainerTemplateItems>
                 {part.map((tier) => (
                   <TemplateCard
-                    key={uuid4()}
+                    key={tier.id}
                     img={tier.imageSrc ?? ""}
                     name={tier.title}
                     id={tier.id}
                     del={tier.author_id === currentUser?.id && delTier}
+                    disable={reqIds.includes(tier.id)}
                   />
                 ))}
               </ContainerTemplateItems>

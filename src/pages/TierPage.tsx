@@ -87,7 +87,7 @@ function TierPage() {
     page_size: DEFAULT_PAGE_SIZE,
   });
   const [activeGame, setActiveGame] = useState<IGameDis | null>(null);
-  const { addCancelable } = useToaster();
+  const { addCancelable, reqIds, setReqIds } = useToaster();
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -540,44 +540,18 @@ function TierPage() {
                 }}
               >
                 {currentUser && currentUser.id === tier.authorId && (
-                  <>
-                    <Button
-                      onClick={() => navigate(`/update-tierlist/${tier.id}`)}
-                      icon={<EditOutlined />}
-                      style={{ width: "12em" }}
-                    >
-                      Редактировать
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        try {
-                          const { request, cancel, resume, pause } =
-                            TimeoutRequest(() =>
-                              DeleteTier(tier.id, currentUser.id)
-                            );
-                            addCancelable(cancel, resume, pause);
-                          request.then(() => {
-                            dispatch(
-                              setMessage({ success: "Успешно удалено" })
-                            );
-                            navigate("/");
-                          });
-                        } catch (error) {
-                          dispatch(setMessage(error));
-                        }
-                      }}
-                      style={{ width: "100%" }}
-                      icon={<DeleteOutlined />}
-                      type="primary"
-                      danger
-                    >
-                      Удалить
-                    </Button>
-                  </>
+                  <Button
+                    onClick={() => navigate(`/update-tierlist/${tier.id}`)}
+                    icon={<EditOutlined />}
+                    style={{ width: "12em" }}
+                  >
+                    Редактировать
+                  </Button>
                 )}
                 <Button
                   onClick={() => {
                     try {
+                      setReqIds((prev) => [...prev, "resetReq"]);
                       if (currentUser) {
                         const { request, cancel, resume, pause } =
                           TimeoutRequest(() =>
@@ -586,10 +560,12 @@ function TierPage() {
                               getGames();
                             })
                           );
-                        addCancelable(cancel, resume, pause);
-                        request.then(() => {
-                          dispatch(setMessage({ success: "Сброс выполнен" }));
-                        });
+                        addCancelable(cancel, resume, pause, "Оменить сброс?");
+                        request.finally(() =>
+                          setReqIds((prev) =>
+                            prev.filter((id) => id !== "resetReq")
+                          )
+                        );
                       } else {
                         sessionStorage.removeItem(tier.id);
                         setLoadingTray(true);
@@ -602,7 +578,6 @@ function TierPage() {
                           dispatch(setTrayGames(resGames));
                           setTotalCount(count);
                           setLoadingTray(false);
-                          dispatch(setMessage({ success: "Сброс выполнен" }));
                         });
                       }
                     } catch (error) {
@@ -613,13 +588,49 @@ function TierPage() {
                     width: "12em",
                     textWrap: "wrap",
                     height: "min-content",
+                    backgroundColor: "#ff9f00",
                   }}
                   icon={<RollbackOutlined />}
                   type="primary"
-                  danger
+                  disabled={reqIds.includes("resetReq")}
                 >
                   Сбросить по умолчанию
                 </Button>
+                {currentUser && currentUser.id === tier.authorId && (
+                  <Button
+                    onClick={() => {
+                      try {
+                        setReqIds((prev) => [...prev, "delReq"]);
+                        const { request, cancel, resume, pause } =
+                          TimeoutRequest(() =>
+                            DeleteTier(tier.id, currentUser.id)
+                          );
+                        addCancelable(cancel, resume, pause);
+                        request
+                          .then(() => {
+                            setReqIds((prev) =>
+                              prev.filter((id) => id !== "delReq")
+                            );
+                            navigate("/");
+                          })
+                          .catch(() =>
+                            setReqIds((prev) =>
+                              prev.filter((id) => id !== "delReq")
+                            )
+                          );
+                      } catch (error) {
+                        dispatch(setMessage(error));
+                      }
+                    }}
+                    style={{ width: "100%" }}
+                    icon={<DeleteOutlined />}
+                    type="primary"
+                    danger
+                    disabled={reqIds.includes("delReq")}
+                  >
+                    Удалить
+                  </Button>
+                )}
               </div>
             }
           >

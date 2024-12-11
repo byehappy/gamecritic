@@ -20,7 +20,7 @@ export const TimeoutRequest = <T>(asyncFunction: () => Promise<T>) => {
     startReq();
     controller.signal.addEventListener("abort", () => {
       if (timeoutId) clearTimeout(timeoutId);
-      reject(new Error("отмена"));
+      return reject(new Error("отмена"));
     });
   });
   const pause = () => {
