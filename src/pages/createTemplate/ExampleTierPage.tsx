@@ -20,8 +20,8 @@ const Container = styled.div`
 `;
 const RowHeader = styled(Col)`
   display: flex;
-  min-height: 9.5rem;
-  width: 10vw;
+  min-height: 12rem;
+  width: 8vw;
   align-items: center;
   justify-content: center;
   color: white;
@@ -89,8 +89,13 @@ export const ExampleTierPage: React.FC<{
               <span
                 style={{
                   textAlign: "center",
-                  display: "inline-block",
+                  display: "-webkit-box",
+                  WebkitBoxOrient: "vertical",
+                  textOverflow: "ellipsis",
+                  WebkitLineClamp: "4",
                   color: getTextColor(tier.color),
+                  overflow: "hidden",
+                  padding:"0 1em",
                 }}
               >
                 {tier.name}

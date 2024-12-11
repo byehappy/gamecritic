@@ -17,17 +17,18 @@ export const ExampleRow: React.FC<{ name: string; color: string }> = ({
       }}
     >
       <span
-         style={{
-            textAlign: "center",
-            display: "inline-block",
-            textOverflow: "ellipsis",
-            wordWrap: "break-word",
-            overflow: "hidden",
-            maxHeight: "4.8em",
-            lineHeight: "1.2em",
-            color: getTextColor(color),
-            padding:"0 1em"
-          }}
+        style={{
+          textAlign: "center",
+          display: "-webkit-box",
+          WebkitBoxOrient: "vertical",
+          textOverflow: "ellipsis",
+          WebkitLineClamp: "4",
+          overflow: "hidden",
+          maxHeight: "4.8em",
+          lineHeight: "1.2em",
+          color: getTextColor(color),
+          padding: "0 1em",
+        }}
       >
         {name}
       </span>

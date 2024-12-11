@@ -16,6 +16,7 @@ const UserInfoWrapper = styled.div`
   display: flex;
   width: 100%;
   height: 25vh;
+  min-height:200px;
   padding: 2vh 5vw;
   gap: 5%;
 `;
@@ -106,11 +107,11 @@ export const AboutePage = () => {
     setLoading(false);
   }, [currentUser, dispatch, getInfo, navigate, userId]);
 
-  useEffect(()=>{
-    if (!edit){
-      setEditInfo({name:userInfo.name,description:userInfo.description})
+  useEffect(() => {
+    if (!edit) {
+      setEditInfo({ name: userInfo.name, description: userInfo.description });
     }
-  },[edit, userInfo.description, userInfo.name])
+  }, [edit, userInfo.description, userInfo.name]);
   return (
     <>
       <UserInfoWrapper>
@@ -124,7 +125,7 @@ export const AboutePage = () => {
         )}
         {!loading && userInfo.init_image && !edit && (
           <IconUser
-            style={{ width: "12vw", objectFit: "cover" }}
+            style={{ width: "15%",minWidth:"200px",minHeight:"200px", objectFit: "cover" }}
             src={userInfo.init_image}
           />
         )}
@@ -163,7 +164,20 @@ export const AboutePage = () => {
                 )}
               </div>
             </div>
-            {edit && <Button onClick={handleSave}>Сохранить</Button>}
+            {edit && (
+              <div style={{ display: "flex", justifyContent: "space-around" }}>
+                <Button style={{ width: "45%" }} onClick={handleSave}>
+                  Сохранить
+                </Button>
+                <Button
+                  style={{ width: "45%" }}
+                  danger
+                  onClick={() => setEdit(false)}
+                >
+                  Отмена
+                </Button>
+              </div>
+            )}
           </UserFormWrapper>
         ) : null}
         {userId ? (
@@ -174,15 +188,16 @@ export const AboutePage = () => {
             Перейти в профиль
           </Link>
         ) : (
-          <Button
-            size="large"
-            type="primary"
-            danger={edit}
-            variant="solid"
-            onClick={() => setEdit((prev) => !prev)}
-          >
-            <EditOutlined />
-          </Button>
+          !edit && (
+            <Button
+              size="large"
+              type="primary"
+              variant="solid"
+              onClick={() => setEdit(true)}
+            >
+              <EditOutlined />
+            </Button>
+          )
         )}
       </UserInfoWrapper>
       <div

@@ -70,6 +70,7 @@ const IconEditor: React.FC<{
               borderRadius={state.width / (100 / state.borderRadius)}
               image={state.image}
               crossOrigin="anonymous"
+              border={0}
             />
             <input
               name="newImage"
@@ -88,7 +89,7 @@ const IconEditor: React.FC<{
           onChange={handleScale}
           min={"0.1"}
           max="5"
-          step="0.01"
+          step="0.1"
           defaultValue="1"
         />
         <br />
@@ -98,7 +99,7 @@ const IconEditor: React.FC<{
           type="range"
           onChange={rotateScale}
           min="0"
-          max="180"
+          max="360"
           step="1"
           defaultValue="0"
         />

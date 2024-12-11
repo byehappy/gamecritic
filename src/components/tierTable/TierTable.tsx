@@ -67,6 +67,12 @@ const RowHeader = styled(Col)`
   justify-content: center;
   color: white;
   font-size: 1rem;
+  span {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 4;
+  }
 `;
 export const TierTable: React.FC<{
   loading: boolean;
@@ -107,14 +113,9 @@ export const TierTable: React.FC<{
               <span
                 style={{
                   textAlign: "center",
-                  display: "inline-block",
-                  textOverflow: "ellipsis",
-                  wordWrap: "break-word",
                   overflow: "hidden",
-                  maxHeight: "4.8em",
-                  lineHeight: "1.2em",
                   color: getTextColor(tier.color),
-                  padding:"0 1em"
+                  padding: "0 1em",
                 }}
               >
                 {tier.name}

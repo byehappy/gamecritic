@@ -91,9 +91,14 @@ export const HomePage = () => {
       setTopUsers(res);
     });
   }, []);
-
-  useEffect(() => {
+  useEffect(()=>{
     getTiers();
+  },[])
+  useEffect(() => {
+    const intreval = setInterval(() => {
+      getTiers();
+    },30 * 1000);
+    return () => clearInterval(intreval);
   }, [getTiers]);
 
   const delTier = (tierId: string) => {
