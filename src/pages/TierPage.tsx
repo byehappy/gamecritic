@@ -3,6 +3,7 @@ import {
   DeleteTier,
   DeleteUserTier,
   gamesRequest,
+  getTheSameUsers,
   getTierById,
   getUserRows,
   updateUserRows,
@@ -53,10 +54,13 @@ import html2canvas from "html2canvas";
 import { AxiosError } from "axios";
 import { TimeoutRequest } from "../utils/cancelableReq";
 import { useToaster } from "../utils/hooks/useToaster";
+import { SameUsersOnTier } from "../components/sameUser/SameUsers";
+import { SameUsers } from "../interfaces/users";
 
 function TierPage() {
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const [saving, setSaving] = useState(false);
+  const [sameUsers, setSameUsers] = useState<SameUsers[]>([]);
   const { rows } = useAppSelector((state) => state.tierData);
   const rowsRef = useRef("");
   const [dirty, setDirty] = useState(false);
@@ -508,7 +512,13 @@ function TierPage() {
       );
     }
   };
-
+  useEffect(()=>{
+    if(!paramsUserId && currentUser){
+      getTheSameUsers(currentUser.id,tierType).then((res) => {
+        setSameUsers(res.data.users);
+      });
+    }
+  },[currentUser, paramsUserId, tierType,saving])
   return (
     <DndContext
       onDragEnd={handleDragEnd}
@@ -553,6 +563,7 @@ function TierPage() {
                     try {
                       setReqIds((prev) => [...prev, "resetReq"]);
                       if (currentUser) {
+                        setSameUsers([])
                         const { request, cancel, resume, pause } =
                           TimeoutRequest(() =>
                             DeleteUserTier(tier.id, currentUser.id).then(() => {
@@ -701,6 +712,7 @@ function TierPage() {
           />
         </div>
       </div>
+      {sameUsers.length !== 0 && <SameUsersOnTier sameUsers={sameUsers} />}
       <DragOverlay>
         {activeGame ? <CardGame id={activeGame.id} game={activeGame} /> : null}
       </DragOverlay>

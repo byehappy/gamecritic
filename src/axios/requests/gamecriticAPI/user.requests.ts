@@ -1,6 +1,7 @@
-import { AxiosPromise } from "axios";
+import { AxiosPromise, AxiosResponse } from "axios";
 import { instanceAPI } from ".";
 import { IAboutGame } from "../../../interfaces/aboutGames";
+import { SameUsers } from "../../../interfaces/users";
 
 export const getUserInfo = async (id: string) => {
   return instanceAPI.get(`/user/info/${id}`);
@@ -14,10 +15,11 @@ export const uploadUserInfo = async (
 
 export const getAllAboutGames = async (
   userId: string
-):  Promise<IAboutGame[]>  => {
+): Promise<IAboutGame[]> => {
   return instanceAPI
     .get(`/about/all-games/${userId}`)
-    .then((res) => JSON.parse(res.data.about_games)).catch(err=>console.error(err));
+    .then((res) => JSON.parse(res.data.about_games))
+    .catch((err) => console.error(err));
 };
 
 export const getAboutGame = async (
@@ -33,4 +35,10 @@ export const updateAboutGame = async (
   value: number
 ) => {
   return instanceAPI.patch(`/about/game/${cardId}/${userId}`, { value });
+};
+
+export const getTheSameUsers = async (
+  id: string,tierId:string,
+): Promise<AxiosResponse<{ users: SameUsers[] }, any>> => {
+  return instanceAPI.get(`/the-same-users/${id}/${tierId}`);
 };

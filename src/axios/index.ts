@@ -38,6 +38,7 @@ export {
   getAboutGame,
   getAllAboutGames,
   updateAboutGame,
+  getTheSameUsers
 } from "./requests/gamecriticAPI/user.requests";
 export {
   getPassedGame,
