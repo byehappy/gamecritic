@@ -515,7 +515,7 @@ function TierPage() {
   useEffect(()=>{
     if(!paramsUserId && currentUser){
       getTheSameUsers(currentUser.id,tierType).then((res) => {
-        setSameUsers(res.data.users);
+        if(res.data) setSameUsers(res.data.users);
       });
     }
   },[currentUser, paramsUserId, tierType,saving])

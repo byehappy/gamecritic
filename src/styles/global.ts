@@ -1,5 +1,5 @@
 import { createGlobalStyle } from "styled-components";
-import SilkscreenRegular from '../assets/fonts/Silkscreen-Regular.ttf'
+import SilkscreenRegular from "../assets/fonts/Silkscreen-Regular.ttf";
 
 export default createGlobalStyle`
     @font-face {
@@ -31,5 +31,12 @@ export default createGlobalStyle`
         &:hover{
             color:hsl(237,55%,57%);
         }
+    }
+    *::-webkit-scrollbar {
+        width: .4vw;       
+    }
+        *::-webkit-scrollbar-thumb {
+        background-color: #8a2be2;
+        border-radius: 20px;
     }
 `;

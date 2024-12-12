@@ -248,69 +248,76 @@ export const CardModal: React.FC<{
             display: "flex",
             flexDirection: "column",
             maxHeight: "47vh",
-            justifyContent: "space-between",
           }}
         >
           <img
             src={game.background_image}
             alt={game.name}
-            style={{ width: "15vw", objectFit: "cover", minHeight: "15vh" }}
+            style={{ width: "15vw", objectFit: "cover", minHeight: "15vh",marginBottom:"1vh" }}
           />
           <div
             style={{
-              display: "-webkit-box",
-              WebkitBoxOrient: "vertical",
-              textOverflow: "ellipsis",
-              WebkitLineClamp: "5",
-              overflow: "hidden",
+              overflow: "auto",
               width: "100%",
-              maxHeight: "7.5em",
+              maxHeight: "8em",
             }}
           >
             {game.description_raw}
           </div>
-          {(game.metacritic !== null || game.metacritic === 0) && (
-            <div>
-              <strong>Оценка на Metacritic:</strong> {game.metacritic}{" "}
-              {textMetacritic}
-            </div>
-          )}
-          {game.rating !== 0 && (
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <strong style={{ marginRight: ".4vw" }}>Рейтинг:</strong>{" "}
-              <Tooltip title={`${game.rating} из 5`}>
-                <Rate allowHalf defaultValue={Number(game.rating)} disabled />
-              </Tooltip>
-            </div>
-          )}
-          {game.released !== null ? (
-            <div>
-              <strong>Дата релиза:</strong>{" "}
-              {new Date(game.released).toLocaleDateString()}
-            </div>
-          ) : (
-            <div>
-              <strong>Дата релиза:</strong> В ближайшее время
-            </div>
-          )}
-          <div>
-            <strong>Среднее время игры:</strong> {game.playtime} {textHoursPlay}
-          </div>
-          <div>
-            <strong style={{ display: "flex" }}>
-              Платформы:
-              <div style={{ display: "flex", gap: ".5vw", marginLeft: ".4vw" }}>
-                {game.parent_platforms.map((platform) => (
-                  <span key={uuid4()}>
-                    {createElement(
-                      platformIcons[
-                        platform.platform.name as keyof typeof platformIcons
-                      ] || platformIcons.Global
-                    )}
-                  </span>
-                ))}
+          <div style={{height:"100%",display:"flex",flexDirection:"column",gap:"1vh",justifyContent:"flex-end"}}>
+            {(game.metacritic !== null || game.metacritic === 0) && (
+              <div>
+                <strong>Оценка на Metacritic:</strong> {game.metacritic}{" "}
+                {textMetacritic}
               </div>
-            </strong>
+            )}
+            {game.rating !== 0 && (
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <strong style={{ marginRight: ".4vw" }}>Рейтинг:</strong>{" "}
+                <Tooltip title={`${game.rating} из 5`}>
+                  <div>
+                    {" "}
+                    <Rate
+                      allowHalf
+                      defaultValue={Number(game.rating)}
+                      disabled
+                    />
+                  </div>
+                </Tooltip>
+              </div>
+            )}
+            {game.released !== null ? (
+              <div>
+                <strong>Дата релиза:</strong>{" "}
+                {new Date(game.released).toLocaleDateString()}
+              </div>
+            ) : (
+              <div>
+                <strong>Дата релиза:</strong> В ближайшее время
+              </div>
+            )}
+            <div>
+              <strong>Среднее время игры:</strong> {game.playtime}{" "}
+              {textHoursPlay}
+            </div>
+            <div>
+              <strong style={{ display: "flex" }}>
+                Платформы:
+                <div
+                  style={{ display: "flex", gap: ".5vw", marginLeft: ".4vw" }}
+                >
+                  {game.parent_platforms.map((platform) => (
+                    <span key={uuid4()}>
+                      {createElement(
+                        platformIcons[
+                          platform.platform.name as keyof typeof platformIcons
+                        ] || platformIcons.Global
+                      )}
+                    </span>
+                  ))}
+                </div>
+              </strong>
+            </div>
           </div>
         </div>
       </div>
