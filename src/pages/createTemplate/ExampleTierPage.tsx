@@ -8,7 +8,7 @@ import { SkeletonFactory } from "../../utils/skeleton/skeleton-factory";
 import { getTextColor } from "../../utils/textColorWithBg";
 import { useCallback, useEffect, useState } from "react";
 import { IGame } from "../../interfaces/games";
-import { gamesRequest } from "../../axios";
+import { gamesRequest, getGame } from "../../axios";
 import { setMessage } from "../../redux/slice/messageSlice";
 
 const Container = styled.div`
@@ -55,13 +55,24 @@ export const ExampleTierPage: React.FC<{
       dispatch(setMessage({ error }));
     }
   }, [createTemplate.filters, dispatch]);
+  const getGameFromCreate = useCallback(async () => {
+    try {
+      const games = await getGame(createTemplate.pickGame).then(
+        (res) => res.data
+      );
+      setGames(games as IGame[]);
+    } catch (error) {
+      dispatch(setMessage({ error }));
+    }
+  }, [createTemplate.pickGame, dispatch]);
+
   useEffect(() => {
     if (createTemplate.pickGame.length !== 0) {
-      setGames(createTemplate.pickGame);
+      getGameFromCreate();
     } else {
       getGames();
     }
-  }, [createTemplate.pickGame, getGames]);
+  }, [createTemplate.pickGame.length, getGameFromCreate, getGames]);
 
   return (
     <>
@@ -95,7 +106,7 @@ export const ExampleTierPage: React.FC<{
                   WebkitLineClamp: "4",
                   color: getTextColor(tier.color),
                   overflow: "hidden",
-                  padding:"0 1em",
+                  padding: "0 1em",
                 }}
               >
                 {tier.name}

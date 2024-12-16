@@ -1,10 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IGame } from "../../interfaces/games";
 import { FilterType } from "../../interfaces/filters";
 
 type CreateTemplateType = {
   filters: { [key: string]: FilterType };
-  pickGame: IGame[];
+  pickGame: number[];
 };
 
 const initialState: CreateTemplateType = {
@@ -34,9 +33,9 @@ const CreateTemplateSlice = createSlice({
         value: type.value ?? state.filters[filter].value,
       };
     },
-    toggleGameSelection: (state, action: PayloadAction<IGame>) => {
+    toggleGameSelection: (state, action: PayloadAction<number>) => {
       const gameIndex = state.pickGame.findIndex(
-        (game) => game.id === action.payload.id
+        (game) => game === action.payload
       );
       if (gameIndex > -1) {
         state.pickGame.splice(gameIndex, 1);
@@ -44,10 +43,13 @@ const CreateTemplateSlice = createSlice({
         state.pickGame.push(action.payload);
       }
     },
+    clearCreateTier: () => {
+      return initialState;
+    },
   },
 });
 
 const { reducer, actions } = CreateTemplateSlice;
 
-export const { setFilter, toggleGameSelection } = actions;
+export const { setFilter, toggleGameSelection, clearCreateTier } = actions;
 export default reducer;

@@ -10,7 +10,15 @@ import {
 } from "antd";
 import { TemplateCard } from "../../components/templateCard/TemplateCard";
 import uuid4 from "uuid4";
-import { createRef, RefObject, useCallback, useEffect, useState } from "react";
+import {
+  createRef,
+  RefObject,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import Column from "antd/es/table/Column";
 import { EyeOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { Filter } from "../../components/filter/Filter";
@@ -24,7 +32,10 @@ import { IGame } from "../../interfaces/games";
 import { SkeletonFactory } from "../../utils/skeleton/skeleton-factory";
 import Search from "antd/es/input/Search";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { toggleGameSelection } from "../../redux/slice/createTemplateSlice";
+import {
+  clearCreateTier,
+  toggleGameSelection,
+} from "../../redux/slice/createTemplateSlice";
 import { useForm } from "antd/es/form/Form";
 import { ExampleTierPage } from "./ExampleTierPage";
 import { AggregationColor } from "antd/es/color-picker/color";
@@ -47,7 +58,7 @@ const HeaderButton = styled(Button)<{ $isActive: boolean }>`
   border: none;
   background: none;
   cursor: pointer;
-  padding:0;
+  padding: 0;
   color: ${(props) => (props.$isActive ? "black" : "grey")};
 `;
 const DEFAULT_ROWS = {
@@ -60,6 +71,7 @@ const DEFAULT_ROWS = {
   ],
 };
 export const CreateTierPage = () => {
+  const [pending, setPending] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { tierId } = useParams();
@@ -82,11 +94,15 @@ export const CreateTierPage = () => {
   const [games, setGames] = useState<IGame[]>();
   const dispatch = useAppDispatch();
   const [form] = useForm();
+  const processedGameRef = useRef(new Set());
   const [defaultValue, setDefaultValue] = useState({
     rows: DEFAULT_ROWS.rows,
     name: "Ваш шаблон",
     img: "",
   });
+  useLayoutEffect(() => {
+    dispatch(clearCreateTier());
+  }, [dispatch]);
   const getTierInfo = useCallback(async () => {
     const res = await getTierById(tierId!).then((res) => res.data);
     if (currentUser?.id !== res.author_id) {
@@ -94,6 +110,13 @@ export const CreateTierPage = () => {
       navigate("/");
       return;
     }
+    if (res.pickGame.length > 0)
+      res.pickGame.forEach((e) => {
+        if (!processedGameRef.current.has(e)) {
+          dispatch(toggleGameSelection(e));
+          processedGameRef.current.add(e);
+        }
+      });
     setDefaultValue({ rows: res.rows, name: res.title, img: res.imageSrc! });
     setFormValues({
       rows: res.rows,
@@ -108,6 +131,7 @@ export const CreateTierPage = () => {
       tags: res.filters.tags.value,
       platforms: res.filters.platforms.value,
     }));
+
     setLoading(false);
   }, [currentUser?.id, dispatch, navigate, tierId]);
   useEffect(() => {
@@ -158,6 +182,7 @@ export const CreateTierPage = () => {
   };
   const finishForm = async () => {
     if (!currentUser) return;
+    setPending(true)
     try {
       if (tierId) {
         const result = await UpdateTier(
@@ -166,7 +191,7 @@ export const CreateTierPage = () => {
             rows: formValues.rows,
             filters: createTemplate.filters,
             imageSrc: formValues.img,
-            pickGame: createTemplate.pickGame.map((e) => e.id),
+            pickGame: createTemplate.pickGame,
           },
           tierId
         );
@@ -182,7 +207,7 @@ export const CreateTierPage = () => {
           rows: formValues.rows,
           filters: createTemplate.filters,
           imageSrc: formValues.img,
-          pickGame: createTemplate.pickGame.map((e) => e.id),
+          pickGame: createTemplate.pickGame,
         });
         dispatch(
           setMessage({
@@ -194,6 +219,8 @@ export const CreateTierPage = () => {
       const error = e as AxiosError;
       const message = error.response?.data as ErrorAuth;
       dispatch(setMessage({ error: message.error[0].msg }));
+    } finally{
+      setPending(false)
     }
   };
   function handleKeyDown(event: any) {
@@ -238,6 +265,7 @@ export const CreateTierPage = () => {
                           .some(({ errors }) => errors.length) ||
                         !form.isFieldsTouched()
                   }
+                  loading={pending}
                 >
                   Сохранить
                 </Button>
@@ -434,13 +462,13 @@ export const CreateTierPage = () => {
                                 game={{
                                   ...game,
                                   disabled: !createTemplate.pickGame.find(
-                                    (pickGame) => pickGame.id === game.id
+                                    (pickGame) => pickGame === game.id
                                   ),
                                 }}
                                 id={game.id}
                                 size="small"
                                 onCardClick={() =>
-                                  dispatch(toggleGameSelection(game))
+                                  dispatch(toggleGameSelection(game.id))
                                 }
                               />
                             );
