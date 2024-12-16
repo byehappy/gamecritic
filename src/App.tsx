@@ -11,7 +11,7 @@ import { LoadingGameCritic } from "./utils/LoadingSvgGame";
 function App() {
   const { addMessage } = useToaster();
   const messages = useAppSelector((state) => state.message);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(window.location.pathname==='/');
   useEffect(() => {
     setTimeout(() => setLoading(false), 4000);
   }, []);

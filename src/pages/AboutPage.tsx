@@ -16,7 +16,7 @@ const UserInfoWrapper = styled.div`
   display: flex;
   width: 100%;
   height: 25vh;
-  min-height:200px;
+  min-height: 200px;
   padding: 2vh 5vw;
   gap: 5%;
 `;
@@ -27,7 +27,6 @@ const IconUser = styled.img`
   background-color: #9494944e;
 `;
 const UserFormWrapper = styled.div`
-  padding: 3%;
   gap: 5%;
   display: flex;
   flex-direction: column;
@@ -125,52 +124,68 @@ export const AboutePage = () => {
         )}
         {!loading && userInfo.init_image && !edit && (
           <IconUser
-            style={{ width: "15%",minWidth:"200px",minHeight:"200px", objectFit: "cover" }}
+            style={{
+              width: "15%",
+              minWidth: "200px",
+              minHeight: "200px",
+              objectFit: "cover",
+            }}
             src={userInfo.init_image}
           />
         )}
         {userInfo ? (
           <UserFormWrapper>
-            <div>
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "1vh" }}
+            >
+              {!edit && (
+                <div style={{ padding: "3%" }}>
+                  <div>Никнейм:{userInfo.name}</div>
+                  <div>Описание:{userInfo.description}</div>
+                </div>
+              )}
               <div>
-                Никнейм:
-                {!edit ? (
-                  userInfo.name
-                ) : (
-                  <Input
-                    value={editInfo.name ?? ""}
-                    onChange={(e) =>
-                      setEditInfo((prev) => ({ ...prev, name: e.target.value }))
-                    }
-                    required
-                  />
+                {edit && (
+                  <div>
+                    Никнейм:
+                    <Input
+                      value={editInfo.name ?? ""}
+                      onChange={(e) =>
+                        setEditInfo((prev) => ({
+                          ...prev,
+                          name: e.target.value,
+                        }))
+                      }
+                      required
+                    />
+                  </div>
                 )}
               </div>
               <div>
-                Описание:
-                {!edit ? (
-                  userInfo.description
-                ) : (
-                  <Input
-                    value={editInfo.description ?? ""}
-                    onChange={(e) =>
-                      setEditInfo((prev) => ({
-                        ...prev,
-                        description: e.target.value,
-                      }))
-                    }
-                    required
-                  />
+                {edit && (
+                  <div>
+                    Описание:
+                    <Input
+                      value={editInfo.description ?? ""}
+                      onChange={(e) =>
+                        setEditInfo((prev) => ({
+                          ...prev,
+                          description: e.target.value,
+                        }))
+                      }
+                      required
+                    />
+                  </div>
                 )}
               </div>
             </div>
             {edit && (
-              <div style={{ display: "flex", justifyContent: "space-around" }}>
-                <Button style={{ width: "45%" }} onClick={handleSave}>
+              <div style={{ display: "flex", marginTop: "2vh" }}>
+                <Button style={{ width: "100%" }} onClick={handleSave}>
                   Сохранить
                 </Button>
                 <Button
-                  style={{ width: "45%" }}
+                  style={{ width: "75%" }}
                   danger
                   onClick={() => setEdit(false)}
                 >

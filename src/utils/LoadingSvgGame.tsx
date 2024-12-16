@@ -3,10 +3,12 @@ const backgroundFrames = keyframes`
   0%{
     background-color:#ffffff;
   } 
-  50%{  
+  60%{  
     background-color:#ffffff;
+    opacity:0.9;
   }100%{
     background-color:transparent;
+    opacity:0;
   }
 `;
 const Container = styled.div`
@@ -20,7 +22,7 @@ const Container = styled.div`
   align-items: center;
   z-index: 1000;
   background-color: #ffffff;
-  animation: ${backgroundFrames} 7s linear;
+  animation: ${backgroundFrames} 5s linear;
 `;
 
 export const LoadingGameCritic = () => {
@@ -43,43 +45,44 @@ export const LoadingGameCritic = () => {
             y2="0"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stop-color="DeepPink">
+            <stop stopColor="LawnGreen">
               <animate
                 attributeName="stop-color"
-                values="DeepPink;LawnGreen;MediumBlue"
+                values="LawnGreen;MediumBlue"
                 begin="1s"
-                dur="2s"
-                fill="freeze"
-              />
-              <animate
-                attributeName="offset"
-                values="0;1"
-                begin="2s"
-                dur="2s"
-                fill="freeze"
-              />
-            </stop>
-            <stop stop-color="yellow">
-              <animate
-                attributeName="stop-color"
-                values="red;DeepPink;LawnGreen"
                 dur="1s"
                 fill="freeze"
               />
               <animate
                 attributeName="offset"
                 values="0;1"
-                begin="1s"
+                begin="1.5s"
+                dur="1.5s"
+                fill="freeze"
+              />
+            </stop>
+            <stop stopColor="yellow">
+              <animate
+                attributeName="stop-color"
+                values="DeepPink;LawnGreen"
+                begin=".5s"
+                dur="1s"
+                fill="freeze"
+              />
+              <animate
+                attributeName="offset"
+                values="0;1"
+                begin=".5s"
                 dur="2s"
                 fill="freeze"
               />
             </stop>
-            <stop stop-color="yellow">
+            <stop stopColor="yellow">
               <animate
                 attributeName="stop-color"
                 values="yellow;red;DeepPink"
-                begin={".2s"}
-                dur="2s"
+                begin=".2s"
+                dur="1s"
                 fill="freeze"
               />
               <animate
@@ -90,7 +93,7 @@ export const LoadingGameCritic = () => {
                 fill="freeze"
               />
             </stop>
-            <stop stop-color="yellow">
+            <stop stopColor="yellow">
               <animate
                 id="yellowanim"
                 attributeName="offset"
@@ -99,7 +102,7 @@ export const LoadingGameCritic = () => {
                 fill="freeze"
               />
             </stop>
-            <stop stop-color="transparent" />
+            <stop stopColor="transparent" />
           </linearGradient>
         </defs>
 

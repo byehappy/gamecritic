@@ -33,10 +33,13 @@ export default createGlobalStyle`
         }
     }
     *::-webkit-scrollbar {
-        width: .4vw;       
+        width: 4px;       
     }
-        *::-webkit-scrollbar-thumb {
-        background-color: #8a2be2;
-        border-radius: 20px;
+    *::-webkit-scrollbar-thumb {
+        background-color: gray;
+    }
+    *::-webkit-scrollbar-track { 
+        -webkit-box-shadow: 5px 5px 5px -5px rgba(34, 60, 80, 0.2) inset; 
+        background-color: #f9f9fd; 
     }
 `;

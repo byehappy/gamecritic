@@ -1,4 +1,5 @@
-import { ChangeEvent, useState } from "react";
+import { Button } from "antd";
+import { ChangeEvent, useRef, useState } from "react";
 import AvatarEditor, { type Position } from "react-avatar-editor";
 import Dropzone from "react-dropzone";
 type State = {
@@ -15,6 +16,7 @@ const IconEditor: React.FC<{
   editor: React.RefObject<AvatarEditor>;
   init_image: string;
 }> = ({ editor, init_image }) => {
+  const inputRef = useRef<HTMLInputElement>(null);
   const [state, setState] = useState<State>({
     image: init_image,
     position: { x: 0.5, y: 0.5 },
@@ -104,12 +106,16 @@ const IconEditor: React.FC<{
           defaultValue="0"
         />
         <br />
-        <input
-          type="file"
-          accept="image/png, image/jpeg, .svg"
-          onChange={onImageChange}
-          style={{ textWrap: "wrap", maxWidth: "10vw" }}
-        />
+        <label>
+          <input
+            type="file"
+            accept="image/png, image/jpeg, .svg"
+            onChange={onImageChange}
+            style={{ display: "none" }}
+            ref={inputRef}
+          />
+          <Button onClick={()=> inputRef.current?.click()}>Выберите файл</Button>
+        </label>
       </div>
     </div>
   );

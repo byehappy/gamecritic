@@ -2,9 +2,9 @@ import { useDroppable } from "@dnd-kit/core";
 import { CardGame } from "../card/CardGame";
 import { rectSortingStrategy, SortableContext } from "@dnd-kit/sortable";
 import styled from "styled-components";
-import { Col } from "antd";
+import { Col, Tooltip, Typography } from "antd";
 import { UpOutlined, DownOutlined, SettingOutlined } from "@ant-design/icons";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { RowSettings } from "./rowSettings/RowSettings";
 import { useAppSelector, useAppDispatch } from "../../redux/hooks";
 import { setRows } from "../../redux/slice/tierDataSlice";
@@ -59,6 +59,13 @@ const FilterRow = styled.div`
     cursor: pointer;
   }
 `;
+const StyledTypography = styled(Typography)({
+  display: "-webkit-box",
+  "-webkit-line-clamp": "4",
+  "-webkit-box-orient": "vertical",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+});
 const RowHeader = styled(Col)`
   display: flex;
   min-height: 9.5rem;
@@ -67,12 +74,6 @@ const RowHeader = styled(Col)`
   justify-content: center;
   color: white;
   font-size: 1rem;
-  span {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    text-overflow: ellipsis;
-    -webkit-line-clamp: 4;
-  }
 `;
 export const TierTable: React.FC<{
   loading: boolean;
@@ -99,63 +100,77 @@ export const TierTable: React.FC<{
   };
   return loading
     ? SkeletonFactory(5, "Table")
-    : rowsData.map((tier, index) => (
-        <Container key={tier.id} id={tier.id}>
-          <RowHeader style={{ backgroundColor: tier.color }}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                wordBreak: "break-all",
-              }}
-            >
-              <span
+    : rowsData.map((tier, index) => {
+        return (
+          <Container key={tier.id} id={tier.id}>
+            <RowHeader style={{ backgroundColor: tier.color }}>
+              <div
                 style={{
-                  textAlign: "center",
-                  overflow: "hidden",
-                  color: getTextColor(tier.color),
-                  padding: "0 1em",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  wordBreak: "break-all",
                 }}
               >
-                {tier.name}
-              </span>
-            </div>
-          </RowHeader>
-          <SortableContext items={tier.games} strategy={rectSortingStrategy}>
-            <DroppableCell id={tier.id}>
-              {tier.games.map((game) => {
-                return <CardGame key={game.id} game={game} id={game.id} />;
-              })}
-            </DroppableCell>
-          </SortableContext>
-          {currentUser && (
-            <FilterRow>
-              <SettingOutlined
-                style={{ fontSize: "3rem" }}
-                onClick={() => setIsOpenTierId(tier.id)}
-              />
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                <UpOutlined
-                  style={{ fontSize: "2rem" }}
-                  onClick={() => changeIndex(index, "up")}
-                />
-                <DownOutlined
-                  style={{ fontSize: "2rem" }}
-                  onClick={() => changeIndex(index, "down")}
-                />
+                <CustomSpan name={tier.name} color={tier.color} />
               </div>
-            </FilterRow>
-          )}
-          {isOpenTierId === tier.id ? (
-            <RowSettings
-              id={tier.id}
-              index={index}
-              isOpen={true}
-              onClose={() => setIsOpenTierId(null)}
-              tier={tier}
-            />
-          ) : null}
-        </Container>
-      ));
+            </RowHeader>
+            <SortableContext items={tier.games} strategy={rectSortingStrategy}>
+              <DroppableCell id={tier.id}>
+                {tier.games.map((game) => {
+                  return <CardGame key={game.id} game={game} id={game.id} />;
+                })}
+              </DroppableCell>
+            </SortableContext>
+            {currentUser && (
+              <FilterRow>
+                <SettingOutlined
+                  style={{ fontSize: "3rem" }}
+                  onClick={() => setIsOpenTierId(tier.id)}
+                />
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <UpOutlined
+                    style={{ fontSize: "2rem" }}
+                    onClick={() => changeIndex(index, "up")}
+                  />
+                  <DownOutlined
+                    style={{ fontSize: "2rem" }}
+                    onClick={() => changeIndex(index, "down")}
+                  />
+                </div>
+              </FilterRow>
+            )}
+            {isOpenTierId === tier.id ? (
+              <RowSettings
+                id={tier.id}
+                index={index}
+                isOpen={true}
+                onClose={() => setIsOpenTierId(null)}
+                tier={tier}
+              />
+            ) : null}
+          </Container>
+        );
+      });
+};
+
+const CustomSpan = ({ name, color }: { name: string; color: string }) => {
+  const spanRef = useRef<HTMLSpanElement>();
+  return (
+    <StyledTypography
+      style={{
+        textAlign: "center",
+        color: getTextColor(color),
+        padding: "0 1em",
+      }}
+      ref={spanRef}
+    >
+      {spanRef.current &&
+      spanRef.current.offsetHeight < spanRef.current.scrollHeight ? (
+        <Tooltip title={name}>{name}</Tooltip>
+      ) : (
+        name
+      )}
+    </StyledTypography>
+  );
 };

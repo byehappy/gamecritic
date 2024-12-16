@@ -23,10 +23,23 @@ const AbouteCardWrapper = styled.div`
     max-width: 100%;
     height: 31vh;
   }
-  div {
-    width: 100%;
-    height: 5vh;
-    text-align: center;
+  div{
+    position:relative;
+  }
+  .bottom-text {
+    padding: 10px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    color: white;
+    line-height: 22px;
+    background-color: #000000ce;
+    gap: 0.2vw;
+    display: flex;
+    height: fit-content;
+    flex-direction: column;
+    align-items:center;
+    width:100%;
   }
 `;
 export const AboutCard: React.FC<{ card: IAboutGame; change: boolean }> = ({
@@ -100,84 +113,91 @@ export const AboutCard: React.FC<{ card: IAboutGame; change: boolean }> = ({
   };
   return (
     <AbouteCardWrapper>
-      {change ? (
-        <Popover
-          open={open}
-          onOpenChange={handleOpenChange}
-          content={
-            <div style={{ display: "grid", height: "30vh" }}>
-              <Search
-                style={{ marginBottom: "1vw" }}
-                placeholder="Введите название игры"
-                onSearch={(value) => {
-                  handleChangeFiters("page", 1);
-                  handleChangeFiters("search", value);
-                }}
-              />
-              <div
-                style={{
-                  display: "inline-flex",
-                  gap: "1%",
-                }}
-              >
-                {loading &&
-                  SkeletonFactory(filterFlags.page_size, "Card-small")}
-                {!loading &&
-                  choiceGames?.map((game) => {
-                    return (
-                      <CardGame
-                        key={game.id}
-                        game={{
-                          ...game,
-                          disabled: game.id === valueGame?.id,
-                        }}
-                        id={game.id}
-                        size="small"
-                        onCardClick={() => {
-                          choiceGame(game.id);
-                        }}
-                      />
-                    );
-                  })}
-              </div>
-              <Pagination
-                defaultCurrent={1}
-                defaultPageSize={5}
-                total={count ?? 1}
-                pageSizeOptions={[5]}
-                onChange={(page, pageSize) => {
-                  handleChangeFiters("page", page);
-                  handleChangeFiters("page_size", pageSize);
-                }}
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "center",
-                }}
-              />
-            </div>
-          }
-          placement="bottom"
-          trigger="click"
-          title={"Выбрать игру"}
-        >
-          <img
-            src={valueGame?.background_image ?? "https://mebeliero.ru/images/photos/medium/no_image.png"}
-            alt={valueGame?.name}
-            style={{ objectFit: "cover", cursor: "pointer",width:"100%" }}
-          />
-        </Popover>
-      ) : (
-        <img
-          src={valueGame?.background_image ?? "https://mebeliero.ru/images/photos/medium/no_image.png"}
-          alt={valueGame?.name}
-          style={{ objectFit: "cover" }}
-        />
-      )}
       <div>
-        {card.name}
-        <br />
-        {valueGame?.name}
+        {change ? (
+          <Popover
+            open={open}
+            onOpenChange={handleOpenChange}
+            content={
+              <div style={{ display: "grid", height: "30vh" }}>
+                <Search
+                  style={{ marginBottom: "1vw" }}
+                  placeholder="Введите название игры"
+                  onSearch={(value) => {
+                    handleChangeFiters("page", 1);
+                    handleChangeFiters("search", value);
+                  }}
+                />
+                <div
+                  style={{
+                    display: "inline-flex",
+                    gap: "1%",
+                  }}
+                >
+                  {loading &&
+                    SkeletonFactory(filterFlags.page_size, "Card-small")}
+                  {!loading &&
+                    choiceGames?.map((game) => {
+                      return (
+                        <CardGame
+                          key={game.id}
+                          game={{
+                            ...game,
+                            disabled: game.id === valueGame?.id,
+                          }}
+                          id={game.id}
+                          size="small"
+                          onCardClick={() => {
+                            choiceGame(game.id);
+                          }}
+                        />
+                      );
+                    })}
+                </div>
+                <Pagination
+                  defaultCurrent={1}
+                  defaultPageSize={5}
+                  total={count ?? 1}
+                  pageSizeOptions={[5]}
+                  onChange={(page, pageSize) => {
+                    handleChangeFiters("page", page);
+                    handleChangeFiters("page_size", pageSize);
+                  }}
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                />
+              </div>
+            }
+            placement="bottom"
+            trigger="click"
+            title={"Выбрать игру"}
+          >
+            <img
+              src={
+                valueGame?.background_image ??
+                "https://mebeliero.ru/images/photos/medium/no_image.png"
+              }
+              alt={valueGame?.name}
+              style={{ objectFit: "cover", cursor: "pointer", width: "100%" }}
+            />
+          </Popover>
+        ) : (
+          <img
+            src={
+              valueGame?.background_image ??
+              "https://mebeliero.ru/images/photos/medium/no_image.png"
+            }
+            alt={valueGame?.name}
+            style={{ objectFit: "cover" }}
+          />
+        )}
+        <div className="bottom-text">
+          {card.name}
+          <span>{valueGame?.name}</span>
+        </div>
       </div>
     </AbouteCardWrapper>
   );
