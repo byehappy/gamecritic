@@ -1,12 +1,11 @@
 import styled from "styled-components";
 
-export const Item = styled.div<{ $IsDisabled: boolean }>`
+export const Item = styled.div<{ $IsDisabled: boolean ,$notClick: boolean }>`
   position: relative;
   flex: none;
   height: 20vh;
   transition: transform 0.3s ease-in-out;
-  pointer-events: ${(props) => props.$IsDisabled && "none"};
-  opacity:${(props) => props.$IsDisabled && "0.5"};
+  pointer-events: ${(props) => (props.$IsDisabled || props.$notClick) && "none"};
   img {
     object-fit: cover;
     width: 100%;
@@ -23,5 +22,11 @@ export const Item = styled.div<{ $IsDisabled: boolean }>`
     color: white;
     line-height: 22px;
     background-color: black;
+  }
+  button{
+    pointer-events:auto !important;
+  }
+  a{
+    opacity:${(props) => props.$IsDisabled && "0.5"};
   }
 `;

@@ -3,6 +3,7 @@ import {
   DeleteTier,
   DeleteUserTier,
   gamesRequest,
+  getGamesOnIdsRequest,
   getTheSameUsers,
   getTierById,
   getUserRows,
@@ -77,7 +78,7 @@ function TierPage() {
     name: string;
     id: string;
     filter: FilterTierValue;
-    pickGame: IGame[] | [];
+    pickGame: number[] | [];
     count: number | null;
     authorId: string;
     rows: {
@@ -211,9 +212,15 @@ function TierPage() {
     try {
       const existingGamesInRows = rows.flatMap((row) => row.games);
       let resGames: IGame[], count: number;
-      if (tier?.pickGame) {
-        resGames = tier.pickGame;
-        count = tier.count!;
+      if (tier?.pickGame && tier.pickGame.length > 0) {
+        const response = await getGamesOnIdsRequest(
+          tier.pickGame.toString().split(",").join(","),
+          {
+            ...filterFlags,
+          }
+        ).then((res) => res.data);
+        resGames = response.games;
+        count = response.meta.total;
       } else {
         const response = await gamesRequest({
           ...filterFlags,
@@ -512,13 +519,13 @@ function TierPage() {
       );
     }
   };
-  useEffect(()=>{
-    if(!paramsUserId && currentUser){
-      getTheSameUsers(currentUser.id,tierType).then((res) => {
-        if(res.data) setSameUsers(res.data.users);
+  useEffect(() => {
+    if (!paramsUserId && currentUser) {
+      getTheSameUsers(currentUser.id, tierType).then((res) => {
+        if (res.data) setSameUsers(res.data.users);
       });
     }
-  },[currentUser, paramsUserId, tierType,saving])
+  }, [currentUser, paramsUserId, tierType, saving]);
   return (
     <DndContext
       onDragEnd={handleDragEnd}
@@ -563,20 +570,26 @@ function TierPage() {
                     try {
                       setReqIds((prev) => [...prev, "resetReq"]);
                       if (currentUser) {
-                        setSameUsers([])
-                        const { request, cancel, resume, pause } =
-                          TimeoutRequest(() =>
-                            DeleteUserTier(tier.id, currentUser.id).then(() => {
-                              loadGamesStorage();
-                              getGames();
-                            })
-                          );
-                        addCancelable(cancel, resume, pause, "Оменить сброс?");
-                        request.finally(() =>
-                          setReqIds((prev) =>
-                            prev.filter((id) => id !== "resetReq")
-                          )
+                        setSameUsers([]);
+                        const cancelableReq = TimeoutRequest(() =>
+                          DeleteUserTier(tier.id, currentUser.id).then(() => {
+                            loadGamesStorage();
+                            getGames();
+                          })
                         );
+                        if (cancelableReq) {
+                          addCancelable(
+                            cancelableReq.cancel,
+                            cancelableReq.resume,
+                            cancelableReq.pause,
+                            "Оменить сброс?"
+                          );
+                          cancelableReq.request.finally(() =>
+                            setReqIds((prev) =>
+                              prev.filter((id) => id !== "resetReq")
+                            )
+                          );
+                        }
                       } else {
                         sessionStorage.removeItem(tier.id);
                         setLoadingTray(true);
@@ -612,23 +625,29 @@ function TierPage() {
                     onClick={() => {
                       try {
                         setReqIds((prev) => [...prev, "delReq"]);
-                        const { request, cancel, resume, pause } =
-                          TimeoutRequest(() =>
-                            DeleteTier(tier.id, currentUser.id)
+                        const cancelableReq = TimeoutRequest(() =>
+                          DeleteTier(tier.id, currentUser.id)
+                        );
+                        if (cancelableReq !== null) {
+                          addCancelable(
+                            cancelableReq.cancel,
+                            cancelableReq.resume,
+                            cancelableReq.pause,
+                            "Оменить удаление шаблона?"
                           );
-                        addCancelable(cancel, resume, pause);
-                        request
-                          .then(() => {
-                            setReqIds((prev) =>
-                              prev.filter((id) => id !== "delReq")
+                          cancelableReq.request
+                            .then(() => {
+                              setReqIds((prev) =>
+                                prev.filter((id) => id !== "delReq")
+                              );
+                              navigate("/");
+                            })
+                            .catch(() =>
+                              setReqIds((prev) =>
+                                prev.filter((id) => id !== "delReq")
+                              )
                             );
-                            navigate("/");
-                          })
-                          .catch(() =>
-                            setReqIds((prev) =>
-                              prev.filter((id) => id !== "delReq")
-                            )
-                          );
+                        }
                       } catch (error) {
                         dispatch(setMessage(error));
                       }

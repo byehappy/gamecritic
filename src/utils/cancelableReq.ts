@@ -1,25 +1,45 @@
 import { DEFAULT_TIMEOUT_REQUEST } from "./constans";
 
-export const TimeoutRequest = <T>(asyncFunction: () => Promise<T>) => {
-  const controller = new AbortController();
+type ActiveReq = {
+  [key: string]: AbortController;
+};
+const activeReq: ActiveReq = {};
+
+export const TimeoutRequest = <T>(
+  asyncFunction: () => Promise<T>,
+  tierId?: string
+) => {
   let timeoutId: NodeJS.Timeout | null = null;
   let remaning = DEFAULT_TIMEOUT_REQUEST;
   let start: number | null = null;
   let resolverPromise: (value: T) => void;
   let rejectPromise: (reason?: Error) => void;
-
+  if (tierId && activeReq[tierId]) {
+    activeReq[tierId].abort();
+    return null;
+  }
+  const controller = new AbortController();
+  if (tierId && !activeReq[tierId]) {
+    activeReq[tierId] = controller;
+  }
   const request = new Promise<T>((resolve, reject) => {
     resolverPromise = resolve;
     rejectPromise = reject;
     const startReq = () => {
       start = Date.now();
       timeoutId = setTimeout(() => {
-        asyncFunction().then(resolve).catch(reject);
+        asyncFunction()
+          .then(resolve)
+          .catch(reject)
+          .finally(() => {
+            if (tierId) delete activeReq[tierId];
+          });
       }, remaning);
     };
     startReq();
     controller.signal.addEventListener("abort", () => {
       if (timeoutId) clearTimeout(timeoutId);
+      if (tierId) delete activeReq[tierId];
       return reject(new Error("отмена"));
     });
   });

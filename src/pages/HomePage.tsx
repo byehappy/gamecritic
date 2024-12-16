@@ -72,7 +72,7 @@ const HeaderTemplate = styled.div`
 `;
 
 export const HomePage = () => {
-  const { addCancelable, setReqIds, reqIds } = useToaster();
+  const { addCancelable, setReqIds, reqIds, delToasterTierId } = useToaster();
   const dispatch = useAppDispatch();
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const [tiers, setTiers] = useState<Tier[][] | null>();
@@ -101,17 +101,28 @@ export const HomePage = () => {
     return () => clearInterval(intreval);
   }, [getTiers]);
 
-  const delTier = (tierId: string) => {
+  const delTier = (tierId: string, title: string) => {
     if (currentUser)
       try {
         setReqIds((prev) => [...prev, tierId]);
-        const { request, cancel, resume, pause } = TimeoutRequest(() =>
-          DeleteTier(tierId, currentUser.id).then(() => getTiers())
+        const cancelableReq = TimeoutRequest(
+          () => DeleteTier(tierId, currentUser.id).then(() => getTiers()),
+          tierId
         );
-        addCancelable(cancel, resume, pause);
-        request.finally(() =>
-          setReqIds((prev) => prev.filter((id) => id !== tierId))
-        );
+        if (cancelableReq !== null) {
+          addCancelable(
+            cancelableReq.cancel,
+            cancelableReq.resume,
+            cancelableReq.pause,
+            `Оменить удаление шаблона:${title}?`,
+            tierId
+          );
+          cancelableReq.request.finally(() =>
+            setReqIds((prev) => prev.filter((id) => id !== tierId))
+          );
+        } else {
+          delToasterTierId(tierId);
+        }
       } catch (error) {
         dispatch(setMessage(error));
       }

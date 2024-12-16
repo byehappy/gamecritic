@@ -1,15 +1,15 @@
 import { Button } from "antd";
 import { Item } from "./TemplateCard.style";
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, RollbackOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 
 export const TemplateCard: React.FC<{
   img: string | null;
   name: string;
   id?: string;
-  del: false | ((tierId: string) => void);
-  disable?:boolean;
-}> = ({ img, name, id, del,disable = false }) => {
+  del: false | ((tierId: string, name: string) => void);
+  disable?: boolean;
+}> = ({ img, name, id, del, disable = false }) => {
   let itemImg, itemName;
   if (name !== "" && name !== null) {
     itemName = name;
@@ -22,10 +22,10 @@ export const TemplateCard: React.FC<{
     itemImg = "https://mebeliero.ru/images/photos/medium/no_image.png";
   }
   return (
-    <Item $IsDisabled={!id || disable}>
+    <Item $IsDisabled={disable} $notClick={!id}>
       {id && del && (
         <Button
-          onClick={() => del(id)}
+          onClick={() => del(id, name)}
           style={{
             zIndex: 2,
             position: "absolute",
@@ -34,7 +34,11 @@ export const TemplateCard: React.FC<{
             border: "none",
           }}
         >
-          <DeleteOutlined style={{ color: "white", fontSize: "1rem" }} />
+          {!disable ? (
+            <DeleteOutlined style={{ color: "white", fontSize: "1rem" }} />
+          ) : (
+            <RollbackOutlined style={{ color: "white", fontSize: "1rem" }} />
+          )}
         </Button>
       )}
       <Link to={`/tier-list/${id}`}>

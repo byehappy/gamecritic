@@ -170,12 +170,14 @@ export const ToasterList: React.FC<{
 
 export const ToasterContext = createContext<{
   toasters: Toaster[];
+  delToasterTierId: (tierId: string) => void;
   addMessage: (message: string, type: MessageType) => void;
   addCancelable: (
     cancel: () => void,
     resume: () => void,
     pause: () => void,
-    message?: string
+    message?: string,
+    tierId?: string
   ) => void;
   reqIds: string[];
   setReqIds: React.Dispatch<React.SetStateAction<string[]>>;
@@ -231,7 +233,8 @@ export const ToasterProvider: React.FC<{ children: React.ReactNode }> = ({
       cancel: () => void,
       resume: () => void,
       pause: () => void,
-      message?: string
+      message?: string,
+      tierId?: string
     ) => {
       const timeoutId = setTimeout(() => {
         setToasters((prev) =>
@@ -247,7 +250,7 @@ export const ToasterProvider: React.FC<{ children: React.ReactNode }> = ({
             prev.filter((toaster) => toaster.id !== newToaster.id)
           );
         },
-        id: uuid4(),
+        id: tierId ?? uuid4(),
         remaining: TOAST_TIMEOUT,
         timeoutId,
         start: Date.now(),
@@ -267,9 +270,20 @@ export const ToasterProvider: React.FC<{ children: React.ReactNode }> = ({
     },
     []
   );
+  const delToasterTierId = useCallback((tierId: string) => {
+    setToasters((prev) => prev.filter((toaster) => toaster.id !== tierId));
+  }, []);
+
   const ToasterProperties = useMemo(
-    () => ({ toasters, addMessage, addCancelable, reqIds, setReqIds }),
-    [addCancelable, addMessage, reqIds, toasters]
+    () => ({
+      toasters,
+      addMessage,
+      addCancelable,
+      reqIds,
+      setReqIds,
+      delToasterTierId,
+    }),
+    [addCancelable, addMessage, reqIds, toasters, delToasterTierId]
   );
   useEffect(() => {
     if (toasters.length === 0 && container) {
