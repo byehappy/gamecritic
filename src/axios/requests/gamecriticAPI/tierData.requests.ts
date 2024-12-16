@@ -1,7 +1,7 @@
 import { AxiosPromise } from "axios";
 import { instanceAPI } from ".";
 import { FilterType } from "../../../interfaces/filters";
-import { IGame } from "../../../interfaces/games";
+
 
 export interface Tier {
   id: string;
@@ -13,7 +13,7 @@ export interface Tier {
   author_id: string;
 }
 export interface ViewTier extends Omit<Tier, "pickGame"> {
-  pickGame: IGame[] | [];
+  pickGame: number[] | [];
   count: number | null;
 }
 export interface UserTier {

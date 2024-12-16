@@ -24,7 +24,7 @@ export {
   getAuthorTiersSize,
   getAuthorTiers,
   UpdateTier,
-  DeleteUserTier
+  DeleteUserTier,
 } from "./requests/gamecriticAPI/tierData.requests";
 export {
   getFavoriteGames,
@@ -38,7 +38,7 @@ export {
   getAboutGame,
   getAllAboutGames,
   updateAboutGame,
-  getTheSameUsers
+  getTheSameUsers,
 } from "./requests/gamecriticAPI/user.requests";
 export {
   getPassedGame,
@@ -46,5 +46,6 @@ export {
   UnpassedGame,
   getTopUsers,
   getUserCount,
-  getPassedGamesUser
+  getPassedGamesUser,
 } from "./requests/gamecriticAPI/passGame.request";
+export { getGamesOnIdsRequest,getGame } from "./requests/gamecriticAPI/games.request";
