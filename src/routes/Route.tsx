@@ -5,7 +5,6 @@ import { useEffect } from "react";
 import { refreshToken } from "../axios";
 import { decodeToken } from "../utils/expiredToken";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { logout } from "../redux/slice/authSlice";
 
 function Root() {
   const dispacth = useAppDispatch();

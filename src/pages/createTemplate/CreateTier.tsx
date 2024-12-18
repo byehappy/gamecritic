@@ -182,7 +182,7 @@ export const CreateTierPage = () => {
   };
   const finishForm = async () => {
     if (!currentUser) return;
-    setPending(true)
+    setPending(true);
     try {
       if (tierId) {
         const result = await UpdateTier(
@@ -219,8 +219,8 @@ export const CreateTierPage = () => {
       const error = e as AxiosError;
       const message = error.response?.data as ErrorAuth;
       dispatch(setMessage({ error: message.error[0].msg }));
-    } finally{
-      setPending(false)
+    } finally {
+      setPending(false);
     }
   };
   function handleKeyDown(event: any) {
@@ -496,7 +496,7 @@ export const CreateTierPage = () => {
         <ExampleTierPage formValues={formValues} />
       </div>
       <FloatButton
-        style={{ zIndex: 5 }}
+        style={{ zIndex: 5, bottom: 110 }}
         icon={<EyeOutlined />}
         tooltip={<div>Посмотреть на шаблон</div>}
         onClick={() => setVisibleForm(!visibleForm)}

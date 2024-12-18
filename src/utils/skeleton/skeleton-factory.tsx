@@ -6,8 +6,15 @@ import {
 } from "./Type/Card.skeleton";
 import { TableSkeleton } from "./Type/Table.skeleton";
 import { IconSkeleton } from "./Type/User.skeleton";
+import { TemplateSkeleton } from "./Type/Template.skeleton";
 
-type SkeletonType = "Icon" | "AbouteCard" | "Card-small" | "Card" | "Table";
+type SkeletonType =
+  | "Icon"
+  | "AbouteCard"
+  | "Card-small"
+  | "Card"
+  | "Table"
+  | "Template"
 
 const types: Record<SkeletonType, React.FC> = {
   Icon: IconSkeleton,
@@ -15,6 +22,7 @@ const types: Record<SkeletonType, React.FC> = {
   Card: CardSkeleton,
   "Card-small": CardSmallSkeleton,
   Table: TableSkeleton,
+  Template: TemplateSkeleton
 };
 
 export function SkeletonFactory(

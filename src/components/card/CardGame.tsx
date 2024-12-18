@@ -22,8 +22,8 @@ const StyleCoverImage = styled.div<{ $name: string; $size: string }>`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    text-align:center;
-    width:85%;
+    text-align: center;
+    width: 85%;
     color: white;
     opacity: 0;
     pointer-events: none;
@@ -43,8 +43,8 @@ export const CardGame: React.FC<{
   id: number | string;
   size?: "small" | "large";
   onCardClick?: (game: IGameDis) => void;
-  cursorValue?:string
-}> = ({ game, id, size = "large", onCardClick,cursorValue }) => {
+  cursorValue?: string;
+}> = ({ game, id, size = "large", onCardClick, cursorValue }) => {
   const isDisabled = game.disabled ?? false;
   const [openModalGameId, setOpenModalGameId] = useState<
     number | string | null
@@ -67,7 +67,8 @@ export const CardGame: React.FC<{
     opacity: isDragging || game.disabled ? "0.5" : "1",
     boxShadow: isDragging ? "0px 0px 9px 1px #000000" : "none",
     overflow: "hidden",
-    width:"130px",
+    width: "calc(80px + 50 * (100vw / 1280))",
+    maxWidth:"130px",
     border: "none",
     cursor: cursorValue ?? cursor,
     maxHeight: "12rem",
@@ -95,10 +96,11 @@ export const CardGame: React.FC<{
         <img
           style={{ objectFit: "cover", width: "100%" }}
           alt={game.name}
-          src={game.background_image?.replace(
-            "/media/",
-            "/media/crop/600/400/"
-          )}
+          src={
+            game.background_image
+              ? game.background_image.replace("/media/", "/media/crop/600/400/")
+              : "https://mebeliero.ru/images/photos/medium/no_image.png"
+          }
           draggable={!game.disabled}
         />
       </StyleCoverImage>

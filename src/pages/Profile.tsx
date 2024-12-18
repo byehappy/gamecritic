@@ -24,18 +24,28 @@ const CarouselWrapper = styled(Carousel)`
 `;
 const ContainerItems = styled.div`
   display: flex;
-  gap: 1vw;
-  max-height: 20vh;
+  gap: 15px;
   padding: 0 1vw;
+  overflow-x: overlay;
+  span {
+    text-wrap: nowrap;
+    overflow: hidden;
+  }
+  div {
+    min-width: calc(100px + 30 * (100vw / 1280));
+    max-width: 130px;
+  }
 `;
 const HeaderTemplate = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.8rem;
+  font-size: ${({ theme }) => theme.fontSizes.adaptivText};
   margin-top: 1vw;
   a {
-    font-size: 1.5em;
+    font-size: ${({ theme }) => theme.fontSizes.adaptivSmallText};
+    font-weight: 300;
+    text-align: right;
   }
 `;
 export const ProfilePage = () => {
@@ -100,14 +110,14 @@ export const ProfilePage = () => {
   return (
     <div>
       <HeaderTemplate>
-        <h1>Ваши шаблоны</h1>
+        Ваши шаблоны
         {myTiers.length !== 0 && (
           <Link to={`/all-my-tierlits/${profileUserId}`}>
             Увидеть все свои шаблоны
           </Link>
         )}
       </HeaderTemplate>
-      <CarouselWrapper arrows infinite={false} dots={false}>
+      <CarouselWrapper arrows infinite={false} dots={false} swipe={false}>
         <div>
           <ContainerItems>
             {loadingTiers && SkeletonFactory(10, "Card")}
@@ -123,23 +133,21 @@ export const ProfilePage = () => {
               );
             })}
             {!loadingTiers && myTiers.length === 0 && (
-              <div style={{ fontSize: "1.2rem" }}>
+              <span style={{ fontSize: "1.2rem" }}>
                 У вас нет созданных шаблонов
-              </div>
+              </span>
             )}
           </ContainerItems>
         </div>
       </CarouselWrapper>
       <HeaderTemplate></HeaderTemplate>
       <HeaderTemplate>
-        <h1>Используемые шаблоны</h1>
+        Используемые шаблоны
         {tiers.length !== 0 && (
-          <Link to={`/all-tierlits/${profileUserId}`}>
-            Увидеть все шаблоны
-          </Link>
+          <Link to={`/all-tierlits/${profileUserId}`}>Увидеть все шаблоны</Link>
         )}
       </HeaderTemplate>
-      <CarouselWrapper arrows infinite={false} dots={false}>
+      <CarouselWrapper arrows infinite={false} dots={false} swipe={false}>
         <div>
           <ContainerItems>
             {loadingTiers && SkeletonFactory(10, "Card")}
@@ -155,22 +163,22 @@ export const ProfilePage = () => {
               );
             })}
             {!loadingTiers && tiers.length === 0 && (
-              <div style={{ fontSize: "1.2rem" }}>
+              <span style={{ fontSize: "1.2rem" }}>
                 Вы еще не состовляли списки по шаблонам
-              </div>
+              </span>
             )}
           </ContainerItems>
         </div>
       </CarouselWrapper>
       <HeaderTemplate>
-        <h1>Избранные игры</h1>
+        Избранные игры
         {favoriteGames.length !== 0 && (
           <Link to={`/all-favorites/${profileUserId}`}>
             Увидеть все избранные игры
           </Link>
         )}
       </HeaderTemplate>
-      <CarouselWrapper arrows infinite={false} dots={false}>
+      <CarouselWrapper arrows infinite={false} dots={false} swipe={false}>
         <div>
           <ContainerItems>
             {loadingFavorites && SkeletonFactory(10, "Card")}
@@ -178,9 +186,9 @@ export const ProfilePage = () => {
               return <CardGame key={game.id} game={game} id={game.id} />;
             })}
             {!loadingFavorites && favoriteGames.length === 0 && (
-              <div style={{ fontSize: "1.2rem" }}>
+              <span style={{ fontSize: "1.2rem" }}>
                 Вы не добавили игры в избранное
-              </div>
+              </span>
             )}
           </ContainerItems>
         </div>

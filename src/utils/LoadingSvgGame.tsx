@@ -1,10 +1,10 @@
 import styled, { keyframes } from "styled-components";
 const backgroundFrames = keyframes`
   0%{
-    background-color:#ffffff;
+    background-color:${({ theme }) => theme.colors.backgroundLoading};
   } 
   60%{  
-    background-color:#ffffff;
+    background-color:${({ theme }) => theme.colors.bg};
     opacity:0.9;
   }100%{
     background-color:transparent;
@@ -21,7 +21,7 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  background-color: #ffffff;
+  background-color: ${({ theme }) => theme.colors.bg};
   animation: ${backgroundFrames} 5s linear;
 `;
 

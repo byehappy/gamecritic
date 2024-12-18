@@ -75,13 +75,13 @@ const ProgressBar = styled.div`
   height: 0.15em;
   background-color: #53377aaa;
   animation: ${progressBar} ${TOAST_TIMEOUT - 500}ms linear 0s;
-  border-radius: 1vw;
+  border-radius: 1em;
 `;
 const ToasterWrapper = styled.div`
   width: fit-content;
   margin-left: auto;
   white-space: normal;
-  border-radius: 5px;
+  border-radius: 0.25em;
   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
   padding: 0.5em;
   background: white;
@@ -139,7 +139,7 @@ const Toaster: React.FC<{
           <Button icon={<RollbackOutlined />} onClick={toaster.cancel} />
         )}
       </StyledMessage>
-      <ProgressBar />
+      {toaster.cancel && <ProgressBar />}
     </ToasterWrapper>
   );
 };

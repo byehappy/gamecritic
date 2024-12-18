@@ -58,16 +58,16 @@ export const SignUpPage = () => {
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: "2vh 0",
+        gap: "1% 0",
         textAlign: "center",
-        width: "25vw",
+        width: "fit-content",
         margin: "20vh auto",
       }}
     >
       <h1 style={{ fontSize: "2rem" }}>Регистрация</h1>
       <Form
         form={form}
-        labelCol={{ xs: { span: 24 }, sm: { span: 8 } }}
+        labelCol={{ xs: { span: 24 }, sm: { span: 6 } }}
         wrapperCol={{ xs: { span: 24 }, sm: { span: 24 } }}
         initialValues={{ remember: true }}
         onFinish={handleRegister}
@@ -136,7 +136,11 @@ export const SignUpPage = () => {
         </Form.Item>
         <Form.Item
           name="confirm"
-          label="Подтвердите пароль"
+          label={
+            <p style={{ textWrap: "wrap", lineHeight: "normal" }}>
+              Подтвердите пароль
+            </p>
+          }
           dependencies={["password"]}
           hasFeedback
           validateDebounce={1000}

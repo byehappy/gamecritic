@@ -7,9 +7,9 @@ export const TemplateCard: React.FC<{
   img: string | null;
   name: string;
   id?: string;
-  del: false | ((tierId: string, name: string) => void);
+  del?: false | ((tierId: string, name: string) => void);
   disable?: boolean;
-}> = ({ img, name, id, del, disable = false }) => {
+}> = ({ img, name, id, del=false, disable = false }) => {
   let itemImg, itemName;
   if (name !== "" && name !== null) {
     itemName = name;

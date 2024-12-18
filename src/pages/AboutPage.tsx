@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { useTheme } from "styled-components";
 import { SkeletonFactory } from "../utils/skeleton/skeleton-factory";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
@@ -33,6 +33,7 @@ const UserFormWrapper = styled.div`
   width: 75%;
 `;
 export const AboutePage = () => {
+  const theme = useTheme();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { userId } = useParams();
@@ -208,6 +209,7 @@ export const AboutePage = () => {
               size="large"
               type="primary"
               variant="solid"
+              style={{background:theme.colors.secondary}}
               onClick={() => setEdit(true)}
             >
               <EditOutlined />
@@ -226,7 +228,6 @@ export const AboutePage = () => {
         {aboutGames?.map((e) => (
           <AboutCard card={e} key={e.id} change={!userId} />
         ))}
-
         {loading && SkeletonFactory(10, "AbouteCard")}
       </div>
     </>

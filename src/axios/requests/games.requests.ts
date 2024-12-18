@@ -25,7 +25,7 @@ export const gameRequest = (id: number) => {
 };
 export const gameScreenshots = (id: number) => {
   return instanceRawg
-    .get<{ results: [{ image: string; id: number }] }>(
+    .get<{ results: [{ image: string; id: number }] | [] }>(
       `/games/${id}/screenshots`
     )
     .then((res) => res.data);

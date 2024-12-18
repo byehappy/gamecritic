@@ -13,7 +13,7 @@ const RowHeader = styled(Col)`
   min-height: 9.5rem;
   width: 10vw;
   animation: slider 1.8s linear infinite forwards;
-  background: linear-gradient(to right, #e6e6e6 8%, #ececec 18%, #e6e6e6 33%);
+  background: ${({theme})=> theme.gradient.loading};
   background-size: 1200px 100%;
   border-right: 1px solid white;
   @keyframes slider {
@@ -30,7 +30,7 @@ const DroppableWrapper = styled.div`
   min-height: 12rem;
   width: 100%;
   animation: slider 1.8s linear infinite forwards;
-  background: linear-gradient(to right, #e6e6e6 8%, #ececec  18%, #e6e6e6 33%);
+  background: ${({theme})=> theme.gradient.loading};
   background-size: 1200px 100%;
 
   @keyframes slider {

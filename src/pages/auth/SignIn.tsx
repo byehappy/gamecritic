@@ -49,8 +49,8 @@ export const SignInPage = () => {
         display: "flex",
         flexDirection: "column",
         gap: "2vh 0",
-        width: "25vw",
         margin: "25vh auto",
+        width: "fit-content",
       }}
     >
       <h1 style={{ fontSize: "2rem", margin: "0 auto" }}>Авторизация</h1>
@@ -62,7 +62,10 @@ export const SignInPage = () => {
         onFinish={handleLogin}
         autoComplete="off"
       >
-        <Form.Item<FieldType> label="Логин" name="login">
+        <Form.Item<FieldType>
+          label="Логин"
+          name="login"
+        >
           <Input
             placeholder="Логин"
             onChange={() => {
@@ -71,7 +74,10 @@ export const SignInPage = () => {
           />
         </Form.Item>
 
-        <Form.Item<FieldType> label="Пароль" name="password">
+        <Form.Item<FieldType>
+          label="Пароль"
+          name="password"
+        >
           <Input.Password
             placeholder="Пароль"
             onChange={() => {
@@ -93,7 +99,7 @@ export const SignInPage = () => {
         </Form.Item>
       </Form>
       <div style={{ textAlign: "center" }}>
-        Еще не зарегистрировались?
+        Еще не зарегистрировались?{" "}
         <Link to="/auth/sign-up">Зарегистрироваться</Link>
       </div>
     </div>

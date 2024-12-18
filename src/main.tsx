@@ -4,13 +4,16 @@ import App from "./App.tsx";
 import { store } from "./redux/store.ts";
 import { Provider } from "react-redux";
 import { ToasterProvider } from "./utils/Toaster.tsx";
+import { ThemeProviderWrapper } from "./utils/hooks/useTheme.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Provider store={store}>
-      <ToasterProvider>
-        <App />
-      </ToasterProvider>
+      <ThemeProviderWrapper>
+        <ToasterProvider>
+          <App />
+        </ToasterProvider>
+      </ThemeProviderWrapper>
     </Provider>
   </StrictMode>
 );

@@ -1,10 +1,10 @@
 import { useDroppable } from "@dnd-kit/core";
 import { CardGame } from "../card/CardGame";
 import { rectSortingStrategy, SortableContext } from "@dnd-kit/sortable";
-import styled from "styled-components";
+import styled, { useTheme } from "styled-components";
 import { Col, Tooltip, Typography } from "antd";
 import { UpOutlined, DownOutlined, SettingOutlined } from "@ant-design/icons";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { RowSettings } from "./rowSettings/RowSettings";
 import { useAppSelector, useAppDispatch } from "../../redux/hooks";
 import { setRows } from "../../redux/slice/tierDataSlice";
@@ -78,6 +78,7 @@ const RowHeader = styled(Col)`
 export const TierTable: React.FC<{
   loading: boolean;
 }> = ({ loading }) => {
+  const theme = useTheme();
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const [isOpenTierId, setIsOpenTierId] = useState<string | null>();
   const rowsData = useAppSelector((state) => state.tierData.rows);
@@ -125,16 +126,16 @@ export const TierTable: React.FC<{
             {currentUser && (
               <FilterRow>
                 <SettingOutlined
-                  style={{ fontSize: "3rem" }}
+                  style={{ fontSize: theme.fontSizes.adaptivLogo }}
                   onClick={() => setIsOpenTierId(tier.id)}
                 />
                 <div style={{ display: "flex", flexDirection: "column" }}>
                   <UpOutlined
-                    style={{ fontSize: "2rem" }}
+                    style={{ fontSize: theme.fontSizes.adaptivH1 }}
                     onClick={() => changeIndex(index, "up")}
                   />
                   <DownOutlined
-                    style={{ fontSize: "2rem" }}
+                    style={{ fontSize: theme.fontSizes.adaptivH1 }}
                     onClick={() => changeIndex(index, "down")}
                   />
                 </div>
@@ -155,7 +156,14 @@ export const TierTable: React.FC<{
 };
 
 const CustomSpan = ({ name, color }: { name: string; color: string }) => {
-  const spanRef = useRef<HTMLSpanElement>();
+  const spanRef = useRef<HTMLSpanElement>(null);
+  const [isOverflow, setIsOverflow] = useState(false);
+  useEffect(() => {
+    if (spanRef.current) {
+      const { offsetHeight, scrollHeight } = spanRef.current;
+      setIsOverflow(offsetHeight < scrollHeight);
+    }
+  }, [name]);
   return (
     <StyledTypography
       style={{
@@ -165,9 +173,10 @@ const CustomSpan = ({ name, color }: { name: string; color: string }) => {
       }}
       ref={spanRef}
     >
-      {spanRef.current &&
-      spanRef.current.offsetHeight < spanRef.current.scrollHeight ? (
-        <Tooltip title={name}>{name}</Tooltip>
+      {spanRef.current && isOverflow ? (
+        <Tooltip title={name}>
+          <span style={{height:"9vh",display:"block"}}>{name}</span>
+        </Tooltip>
       ) : (
         name
       )}

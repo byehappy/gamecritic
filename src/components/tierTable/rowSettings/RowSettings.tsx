@@ -7,6 +7,7 @@ import { IGameDis } from "../../../interfaces/games";
 import { useAppSelector, useAppDispatch } from "../../../redux/hooks";
 import { setRows, setTrayGames } from "../../../redux/slice/tierDataSlice";
 import { ExampleRow } from "../../exampleRow/ExampleRow";
+import { useTheme } from "styled-components";
 
 export const RowSettings: React.FC<{
   id: string;
@@ -15,6 +16,7 @@ export const RowSettings: React.FC<{
   isOpen: boolean;
   onClose: () => void;
 }> = ({ id, tier, index, isOpen, onClose }) => {
+  const theme = useTheme();
   const tierData = useAppSelector((state) => state.tierData);
   const dispatch = useAppDispatch();
   function enabledGamesInTray(
@@ -134,6 +136,7 @@ export const RowSettings: React.FC<{
             style={{
               display: "flex",
               alignItems: "center",
+              color:theme.colors.font
             }}
           >
             Цвет:

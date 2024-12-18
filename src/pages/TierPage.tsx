@@ -57,8 +57,10 @@ import { TimeoutRequest } from "../utils/cancelableReq";
 import { useToaster } from "../utils/hooks/useToaster";
 import { SameUsersOnTier } from "../components/sameUser/SameUsers";
 import { SameUsers } from "../interfaces/users";
+import { useTheme } from "styled-components";
 
 function TierPage() {
+  const theme = useTheme();
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const [saving, setSaving] = useState(false);
   const [sameUsers, setSameUsers] = useState<SameUsers[]>([]);
@@ -210,7 +212,7 @@ function TierPage() {
     if (loadingRows) return;
     setLoadingTray(true);
     try {
-      const existingGamesInRows = rows.flatMap((row) => row.games);
+      const existingGamesInRows = rows.flatMap((row) => row.games);      
       let resGames: IGame[], count: number;
       if (tier?.pickGame && tier.pickGame.length > 0) {
         const response = await getGamesOnIdsRequest(
@@ -536,12 +538,12 @@ function TierPage() {
       <h1
         style={{
           margin: "1vw 0",
-          width: "100%",
           textAlign: "center",
-          color: "#2e2532",
+          color: theme.colors.font,
+          fontSize:theme.fontSizes.adaptivH1
         }}
       >
-        {tier?.name}{" "}
+        {tier?.name}
         {tier && !paramsUserId && (
           <Popover
             trigger={"click"}
@@ -717,7 +719,7 @@ function TierPage() {
       ) : (
         <CardList loading={loadingTray} pageSize={filterFlags.page_size} />
       )}
-      <div style={{ margin: "4vh 0" }}>
+      <div style={{ margin: "1vh 0" }}>
         <div style={{ display: "flex", justifyContent: "center" }}>
           <Pagination
             defaultCurrent={1}
@@ -736,7 +738,7 @@ function TierPage() {
         {activeGame ? <CardGame id={activeGame.id} game={activeGame} /> : null}
       </DragOverlay>
       <FloatButton
-        style={{ zIndex: 5 }}
+        style={{ zIndex: 5, bottom:110 }}
         icon={
           !saving ? (
             <SaveOutlined />

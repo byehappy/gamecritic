@@ -31,20 +31,23 @@ const CarouselWrapper = styled(Carousel)`
 `;
 const ContainerTemplateItems = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(8vw, 1fr));
-  gap: 1vw;
+  grid-template-columns: repeat(auto-fit, minmax(calc(100px + 30 * (100vw / 1280)), 1fr));
+  column-gap:1vw;
+  row-gap:10px;
   height: 100%;
   padding: 0 1vw;
 `;
 const ContainerUsersTemplateItems = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(20%, 1fr));
+  display: flex;
+  justify-content:space-between;
+  overflow:auto;
   gap: 1vw;
   height: 100%;
   padding: 0 1vw;
 `;
 const ContainerTopUsersItems = styled.div`
   display: flex;
+  justify-content:space-between;
   gap: 1vw;
   height: 100%;
   padding: 0 1vw;
@@ -54,20 +57,23 @@ const IntroText = styled.h1`
   display: flex;
   flex-direction: column;
   margin: 3vh 0;
-  font-size: 1.8rem;
+  font-size: ${({ theme }) => theme.fontSizes.adaptivH1};
   p {
     margin: 1vh 0;
     font-weight: 300;
+    font-size: ${({ theme }) => theme.fontSizes.adaptivText};
   }
 `;
 const HeaderTemplate = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.8rem;
   margin-top: 3vh;
+  font-size: ${({ theme }) => theme.fontSizes.adaptivText};
   a {
-    font-size: 1.5em;
+    font-weight: 300;
+    font-size: ${({ theme }) => theme.fontSizes.adaptivSmallText};
+    text-align:right;
   }
 `;
 
@@ -80,7 +86,7 @@ export const HomePage = () => {
   const [topUsers, setTopUsers] = useState<TopUsers[] | null>(null);
   const getTiers = useCallback(() => {
     getAllTiers().then((res) => {
-      const partedArray = partArray(res, 8);
+      const partedArray = partArray(res, 6);
       setTiers(partedArray);
     });
     getUsersTiers().then((res) => {
@@ -138,15 +144,15 @@ export const HomePage = () => {
       </IntroText>
       <div>
         <HeaderTemplate>
-          <h1>Шаблоны по видеоиграм</h1>
+          Шаблоны по видеоиграм
           <Link to={"/all"}>Увидеть все шаблоны</Link>
         </HeaderTemplate>
-        <CarouselWrapper arrows infinite={false} dots={false}>
+        <CarouselWrapper arrows infinite={false} dots={false} swipe={false}>
           {!tiers && (
             <div>
-              <div style={{ display: "flex" }}>
-                {SkeletonFactory(12, "Card")}
-              </div>
+              <ContainerTemplateItems>
+                {SkeletonFactory(6, "Template")}
+              </ContainerTemplateItems>
             </div>
           )}
           {tiers?.map((part) => (
@@ -168,15 +174,13 @@ export const HomePage = () => {
         </CarouselWrapper>
       </div>
       <div>
-        <HeaderTemplate>
-          <h1>Шаблоны других пользователей</h1>
-        </HeaderTemplate>
-        <CarouselWrapper arrows infinite={false} dots={false}>
+        <HeaderTemplate>Шаблоны других пользователей</HeaderTemplate>
+        <CarouselWrapper arrows infinite={false} dots={false} swipe={false}>
           {!usersTiers && (
             <div>
-              <div style={{ display: "flex" }}>
-                {SkeletonFactory(12, "Card")}
-              </div>
+              <ContainerUsersTemplateItems>
+                {SkeletonFactory(4, "Template")}
+              </ContainerUsersTemplateItems>
             </div>
           )}
           {usersTiers?.map((part) => (
@@ -199,18 +203,16 @@ export const HomePage = () => {
         </CarouselWrapper>
       </div>
       <div>
-        <HeaderTemplate>
-          <h1>Рекорды по пройденным играм</h1>
-        </HeaderTemplate>
-        <CarouselWrapper arrows infinite={false} dots={false} draggable={false}>
+        <HeaderTemplate>Рекорды по пройденным играм</HeaderTemplate>
+        <CarouselWrapper arrows infinite={false} dots={false} draggable={false} swipe={false}>
           {!topUsers && (
             <div>
               <div style={{ display: "flex" }}>
-                {SkeletonFactory(12, "Card")}
+                {SkeletonFactory(10, "Card")}
               </div>
             </div>
           )}
-          <div>
+          <div> 
             <ContainerTopUsersItems>
               {topUsers?.map((e) => (
                 <UserCard user={e} key={e.id} />

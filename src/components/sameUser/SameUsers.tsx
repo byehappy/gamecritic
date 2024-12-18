@@ -14,7 +14,6 @@ const ContainerTopUsersItems = styled.div`
   display: flex;
   gap: 1vw;
   height: 100%;
-  padding: 0 1vw;
   overflow: overlay;
 `;
 const HeaderTemplate = styled.div`

@@ -2,7 +2,7 @@ import { Pagination, Popover } from "antd";
 import Search from "antd/es/input/Search";
 import { SkeletonFactory } from "../../utils/skeleton/skeleton-factory";
 import { IAboutGame } from "../../interfaces/aboutGames";
-import styled from "styled-components";
+import styled, { useTheme } from "styled-components";
 import { useCallback, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setMessage } from "../../redux/slice/messageSlice";
@@ -11,7 +11,7 @@ import { IGame } from "../../interfaces/games";
 import { FilterFlags } from "../../interfaces/filters";
 import { DEFAULT_PAGE } from "../../utils/constans";
 import { CardGame } from "../card/CardGame";
-
+//todo:loading state отобразить у карточек
 const AbouteCardWrapper = styled.div`
   width: 15vw;
   padding: 1%;
@@ -23,8 +23,8 @@ const AbouteCardWrapper = styled.div`
     max-width: 100%;
     height: 31vh;
   }
-  div{
-    position:relative;
+  div {
+    position: relative;
   }
   .bottom-text {
     padding: 10px;
@@ -32,20 +32,25 @@ const AbouteCardWrapper = styled.div`
     bottom: 0;
     left: 0;
     color: white;
-    line-height: 22px;
+    line-height: 20px;
     background-color: #000000ce;
     gap: 0.2vw;
     display: flex;
     height: fit-content;
     flex-direction: column;
-    align-items:center;
-    width:100%;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 45%;
+    text-align: center;
+    font-size: ${({ theme }) => theme.fontSizes.adaptivSmallText};
   }
 `;
 export const AboutCard: React.FC<{ card: IAboutGame; change: boolean }> = ({
   card,
   change,
 }) => {
+  const theme = useTheme();
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const [open, setOpen] = useState(false);
@@ -176,22 +181,26 @@ export const AboutCard: React.FC<{ card: IAboutGame; change: boolean }> = ({
             title={"Выбрать игру"}
           >
             <img
-              src={
-                valueGame?.background_image ??
-                "https://mebeliero.ru/images/photos/medium/no_image.png"
-              }
+              src={valueGame?.background_image ?? theme.image.no_image}
               alt={valueGame?.name}
-              style={{ objectFit: "cover", cursor: "pointer", width: "100%" }}
+              style={{
+                objectFit: "cover",
+                cursor: "pointer",
+                width: "100%",
+                opacity: !valueGame?.name ? 0.25 : 1,
+                border: "1px solid black",
+              }}
             />
           </Popover>
         ) : (
           <img
-            src={
-              valueGame?.background_image ??
-              "https://mebeliero.ru/images/photos/medium/no_image.png"
-            }
+            src={valueGame?.background_image ?? theme.image.no_image}
             alt={valueGame?.name}
-            style={{ objectFit: "cover" }}
+            style={{
+              objectFit: "cover",
+              opacity: !valueGame?.name ? 0.25 : 1,
+              border: "1px solid black",
+            }}
           />
         )}
         <div className="bottom-text">

@@ -20,7 +20,7 @@ export const CardList: React.FC<CardListPorps> = ({  loading,pageSize = 40 }) =>
     <Row
       style={{
         display: "grid",
-        gridTemplateColumns:" repeat(auto-fill, minmax(130px,1fr)",
+        gridTemplateColumns:" repeat(auto-fill, minmax(calc(80px + 50 * (100vw / 1280)),1fr)",
         justifyItems:"center",
         gap:"1em"
       }} ref={setNodeRef}

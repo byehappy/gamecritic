@@ -52,7 +52,7 @@ export const CardModal: React.FC<{
   const sliderRef = createRef<HTMLDivElement>();
   const [sliderWidth, setSliderWidth] = useState<number | undefined>(0);
   const [screenshotsGame, setScreenshotsGame] =
-    useState<[{ image: string; id: number }]>();
+    useState<[{ image: string; id: number | string }]>();
   const [isFavorite, setIsFavorite] = useState<boolean | null>(null);
   const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(
     null
@@ -80,8 +80,20 @@ export const CardModal: React.FC<{
       try {
         const responseGame = await gameRequest(id);
         const responseScreenshot = await gameScreenshots(id);
-        if (responseScreenshot.results)
-          setScreenshotsGame(responseScreenshot.results);
+        if (responseScreenshot.results.length > 0) {
+          setScreenshotsGame(
+            responseScreenshot.results as [
+              { image: string; id: number | string }
+            ]
+          );
+        } else {
+          setScreenshotsGame([
+            {
+              image: "https://mebeliero.ru/images/photos/medium/no_image.png",
+              id: uuid4(),
+            },
+          ]);
+        }
 
         setGame(responseGame.data as IGameOnly);
       } catch (error) {
@@ -251,9 +263,17 @@ export const CardModal: React.FC<{
           }}
         >
           <img
-            src={game.background_image}
+            src={
+              game.background_image ??
+              "https://mebeliero.ru/images/photos/medium/no_image.png"
+            }
             alt={game.name}
-            style={{ width: "15vw", objectFit: "cover", minHeight: "15vh",marginBottom:"1vh" }}
+            style={{
+              width: "15vw",
+              objectFit: "cover",
+              minHeight: "15vh",
+              marginBottom: "1vh",
+            }}
           />
           <div
             style={{
@@ -264,7 +284,15 @@ export const CardModal: React.FC<{
           >
             {game.description_raw}
           </div>
-          <div style={{height:"100%",display:"flex",flexDirection:"column",gap:"1vh",justifyContent:"flex-end"}}>
+          <div
+            style={{
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              gap: "1vh",
+              justifyContent: "flex-end",
+            }}
+          >
             {(game.metacritic !== null || game.metacritic === 0) && (
               <div>
                 <strong>Оценка на Metacritic:</strong> {game.metacritic}{" "}

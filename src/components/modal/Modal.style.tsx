@@ -15,7 +15,8 @@ export const ModalOverlay = styled.div`
 `
 
 export const ModalWindow = styled.div<{$widthMin:boolean}>`
-  background: white;
+  background: ${({theme})=> theme.colors.bg};
+  color:${({theme})=>theme.colors.font};
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   min-width: 25rem;

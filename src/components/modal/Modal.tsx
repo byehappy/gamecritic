@@ -2,6 +2,7 @@ import { ReactNode, useCallback, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { ModalHeader, ModalOverlay, ModalWindow } from "./Modal.style";
 import { CloseOutlined } from "@ant-design/icons";
+import { useTheme } from "styled-components";
 const modalRootElement: Element = document.querySelector("#portal")!;
 
 export const Modal: React.FC<{
@@ -11,6 +12,7 @@ export const Modal: React.FC<{
   header?: ReactNode;
   widthMin?: boolean;
 }> = ({ isOpen, onClose, children, header, widthMin = false }) => {
+  const theme = useTheme();
   const ref = useRef() as React.MutableRefObject<HTMLDivElement>;
   const checkKeyEscape = useCallback(
     (event: KeyboardEvent) => {
@@ -55,7 +57,7 @@ export const Modal: React.FC<{
         <ModalWindow ref={ref} $widthMin={widthMin}>
           <ModalHeader $haveHeader={header !== undefined}>
             {header}
-            <CloseOutlined onClick={onClose} />
+            <CloseOutlined style={{color:theme.colors.font}} onClick={onClose} />
           </ModalHeader>
           {children}
         </ModalWindow>

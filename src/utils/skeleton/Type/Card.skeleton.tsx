@@ -6,7 +6,7 @@ const CardWrapper = styled.div<{ $size: string }>`
   align-items: center;
   justify-content: center;
   animation: slider 1.8s linear infinite forwards;
-  background: linear-gradient(to right, #f6f6f6 8%, #f0f0f0 18%, #f6f6f6 33%);
+  background: ${({theme})=> theme.gradient.loading};
   background-size: 1200px 100%;
   height: ${(props) => (props.$size === "large" ? "15rem" : "10rem")};
   width: 130px;
@@ -25,7 +25,7 @@ const AbouteCardWrapper = styled.div`
   padding:1%;
   border-radius:1em;
   animation: slider 1.8s linear infinite forwards;
-  background: linear-gradient(to right, #f6f6f6 8%, #f0f0f0 18%, #f6f6f6 33%);
+  background: ${({theme})=> theme.gradient.loading};
   background-size: 1200px 100%;
   span{
     width:100%;
