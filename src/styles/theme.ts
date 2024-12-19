@@ -1,4 +1,3 @@
-import { DefaultTheme } from "styled-components";
 import { ITheme, ThemeEnum } from "../interfaces/styled";
 
 export const baseTheme: ITheme = {
@@ -78,7 +77,7 @@ export const lightTheme: StyledTheme = {
   },
 };
 
-export const darkTheme: Omit<DefaultTheme, "antd"> = {
+export const darkTheme: StyledTheme = {
   ...baseTheme,
   type: ThemeEnum.dark,
 

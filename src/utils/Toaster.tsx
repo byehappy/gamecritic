@@ -17,6 +17,7 @@ import { TOAST_TIMEOUT } from "./constans";
 import { Button } from "antd";
 import { RollbackOutlined } from "@ant-design/icons";
 import { createPortal } from "react-dom";
+import { useTheme } from "./hooks/useTheme";
 
 type MessageType = "error" | "info" | "warning" | "success";
 
@@ -73,18 +74,20 @@ const ProgressBar = styled.div`
   bottom: 1%;
   left: 0;
   height: 0.15em;
-  background-color: #53377aaa;
+  background-color: #AB5EF1;
   animation: ${progressBar} ${TOAST_TIMEOUT - 500}ms linear 0s;
   border-radius: 1em;
 `;
-const ToasterWrapper = styled.div`
+const ToasterWrapper = styled.div<{ $backColor: string; $textColor: string,$fontSize:string }>`
   width: fit-content;
   margin-left: auto;
   white-space: normal;
   border-radius: 0.25em;
   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
   padding: 0.5em;
-  background: white;
+  background: ${(props) => props.$backColor};
+  color: ${(props) => props.$textColor};
+  font-size: ${(props) => props.$fontSize};
   animation: ${fadeIn} 0.5s ease-in,
     ${fadeOut} 0.5s ease-out ${TOAST_TIMEOUT - 500}ms;
   &:hover {
@@ -112,6 +115,7 @@ const StyledMessage = styled.div`
 const Toaster: React.FC<{
   toaster: Toaster;
 }> = ({ toaster }) => {
+  const { theme } = useTheme();
   const glyph = typesIcon[toaster.type] || null;
   const handleMouseEnter = (toaster: Toaster) => {
     if (toaster.pause) toaster.pause();
@@ -129,6 +133,9 @@ const Toaster: React.FC<{
   };
   return (
     <ToasterWrapper
+      $backColor={theme.colors.bg}
+      $textColor={theme.colors.font}
+      $fontSize={theme.fontSizes.adaptivSmallText}
       key={toaster.id}
       onMouseEnter={() => handleMouseEnter(toaster)}
       onMouseLeave={() => handleMouseLeave(toaster)}
@@ -136,7 +143,11 @@ const Toaster: React.FC<{
       <StyledMessage>
         {glyph} {toaster.content}{" "}
         {toaster.cancel && (
-          <Button icon={<RollbackOutlined />} onClick={toaster.cancel} />
+          <Button
+            icon={<RollbackOutlined />}
+            onClick={toaster.cancel}
+            style={{ background: theme.colors.bg,color:theme.colors.font }}
+          />
         )}
       </StyledMessage>
       {toaster.cancel && <ProgressBar />}

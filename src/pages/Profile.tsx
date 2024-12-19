@@ -120,7 +120,7 @@ export const ProfilePage = () => {
       <CarouselWrapper arrows infinite={false} dots={false} swipe={false}>
         <div>
           <ContainerItems>
-            {loadingTiers && SkeletonFactory(10, "Card")}
+            {loadingTiers && SkeletonFactory(10, "Template")}
             {myTiers.map((tier) => {
               const id = uuid4();
               return (
@@ -150,7 +150,7 @@ export const ProfilePage = () => {
       <CarouselWrapper arrows infinite={false} dots={false} swipe={false}>
         <div>
           <ContainerItems>
-            {loadingTiers && SkeletonFactory(10, "Card")}
+            {loadingTiers && SkeletonFactory(10, "Template")}
             {tiers.map((tier) => {
               const id = uuid4();
               return (

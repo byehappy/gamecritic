@@ -247,33 +247,6 @@ export const CreateTierPage = () => {
         >
           <div
             style={{
-              width: "100%",
-              display: "flex",
-              justifyContent: "center",
-              marginTop: "1vw",
-            }}
-          >
-            <Form.Item shouldUpdate>
-              {() => (
-                <Button
-                  htmlType="submit"
-                  disabled={
-                    tierId
-                      ? false
-                      : form
-                          .getFieldsError()
-                          .some(({ errors }) => errors.length) ||
-                        !form.isFieldsTouched()
-                  }
-                  loading={pending}
-                >
-                  Сохранить
-                </Button>
-              )}
-            </Form.Item>
-          </div>
-          <div
-            style={{
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
@@ -490,13 +463,40 @@ export const CreateTierPage = () => {
               </Carousel>
             </div>
           </div>
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "1vw",
+            }}
+          >
+            <Form.Item shouldUpdate>
+              {() => (
+                <Button
+                  htmlType="submit"
+                  disabled={
+                    tierId
+                      ? false
+                      : form
+                          .getFieldsError()
+                          .some(({ errors }) => errors.length) ||
+                        !form.isFieldsTouched()
+                  }
+                  loading={pending}
+                >
+                  Сохранить
+                </Button>
+              )}
+            </Form.Item>
+          </div>
         </StyledForm>
       )}
       <div style={{ display: visibleForm ? "none" : "block" }}>
         <ExampleTierPage formValues={formValues} />
       </div>
       <FloatButton
-        style={{ zIndex: 5, bottom: 110 }}
+        style={{ zIndex: 5 }}
         icon={<EyeOutlined />}
         tooltip={<div>Посмотреть на шаблон</div>}
         onClick={() => setVisibleForm(!visibleForm)}

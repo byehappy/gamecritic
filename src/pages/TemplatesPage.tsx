@@ -14,9 +14,11 @@ import { useParams } from "react-router-dom";
 
 const TepmlatesContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(8vw, 1fr));
-  gap: 1rem;
-  grid-template-rows: repeat(auto-fill, 20vh);
+  grid-template-columns: repeat(auto-fit, minmax(calc(100px + 30 * (100vw / 1280)), 1fr));
+  column-gap:1vw;
+  row-gap:10px;
+  height: 100%;
+  padding: 0 1vw;
   ${Item}:hover {
     transform: scale(1.15, 1.15);
   }
@@ -36,12 +38,14 @@ export const TemplatesPage: React.FC<{ author?: boolean }> = ({ author }) => {
         setLoadingTiers(false);
         return;
       }
-      const tiers = await getUserTiers(userid).then((res) => res.data);
-      setTiers(tiers);
+      await getUserTiers(userid)
+        .then((res) => setTiers(res.data))
+        .finally(() => setLoadingTiers(false));
     } else {
-      getAllTiers().then((res) => setTiers(res));
+      getAllTiers()
+        .then((res) => setTiers(res))
+        .finally(() => setLoadingTiers(false));
     }
-    setLoadingTiers(false);
   }, [author, userid]);
 
   useEffect(() => {

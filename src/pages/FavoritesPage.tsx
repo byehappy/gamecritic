@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { useTheme } from "styled-components";
 import { Item } from "../components/templateCard/TemplateCard.style";
 import { useState, useCallback, useEffect } from "react";
 import {  getFavoriteGames } from "../axios";
@@ -12,15 +12,17 @@ import { useAppDispatch } from "../redux/hooks";
 
 const TepmlatesContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(7vw, 1fr));
-  gap: 1rem;
-  grid-template-rows: repeat(auto-fill, 20vh);
+  grid-template-columns: repeat(auto-fill, minmax(calc(100px + 30 * (100vw / 1280)), 1fr));
+  gap:10px;
+  height: 100%;
+  padding: 0 1vw;
   ${Item}:hover {
     transform: scale(1.15, 1.15);
   }
 `;
 
 export const FavoritesPage = () => {
+  const theme = useTheme()
   const { userid } = useParams() as {
     userid: string;
   };
@@ -57,7 +59,7 @@ export const FavoritesPage = () => {
 
   return (
     <>
-      <h1 style={{ margin: "1vw 0" }}>Все избранные игры</h1>
+      <h1 style={{ margin: "1vw 0",fontSize:theme.fontSizes.adaptivH1 }}>Все избранные игры</h1>
       <TepmlatesContainer>
         {loadingFavorites && SkeletonFactory(10, "Card")}
         {favoriteGames.map((game) => {

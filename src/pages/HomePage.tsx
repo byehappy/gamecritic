@@ -207,18 +207,19 @@ export const HomePage = () => {
         <CarouselWrapper arrows infinite={false} dots={false} draggable={false} swipe={false}>
           {!topUsers && (
             <div>
-              <div style={{ display: "flex" }}>
+              <ContainerTopUsersItems>
                 {SkeletonFactory(10, "Card")}
-              </div>
+              </ContainerTopUsersItems>
             </div>
           )}
+          {topUsers && 
           <div> 
-            <ContainerTopUsersItems>
-              {topUsers?.map((e) => (
-                <UserCard user={e} key={e.id} />
-              ))}
-            </ContainerTopUsersItems>
-          </div>
+          <ContainerTopUsersItems>
+            {topUsers?.map((e) => (
+              <UserCard user={e} key={e.id} />
+            ))}
+          </ContainerTopUsersItems>
+        </div>}
         </CarouselWrapper>
       </div>
     </>

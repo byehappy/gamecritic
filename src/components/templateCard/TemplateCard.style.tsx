@@ -4,7 +4,7 @@ export const Item = styled.div<{ $IsDisabled: boolean; $notClick: boolean }>`
   position: relative;
   flex: none;
   overflow: hidden;
-  height: 20vh;
+  height: 24vh;
   transition: transform 0.3s ease-in-out;
   pointer-events: ${(props) =>
     (props.$IsDisabled || props.$notClick) && "none"};

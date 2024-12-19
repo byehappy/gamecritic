@@ -10,15 +10,16 @@ import { useAppSelector, useAppDispatch } from "../../redux/hooks";
 import { setRows } from "../../redux/slice/tierDataSlice";
 import { SkeletonFactory } from "../../utils/skeleton/skeleton-factory";
 import { getTextColor } from "../../utils/textColorWithBg";
+import { device } from "../../styles/size";
 
 const DroppableWrapper = styled.div<{ $isOver: boolean }>`
   background-color: ${(props) =>
     props.$isOver ? "#dfdfdf" : "rgba(0, 0, 0,0.04)"};
   min-height: 12rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(129px, 1fr));
+  display:grid;
+  grid-template-columns: repeat(auto-fit, calc(80px + 56 * (100vw / 1280)));
   gap: 0.5vh;
-  width: 100%;
+  flex:1;
 `;
 
 const DroppableCell: React.FC<{ id: string; children?: React.ReactNode }> = ({
@@ -46,11 +47,19 @@ const Container = styled.div`
 const FilterRow = styled.div`
   background: #ff9f00;
   display: flex;
+  @media ${device.mobileS} {
+    flex-direction: column;
+  }
+  @media ${device.tablet} {
+    flex-direction: row;
+  }
   justify-content: center;
   align-items: center;
   color: white;
   padding: 0 0.4vw;
-  gap: 1vw;
+  gap: 10%;
+  min-width: 30px;
+  max-width:90px;
   span {
     transition: opacity 0.3s ease-in-out;
   }
@@ -69,7 +78,7 @@ const StyledTypography = styled(Typography)({
 const RowHeader = styled(Col)`
   display: flex;
   min-height: 9.5rem;
-  width: 10vw;
+  width: 100px;
   align-items: center;
   justify-content: center;
   color: white;
@@ -126,16 +135,16 @@ export const TierTable: React.FC<{
             {currentUser && (
               <FilterRow>
                 <SettingOutlined
-                  style={{ fontSize: theme.fontSizes.adaptivLogo }}
+                  style={{ fontSize: theme.fontSizes.adaptivText }}
                   onClick={() => setIsOpenTierId(tier.id)}
                 />
                 <div style={{ display: "flex", flexDirection: "column" }}>
                   <UpOutlined
-                    style={{ fontSize: theme.fontSizes.adaptivH1 }}
+                    style={{ fontSize: theme.fontSizes.adaptivText }}
                     onClick={() => changeIndex(index, "up")}
                   />
                   <DownOutlined
-                    style={{ fontSize: theme.fontSizes.adaptivH1 }}
+                    style={{ fontSize: theme.fontSizes.adaptivText }}
                     onClick={() => changeIndex(index, "down")}
                   />
                 </div>

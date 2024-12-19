@@ -32,6 +32,7 @@ const DroppableWrapper = styled.div`
   animation: slider 1.8s linear infinite forwards;
   background: ${({theme})=> theme.gradient.loading};
   background-size: 1200px 100%;
+  flex:1;
 
   @keyframes slider {
     0% {

@@ -212,7 +212,7 @@ function TierPage() {
     if (loadingRows) return;
     setLoadingTray(true);
     try {
-      const existingGamesInRows = rows.flatMap((row) => row.games);      
+      const existingGamesInRows = rows.flatMap((row) => row.games);
       let resGames: IGame[], count: number;
       if (tier?.pickGame && tier.pickGame.length > 0) {
         const response = await getGamesOnIdsRequest(
@@ -297,7 +297,8 @@ function TierPage() {
       const activeItems =
         activeContainer === "tray"
           ? tierData.games
-          : tierData.rows.find((row) => row.id === activeContainer)!.games;
+          : (tierData.rows.find((row) => row.id === activeContainer)!
+              .games as IGameDis[]);
 
       const overItems =
         overContainer === "tray"
@@ -540,7 +541,7 @@ function TierPage() {
           margin: "1vw 0",
           textAlign: "center",
           color: theme.colors.font,
-          fontSize:theme.fontSizes.adaptivH1
+          fontSize: theme.fontSizes.adaptivH1,
         }}
       >
         {tier?.name}
@@ -738,7 +739,7 @@ function TierPage() {
         {activeGame ? <CardGame id={activeGame.id} game={activeGame} /> : null}
       </DragOverlay>
       <FloatButton
-        style={{ zIndex: 5, bottom:110 }}
+        style={{ zIndex: 5 }}
         icon={
           !saving ? (
             <SaveOutlined />
