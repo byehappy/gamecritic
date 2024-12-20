@@ -2,6 +2,8 @@ import { Button } from "antd";
 import { ChangeEvent, useRef, useState } from "react";
 import AvatarEditor, { type Position } from "react-avatar-editor";
 import Dropzone from "react-dropzone";
+import styled from "styled-components";
+import { device } from "../../styles/size";
 type State = {
   image: string | File;
   position: Position;
@@ -11,6 +13,24 @@ type State = {
   width: number;
   height: number;
 };
+const AvatarWrapper = styled.div`
+  display: flex;
+  gap: 1vw;
+  @media (max-width: 425px) {
+    flex-direction: column;
+    align-items: center;
+    margin-bottom:5%;
+    div {
+      max-width: 200px;
+    }
+    input {
+      width: 100%;
+    }
+  }
+  @media ${device.tablet} {
+    flex-direction: row;
+  }
+`;
 
 const IconEditor: React.FC<{
   editor: React.RefObject<AvatarEditor>;
@@ -53,7 +73,7 @@ const IconEditor: React.FC<{
   };
 
   return (
-    <div style={{ display: "flex", gap: "1vw" }}>
+    <AvatarWrapper>
       <Dropzone
         onDrop={([image]) => setState({ ...state, image })}
         noClick
@@ -114,10 +134,12 @@ const IconEditor: React.FC<{
             style={{ display: "none" }}
             ref={inputRef}
           />
-          <Button onClick={()=> inputRef.current?.click()}>Выберите файл</Button>
+          <Button onClick={() => inputRef.current?.click()}>
+            Выберите файл
+          </Button>
         </label>
       </div>
-    </div>
+    </AvatarWrapper>
   );
 };
 

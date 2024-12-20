@@ -16,10 +16,18 @@ const DroppableWrapper = styled.div<{ $isOver: boolean }>`
   background-color: ${(props) =>
     props.$isOver ? "#dfdfdf" : "rgba(0, 0, 0,0.04)"};
   min-height: 12rem;
-  display:grid;
-  grid-template-columns: repeat(auto-fit, calc(80px + 56 * (100vw / 1280)));
+  display: grid;
+  grid-template-columns: repeat(auto-fit, calc(80px + 48 * (100vw / 1280)));
   gap: 0.5vh;
-  flex:1;
+  flex: 1;
+  @media (max-width: 425px) {
+    div {
+      height: 6rem;
+      img {
+        height: 100%;
+      }
+    }
+  }
 `;
 
 const DroppableCell: React.FC<{ id: string; children?: React.ReactNode }> = ({
@@ -57,9 +65,9 @@ const FilterRow = styled.div`
   align-items: center;
   color: white;
   padding: 0 0.4vw;
-  gap: 10%;
+  gap: 2%;
   min-width: 30px;
-  max-width:90px;
+  max-width: 90px;
   span {
     transition: opacity 0.3s ease-in-out;
   }
@@ -78,7 +86,7 @@ const StyledTypography = styled(Typography)({
 const RowHeader = styled(Col)`
   display: flex;
   min-height: 9.5rem;
-  width: 100px;
+  width: calc(80px + 20 * (100vw / 1280));
   align-items: center;
   justify-content: center;
   color: white;
@@ -184,7 +192,7 @@ const CustomSpan = ({ name, color }: { name: string; color: string }) => {
     >
       {spanRef.current && isOverflow ? (
         <Tooltip title={name}>
-          <span style={{height:"9vh",display:"block"}}>{name}</span>
+          <span style={{ height: "9vh", display: "block" }}>{name}</span>
         </Tooltip>
       ) : (
         name

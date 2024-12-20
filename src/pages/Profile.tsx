@@ -34,6 +34,7 @@ const ContainerItems = styled.div`
   div {
     min-width: calc(100px + 30 * (100vw / 1280));
     max-width: 130px;
+    touch-action:auto;
   }
 `;
 const HeaderTemplate = styled.div`

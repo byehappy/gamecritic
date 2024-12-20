@@ -8,11 +8,13 @@ export default ({ children }: React.PropsWithChildren) => {
   const { theme, themeName } = useTheme();
   const { token } = AntTheme.useToken();
 
-  return(
-    <ThemeProvider theme={{
-      antd:token,
-      ...theme
-    }}>
+  return (
+    <ThemeProvider
+      theme={{
+        antd: token,
+        ...theme,
+      }}
+    >
       <ConfigProvider
         theme={{
           algorithm:
@@ -22,6 +24,7 @@ export default ({ children }: React.PropsWithChildren) => {
           components: {
             Button: {
               colorBgContainer: "transparent",
+              colorFillTertiary:"transparent"
             },
           },
           token: {

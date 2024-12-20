@@ -138,7 +138,7 @@ export const Header = () => {
                   alt={`iconUser`}
                 />
               }
-              style={{ cursor: "pointer", width: "fit-content", height: "75%" }}
+              style={{ cursor: "pointer",height:"50px",width:"50px" }}
             />
           </Dropdown>
         )

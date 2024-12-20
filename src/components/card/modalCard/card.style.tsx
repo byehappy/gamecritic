@@ -50,19 +50,24 @@ export const PortalWrapper = styled.div`
   top: 0;
   left: 0;
   width: 100%;
-  height:  100%;
-  background:  rgba(0, 0, 0, 0.5);
-  display:  flex;
-  justify-content:  space-around;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: space-around;
   align-items: center;
   z-index: 101;
   cursor: zoom-out;
-  img{
-    width:75%;
+  img {
+    width: 75%;
   }
-  button{
-    width:100%;
-    height:auto;
-    z-index:102;
+  button {
+    width: 100%;
+    height: auto;
+    z-index: 102;
   }
+`;
+export const MoadalWrapperGameInfo = styled.div`
+  width: min-content;
+  display: flex;
+  gap: 1vw;
 `;

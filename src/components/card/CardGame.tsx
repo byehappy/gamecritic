@@ -5,10 +5,11 @@ import styled from "styled-components";
 import { useState } from "react";
 import { CardModal } from "./modalCard/Card.modal";
 import { isString } from "antd/es/button";
-const StyleCoverImage = styled.div<{ $name: string; $size: string }>`
+const StyleCoverImage = styled.div<{ $name: string; $size: string  }>`
   position: relative;
   display: block;
   overflow: hidden;
+  touch-action:none;
   img {
     transition: filter 0.3s ease;
     height: ${(props) => (props.$size === "large" ? "12rem" : "10rem")};

@@ -12,25 +12,38 @@ import { IAboutGame } from "../interfaces/aboutGames";
 import { AboutCard } from "../components/aboutCard/AboutCard";
 import { setImageIcon } from "../redux/slice/authSlice";
 import { EditOutlined } from "@ant-design/icons";
+import { device } from "../styles/size";
 const UserInfoWrapper = styled.div`
   display: flex;
   width: 100%;
-  height: 25vh;
   min-height: 200px;
   padding: 2vh 5vw;
   gap: 5%;
+  @media (max-width: 425px) {
+    flex-direction: column;
+    align-items: center;
+    div {
+      width: 100%;
+    }
+  }
+  @media ${device.tablet} {
+    flex-direction: row;
+  }
 `;
 const IconUser = styled.img`
-  width: 100%;
-  height: 100%;
   border-radius: 100%;
+  width: 200px;
+  object-fit: cover;
   background-color: #9494944e;
 `;
 const UserFormWrapper = styled.div`
   gap: 5%;
   display: flex;
+  font-size: ${({ theme }) => theme.fontSizes.adaptivText};
   flex-direction: column;
-  width: 75%;
+  @media ${device.tablet} {
+    width: 75%;
+  }
 `;
 export const AboutePage = () => {
   const theme = useTheme();
@@ -124,15 +137,7 @@ export const AboutePage = () => {
           <IconEditor editor={editor} init_image={userInfo.init_image} />
         )}
         {!loading && userInfo.init_image && !edit && (
-          <IconUser
-            style={{
-              width: "15%",
-              minWidth: "200px",
-              minHeight: "200px",
-              objectFit: "cover",
-            }}
-            src={userInfo.init_image}
-          />
+          <IconUser src={userInfo.init_image} />
         )}
         {userInfo ? (
           <UserFormWrapper>
@@ -209,7 +214,10 @@ export const AboutePage = () => {
               size="large"
               type="primary"
               variant="solid"
-              style={{background:theme.colors.secondary}}
+              style={{
+                background: theme.colors.secondary,
+                width: "50px",
+              }}
               onClick={() => setEdit(true)}
             >
               <EditOutlined />

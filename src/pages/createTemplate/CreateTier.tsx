@@ -59,7 +59,7 @@ const HeaderButton = styled(Button)<{ $isActive: boolean }>`
   background: none;
   cursor: pointer;
   padding: 0;
-  color: ${(props) => (props.$isActive ? "black" : "grey")};
+  color: ${(props) => (props.$isActive ? props.theme.colors.font : "grey")};
 `;
 const DEFAULT_ROWS = {
   rows: [

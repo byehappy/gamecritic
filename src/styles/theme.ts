@@ -73,7 +73,7 @@ export const lightTheme: StyledTheme = {
     loading: "linear-gradient(to right, #f6f6f6 8%, #f0f0f0 18%, #f6f6f6 33%)",
   },
   image: {
-    no_image: "src/assets/icons/noImage/black_no_image.svg",
+    no_image: `${import.meta.env.VITE_URL_FRONT}src/assets/icons/noImage/black_no_image.svg`,
   },
 };
 
@@ -96,6 +96,6 @@ export const darkTheme: StyledTheme = {
     loading: "linear-gradient(to right, #4d494b 8%, #353537 18%, #4d494b 33%)",
   },
   image: {
-    no_image: "src/assets/icons/noImage/white_no_image.svg",
+    no_image: `${import.meta.env.VITE_URL_FRONT}src/assets/icons/noImage/white_no_image.svg`,
   },
 };

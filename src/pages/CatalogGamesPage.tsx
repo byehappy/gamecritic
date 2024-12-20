@@ -25,8 +25,8 @@ const UserInfoWrapper = styled.div`
   gap: 5%;
 `;
 const IconUser = styled.img`
-  width: 15%;
-  height: 100%;
+  height: calc(100px + 100 * (100vw / 1280));
+  max-height: 200px;
   border-radius: 100%;
   background-color: #9494944e;
 `;
@@ -36,6 +36,17 @@ const UserFormWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 75%;
+`;
+
+const CardGameWrapper = styled.div`
+  @media (max-width: 425px) {
+    div {
+      height: 6rem;
+      img {
+        height: 100%;
+      }
+    }
+  }
 `;
 export const CatalogGamesPage = () => {
   const navigate = useNavigate();
@@ -222,22 +233,24 @@ export const CatalogGamesPage = () => {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: " repeat(auto-fit, minmax(130px,1fr)",
-            gap: "1rem",
+            gridTemplateColumns:
+              " repeat(auto-fit, minmax(calc(80px + 30 * (100vw / 1280)),1fr)",
+            gap: "10px"
           }}
         >
           {loading && SkeletonFactory(filterFlags.page_size, "Card")}
           {!loading &&
             games?.map((game) => {
               return (
-                <CardGame
-                  key={game.id}
-                  game={game}
-                  id={game.id}
-                  size="large"
-                  cursorValue="default"
-                  onCardClick={!userId ? handlePassedGame : undefined}
-                />
+                <CardGameWrapper key={game.id}>
+                  <CardGame
+                    game={game}
+                    id={game.id}
+                    size="large"
+                    cursorValue="default"
+                    onCardClick={!userId ? handlePassedGame : undefined}
+                  />
+                </CardGameWrapper>
               );
             })}
         </div>

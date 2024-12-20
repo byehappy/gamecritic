@@ -3,8 +3,7 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 export const Item = styled.div`
-  min-width: 260px;
-  min-width:calc(200px + 100 * (100vw / 1280));
+  width: calc(200px + 100 * (100vw / 1280));
   position: relative;
   flex: none;
   height: 24vh;

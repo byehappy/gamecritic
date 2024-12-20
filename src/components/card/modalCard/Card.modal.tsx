@@ -34,9 +34,11 @@ import {
   DotsContainer,
   Dot,
   PortalWrapper,
+  MoadalWrapperGameInfo,
 } from "./card.style";
 import { useWordDeclination } from "../../../utils/hooks/useWorldDeclination";
 import { createPortal } from "react-dom";
+import { useTheme } from "styled-components";
 
 export const CardModal: React.FC<{
   id: number;
@@ -44,6 +46,7 @@ export const CardModal: React.FC<{
     value: React.SetStateAction<number | string | null | undefined>
   ) => void;
 }> = ({ id, setOpenModalGameId }) => {
+  const theme = useTheme();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
@@ -182,180 +185,172 @@ export const CardModal: React.FC<{
     setPortalContainer(zoomContainer);
   };
   const gameInfo = game ? (
-    <div>
-      <div style={{ width: "min-content", display: "flex", gap: "1vw" }}>
-        {screenshotsGame && (
-          <>
-            <div onMouseMove={handleMouseMove} ref={sliderRef}>
-              <SliderContainer onClick={handleZoomInImage}>
-                <SliderImage
+    <MoadalWrapperGameInfo>
+      {screenshotsGame && (
+        <>
+          <div onMouseMove={handleMouseMove} ref={sliderRef}>
+            <SliderContainer onClick={handleZoomInImage}>
+              <SliderImage
+                src={screenshotsGame[currentImageIndex].image}
+                alt={`Скриншот ${currentImageIndex + 1}`}
+              />
+              <DotsContainer>
+                {screenshotsGame.map((_, index) => (
+                  <Dot
+                    key={screenshotsGame[index].id}
+                    $isActive={index === currentImageIndex}
+                  />
+                ))}
+              </DotsContainer>
+            </SliderContainer>
+          </div>
+          {portalContainer &&
+            createPortal(
+              <PortalWrapper
+                onClick={(e) => {
+                  e.stopPropagation();
+                  document.body.removeChild(portalContainer);
+                  setPortalContainer(null);
+                }}
+              >
+                <Button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (currentImageIndex > 0)
+                      setCurrentImageIndex((prev) => --prev);
+                  }}
+                  icon={<LeftCircleOutlined style={{ fontSize: theme.fontSizes.adaptivLogo }} />}
+                  size="large"
+                  style={{
+                    width: "fit-content",
+                    background: "none",
+                    border: "none",
+                    color: currentImageIndex === 0 ? "gray" : "white",
+                  }}
+                  disabled={currentImageIndex === 0}
+                />
+                <img
                   src={screenshotsGame[currentImageIndex].image}
                   alt={`Скриншот ${currentImageIndex + 1}`}
                 />
-                <DotsContainer>
-                  {screenshotsGame.map((_, index) => (
-                    <Dot
-                      key={screenshotsGame[index].id}
-                      $isActive={index === currentImageIndex}
-                    />
-                  ))}
-                </DotsContainer>
-              </SliderContainer>
-            </div>
-            {portalContainer &&
-              createPortal(
-                <PortalWrapper
+                <Button
                   onClick={(e) => {
                     e.stopPropagation();
-                    document.body.removeChild(portalContainer);
-                    setPortalContainer(null);
+                    if (currentImageIndex < screenshotsGame.length - 1)
+                      setCurrentImageIndex((prev) => ++prev);
                   }}
-                >
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (currentImageIndex > 0)
-                        setCurrentImageIndex((prev) => --prev);
-                    }}
-                    icon={<LeftCircleOutlined style={{ fontSize: "5rem" }} />}
-                    size="large"
-                    style={{
-                      width: "fit-content",
-                      background: "none",
-                      border: "none",
-                      color: currentImageIndex === 0 ? "gray" : "white",
-                    }}
-                    disabled={currentImageIndex === 0}
-                  />
-                  <img
-                    src={screenshotsGame[currentImageIndex].image}
-                    alt={`Скриншот ${currentImageIndex + 1}`}
-                  />
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (currentImageIndex < screenshotsGame.length - 1)
-                        setCurrentImageIndex((prev) => ++prev);
-                    }}
-                    icon={<RightCircleOutlined style={{ fontSize: "5rem" }} />}
-                    size="large"
-                    style={{
-                      width: "fit-content",
-                      background: "none",
-                      border: "none",
-                      color:
-                        currentImageIndex === screenshotsGame.length - 1
-                          ? "gray"
-                          : "white",
-                    }}
-                    disabled={currentImageIndex === screenshotsGame.length - 1}
-                  />
-                </PortalWrapper>,
-                portalContainer
-              )}
-          </>
-        )}
+                  icon={<RightCircleOutlined style={{ fontSize: theme.fontSizes.adaptivLogo }} />}
+                  size="large"
+                  style={{
+                    width: "fit-content",
+                    background: "none",
+                    border: "none",
+                    color:
+                      currentImageIndex === screenshotsGame.length - 1
+                        ? "gray"
+                        : "white",
+                  }}
+                  disabled={currentImageIndex === screenshotsGame.length - 1}
+                />
+              </PortalWrapper>,
+              portalContainer
+            )}
+        </>
+      )}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          maxHeight: "47vh",
+        }}
+      >
+        <img
+          src={
+            game.background_image ??
+            "https://mebeliero.ru/images/photos/medium/no_image.png"
+          }
+          alt={game.name}
+          style={{
+            width: "calc(100px + 120 * (100vw / 1280))",
+            objectFit: "cover",
+            minHeight: "15vh",
+            marginBottom: "1vh",
+          }}
+        />
         <div
           style={{
-            display: "flex",
-            flexDirection: "column",
-            maxHeight: "47vh",
+            overflow: "auto",
+            width: "100%",
+            maxHeight: "8em",
+            fontSize:theme.fontSizes.adaptivSmallText,
           }}
         >
-          <img
-            src={
-              game.background_image ??
-              "https://mebeliero.ru/images/photos/medium/no_image.png"
-            }
-            alt={game.name}
-            style={{
-              width: "15vw",
-              objectFit: "cover",
-              minHeight: "15vh",
-              marginBottom: "1vh",
-            }}
-          />
-          <div
-            style={{
-              overflow: "auto",
-              width: "100%",
-              maxHeight: "8em",
-            }}
-          >
-            {game.description_raw}
-          </div>
-          <div
-            style={{
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-              gap: "1vh",
-              justifyContent: "flex-end",
-            }}
-          >
-            {(game.metacritic !== null || game.metacritic === 0) && (
-              <div>
-                <strong>Оценка на Metacritic:</strong> {game.metacritic}{" "}
-                {textMetacritic}
-              </div>
-            )}
-            {game.rating !== 0 && (
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <strong style={{ marginRight: ".4vw" }}>Рейтинг:</strong>{" "}
-                <Tooltip title={`${game.rating} из 5`}>
-                  <div>
-                    {" "}
-                    <Rate
-                      allowHalf
-                      defaultValue={Number(game.rating)}
-                      disabled
-                    />
-                  </div>
-                </Tooltip>
-              </div>
-            )}
-            {game.released !== null ? (
-              <div>
-                <strong>Дата релиза:</strong>{" "}
-                {new Date(game.released).toLocaleDateString()}
-              </div>
-            ) : (
-              <div>
-                <strong>Дата релиза:</strong> В ближайшее время
-              </div>
-            )}
+          {game.description_raw}
+        </div>
+        <div
+          style={{
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            gap: "1vh",
+            justifyContent: "flex-end",
+          }}
+        >
+          {(game.metacritic !== null || game.metacritic === 0) && (
             <div>
-              <strong>Среднее время игры:</strong> {game.playtime}{" "}
-              {textHoursPlay}
+              <strong>Оценка на Metacritic:</strong> {game.metacritic}{" "}
+              {textMetacritic}
             </div>
-            <div>
-              <strong style={{ display: "flex" }}>
-                Платформы:
-                <div
-                  style={{ display: "flex", gap: ".5vw", marginLeft: ".4vw" }}
-                >
-                  {game.parent_platforms.map((platform) => (
-                    <span key={uuid4()}>
-                      {createElement(
-                        platformIcons[
-                          platform.platform.name as keyof typeof platformIcons
-                        ] || platformIcons.Global
-                      )}
-                    </span>
-                  ))}
+          )}
+          {game.rating !== 0 && (
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <strong style={{ marginRight: ".4vw" }}>Рейтинг:</strong>{" "}
+              <Tooltip title={`${game.rating} из 5`}>
+                <div>
+                  {" "}
+                  <Rate allowHalf defaultValue={Number(game.rating)} disabled />
                 </div>
-              </strong>
+              </Tooltip>
             </div>
+          )}
+          {game.released !== null ? (
+            <div>
+              <strong>Дата релиза:</strong>{" "}
+              {new Date(game.released).toLocaleDateString()}
+            </div>
+          ) : (
+            <div>
+              <strong>Дата релиза:</strong> В ближайшее время
+            </div>
+          )}
+          <div>
+            <strong>Среднее время игры:</strong> {game.playtime} {textHoursPlay}
+          </div>
+          <div>
+            <strong style={{ display: "flex" }}>
+              Платформы:
+              <div style={{ display: "flex", gap: ".5vw", marginLeft: ".4vw" }}>
+                {game.parent_platforms.map((platform) => (
+                  <span key={uuid4()}>
+                    {createElement(
+                      platformIcons[
+                        platform.platform.name as keyof typeof platformIcons
+                      ] || platformIcons.Global
+                    )}
+                  </span>
+                ))}
+              </div>
+            </strong>
           </div>
         </div>
       </div>
-    </div>
+    </MoadalWrapperGameInfo>
   ) : (
     <div>Не удалось загрузить данные об игре.</div>
   );
 
   const modalHeader = loading ? undefined : (
-    <h2 style={{ textWrap: "nowrap" }}>
+    <h2 style={{ textWrap: "nowrap", fontSize: theme.fontSizes.adaptivText }}>
       {game?.name}{" "}
       {isFavorite ? (
         <Tooltip title="Удалить из избранного">

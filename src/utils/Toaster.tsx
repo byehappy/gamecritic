@@ -57,8 +57,8 @@ const fadeOut = keyframes`
     transform:translateX(0%);
   }
   to{
-    opacity:1;
-    transform:translateX(100%);
+    opacity:0;
+    transform:translateX(200%);
   }
 `;
 const progressBar = keyframes`
@@ -74,11 +74,15 @@ const ProgressBar = styled.div`
   bottom: 1%;
   left: 0;
   height: 0.15em;
-  background-color: #AB5EF1;
+  background-color: #ab5ef1;
   animation: ${progressBar} ${TOAST_TIMEOUT - 500}ms linear 0s;
   border-radius: 1em;
 `;
-const ToasterWrapper = styled.div<{ $backColor: string; $textColor: string,$fontSize:string }>`
+const ToasterWrapper = styled.div<{
+  $backColor: string;
+  $textColor: string;
+  $fontSize: string;
+}>`
   width: fit-content;
   margin-left: auto;
   white-space: normal;
@@ -95,6 +99,9 @@ const ToasterWrapper = styled.div<{ $backColor: string; $textColor: string,$font
     ${ProgressBar} {
       animation-play-state: paused;
     }
+  }
+  @media (max-width: 425px) {
+    margin-left: unset;
   }
 `;
 
@@ -146,7 +153,7 @@ const Toaster: React.FC<{
           <Button
             icon={<RollbackOutlined />}
             onClick={toaster.cancel}
-            style={{ background: theme.colors.bg,color:theme.colors.font }}
+            style={{ background: theme.colors.bg, color: theme.colors.font }}
           />
         )}
       </StyledMessage>
@@ -165,6 +172,13 @@ const StyledList = styled.div`
   gap: 2vh;
   flex-direction: column-reverse;
   max-width: 35vw;
+  @media (max-width: 425px) {
+    bottom: 5vh;
+    right: 0;
+    max-width:none;
+    width:100%;
+    align-items: center;
+  }
 `;
 
 export const ToasterList: React.FC<{

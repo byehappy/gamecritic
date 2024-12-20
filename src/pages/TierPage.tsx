@@ -57,7 +57,18 @@ import { TimeoutRequest } from "../utils/cancelableReq";
 import { useToaster } from "../utils/hooks/useToaster";
 import { SameUsersOnTier } from "../components/sameUser/SameUsers";
 import { SameUsers } from "../interfaces/users";
-import { useTheme } from "styled-components";
+import styled, { useTheme } from "styled-components";
+
+const CardGameWrapper = styled.div`
+  @media (max-width: 425px) {
+    div {
+      height: 6rem;
+      img {
+        height: 100%;
+      }
+    }
+  }
+`;
 
 function TierPage() {
   const theme = useTheme();
@@ -736,7 +747,12 @@ function TierPage() {
       </div>
       {sameUsers.length !== 0 && <SameUsersOnTier sameUsers={sameUsers} />}
       <DragOverlay>
-        {activeGame ? <CardGame id={activeGame.id} game={activeGame} /> : null}
+        {activeGame ? (
+          <CardGameWrapper>
+            {" "}
+            <CardGame id={activeGame.id} game={activeGame} />
+          </CardGameWrapper>
+        ) : null}
       </DragOverlay>
       <FloatButton
         style={{ zIndex: 5 }}
