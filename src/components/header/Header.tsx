@@ -23,7 +23,7 @@ const StyledHeader = styled.header`
     padding: 0 10vw;
   }
   justify-content: space-between;
-  border-bottom: 2px #8a2be2 solid;
+  border-bottom:${({theme})=> `2px ${theme.colors.primary} solid`};
   .logo {
     color: ${({ theme }) => theme.colors.font};
     font-family: "Silkscreen";

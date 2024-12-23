@@ -28,7 +28,9 @@ export default ({ children }: React.PropsWithChildren) => {
             },
           },
           token: {
-            colorPrimaryHover: theme.colors.secondary,
+            colorPrimaryHover: theme.colors.primary,
+            colorPrimaryActive:theme.colors.primary,
+            colorPrimary:theme.colors.primary
           },
         }}
       >

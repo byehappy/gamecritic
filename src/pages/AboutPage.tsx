@@ -215,7 +215,7 @@ export const AboutePage = () => {
               type="primary"
               variant="solid"
               style={{
-                background: theme.colors.secondary,
+                background: theme.colors.primary,
                 width: "50px",
               }}
               onClick={() => setEdit(true)}

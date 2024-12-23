@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { useTheme } from "styled-components";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { Button, Col, Row } from "antd";
 import Search from "antd/es/input/Search";
@@ -20,8 +20,8 @@ const Container = styled.div`
 `;
 const RowHeader = styled(Col)`
   display: flex;
-  min-height: 12rem;
-  width: 8vw;
+  min-height: 9.5rem;
+  width: calc(80px + 20 * (100vw / 1280));
   align-items: center;
   justify-content: center;
   color: white;
@@ -38,6 +38,7 @@ type FormValueType = {
 export const ExampleTierPage: React.FC<{
   formValues: FormValueType;
 }> = ({ formValues: { rows, name } }) => {
+  const theme = useTheme();
   const dispatch = useAppDispatch();
   const createTemplate = useAppSelector((state) => state.createTemplate);
   const [games, setGames] = useState<IGame[] | undefined>();
@@ -81,7 +82,7 @@ export const ExampleTierPage: React.FC<{
           margin: "1vw 0",
           width: "100%",
           textAlign: "center",
-          color: "#2e2532",
+          color: theme.colors.font,
         }}
       >
         {name}
@@ -139,8 +140,11 @@ export const ExampleTierPage: React.FC<{
       <Row
         style={{
           display: "grid",
-          gridTemplateColumns: " repeat(auto-fill, minmax(130px,1fr)",
-          gap: "1rem",
+          gridTemplateColumns:
+            " repeat(auto-fill, calc(80px + 50 * (100vw / 1280))",
+          justifyContent: "space-between",
+          justifyItems: "center",
+          gap: "1em",
         }}
       >
         {!games

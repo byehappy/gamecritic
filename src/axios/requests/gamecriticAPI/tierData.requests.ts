@@ -35,6 +35,12 @@ export const getAllTiers = async (): Promise<Tier[]> => {
     .then((res) => res.data);
   return response;
 };
+export const getPreviewTiers = async (): Promise<Tier[]> => {
+  const response = await instanceAPI
+    .get<Tier[]>("/promo-tierlist")
+    .then((res) => res.data);
+  return response;
+};
 
 export const getUsersTiers = async (): Promise<UserTier[]> => {
   return await instanceAPI.get(`/tierlists/users`).then((res) => res.data);

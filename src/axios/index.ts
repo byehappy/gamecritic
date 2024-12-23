@@ -25,6 +25,7 @@ export {
   getAuthorTiers,
   UpdateTier,
   DeleteUserTier,
+  getPreviewTiers
 } from "./requests/gamecriticAPI/tierData.requests";
 export {
   getFavoriteGames,

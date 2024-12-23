@@ -1,4 +1,5 @@
 import styled, { keyframes } from "styled-components";
+import { device } from "../../../styles/size";
 
 const fadeIn = keyframes`
   from {
@@ -32,17 +33,13 @@ export const Dot = styled.div<{ $isActive: boolean }>`
 `;
 
 export const SliderContainer = styled.div`
-  width: 40vw;
-  height: 47vh;
-  overflow: hidden;
   position: relative;
   cursor: zoom-in;
 `;
 
 export const SliderImage = styled.img`
-  width: 100%;
-  height: 100%;
   object-fit: cover;
+  width:100%;
 `;
 
 export const PortalWrapper = styled.div`
@@ -67,7 +64,12 @@ export const PortalWrapper = styled.div`
   }
 `;
 export const MoadalWrapperGameInfo = styled.div`
-  width: min-content;
   display: flex;
-  gap: 1vw;
+  gap: 10px;
+  @media ${device.mobileS} {
+    flex-direction: column;
+  }
+  @media ${device.laptopL} {
+    flex-direction: row;
+  }
 `;

@@ -2,8 +2,7 @@ import { ITheme, ThemeEnum } from "../interfaces/styled";
 
 export const baseTheme: ITheme = {
   colors: {
-    primary: "#8B2BE2",
-    secondary: "#AB5EF1",
+    primary: "#AB5EF1",
     success: "green",
     danger: "red",
     bg: "",

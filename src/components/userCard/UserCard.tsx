@@ -5,24 +5,26 @@ import { SameUsers } from "../../interfaces/users";
 
 const UserWrapper = styled.div`
   max-width: 130px;
-  min-width:calc(80px + 30 * (100vw / 1280));
-  aspect-ratio: 2 / 3.5;
-  background-color: #AB5EF1;
-  padding: 0.1em;
+  min-width: calc(80px + 10 * (100vw / 1280));
+  aspect-ratio: 2 / 3.2;
+  background-color: ${({ theme }) => theme.colors.primary};
+  padding: 0.2em;
   border-radius: 1em;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-evenly;
   a {
     display: flex;
     justify-content: center;
     flex-direction: row;
     width: 85%;
     color: white;
+    &:hover {
+      color: #ffd0a3;
+    }
   }
   img {
-    width: 100%;
+    width: calc(70px + 20 * (100vw / 1280));
     border-radius: 100%;
   }
   div {
@@ -31,7 +33,7 @@ const UserWrapper = styled.div`
     margin-top: 0.5vw;
     width: 100%;
     color: white;
-    font-size:${({theme})=> theme.fontSizes.adaptivSmallText};
+    font-size: ${({ theme }) => theme.fontSizes.adaptivSmallText};
     a {
       width: 100%;
     }
@@ -43,11 +45,19 @@ export const UserCard: React.FC<{ user: TopUsers | SameUsers }> = ({
   if ("gameCount" in user) {
     return (
       <UserWrapper>
-        <Link to={`/about/${user.id}`}>
+        <Link
+          to={`/about/${user.id}`}
+          style={{
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "10px",
+            margin: "10px 0",
+          }}
+        >
           <img src={user.img_icon} alt={user.name} />
+          {user.name}
         </Link>
         <div>
-          <Link to={`/about/${user.id}`}>{user.name}</Link>
           <Link to={`/passed-games/${user.id}`}>
             Кол-во игр: {user.gameCount}
           </Link>
@@ -57,12 +67,21 @@ export const UserCard: React.FC<{ user: TopUsers | SameUsers }> = ({
   } else if ("totalSimilarityScore" in user) {
     return (
       <UserWrapper>
-        <Link to={`/about/${user.userId}`}>
+        <Link
+          to={`/about/${user.userId}`}
+          style={{
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "10px",
+          }}
+        >
           <img src={user.img} alt={user.name} />
+          {user.name}
         </Link>
         <div>
-          <Link to={`/about/${user.userId}`}>{user.name}</Link>
-         <span style={{fontSize:".9em"}}>Совпадение: {user.totalSimilarityScore * 100}%</span>
+          <span style={{ fontSize: ".9em" }}>
+            Совпадение: {user.totalSimilarityScore * 100}%
+          </span>
         </div>
       </UserWrapper>
     );

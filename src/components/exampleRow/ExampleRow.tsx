@@ -30,6 +30,7 @@ export const ExampleRow: React.FC<{ name: string; color: string }> = ({
         alignItems: "center",
         wordBreak: "break-all",
         height: "15vh",
+        minWidth:"100px"
       }}
     >
       <span

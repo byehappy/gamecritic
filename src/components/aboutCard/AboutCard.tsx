@@ -2,7 +2,7 @@ import { Pagination, Popover } from "antd";
 import Search from "antd/es/input/Search";
 import { SkeletonFactory } from "../../utils/skeleton/skeleton-factory";
 import { IAboutGame } from "../../interfaces/aboutGames";
-import styled, { useTheme } from "styled-components";
+import styled from "styled-components";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setMessage } from "../../redux/slice/messageSlice";
@@ -182,6 +182,7 @@ export const AboutCard: React.FC<{ card: IAboutGame; change: boolean }> = ({
                   defaultPageSize={5}
                   total={count ?? 1}
                   pageSizeOptions={[5]}
+                  size={window.innerWidth <= 425 ? "small" : "default"}
                   onChange={(page, pageSize) => {
                     handleChangeFiters("page", page);
                     handleChangeFiters("page_size", pageSize);

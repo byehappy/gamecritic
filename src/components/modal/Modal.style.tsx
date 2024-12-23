@@ -19,8 +19,8 @@ export const ModalWindow = styled.div<{$widthMin:boolean}>`
   color:${({theme})=>theme.colors.font};
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  min-width: 25rem;
-  max-width:70vw;
+  min-width: 320px;
+  max-width:75%;
   padding: 1em;
   width:${(props)=> props.$widthMin ?  "min-content" : "auto"};
 `

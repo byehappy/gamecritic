@@ -47,6 +47,14 @@ const HeaderTemplate = styled.div`
     font-size: ${({ theme }) => theme.fontSizes.adaptivSmallText};
     font-weight: 300;
     text-align: right;
+    @media (max-width: 425px) {
+      width:35vw;
+    }
+  }
+  h4{
+    @media (max-width: 425px) {
+      width:35vw;
+    }
   }
 `;
 export const ProfilePage = () => {
@@ -111,7 +119,7 @@ export const ProfilePage = () => {
   return (
     <div>
       <HeaderTemplate>
-        Ваши шаблоны
+        <h4>Ваши шаблоны</h4>
         {myTiers.length !== 0 && (
           <Link to={`/all-my-tierlits/${profileUserId}`}>
             Увидеть все свои шаблоны
@@ -130,6 +138,7 @@ export const ProfilePage = () => {
                   img={tier.imageSrc ?? ""}
                   name={tier.title}
                   id={tier.id}
+                  userId={profileUserId}
                 />
               );
             })}
@@ -143,7 +152,7 @@ export const ProfilePage = () => {
       </CarouselWrapper>
       <HeaderTemplate></HeaderTemplate>
       <HeaderTemplate>
-        Используемые шаблоны
+      <h4> Используемые шаблоны</h4>
         {tiers.length !== 0 && (
           <Link to={`/all-tierlits/${profileUserId}`}>Увидеть все шаблоны</Link>
         )}
@@ -160,6 +169,7 @@ export const ProfilePage = () => {
                   img={tier.imageSrc ?? ""}
                   name={tier.title}
                   id={tier.id}
+                  userId={profileUserId}
                 />
               );
             })}
@@ -172,7 +182,7 @@ export const ProfilePage = () => {
         </div>
       </CarouselWrapper>
       <HeaderTemplate>
-        Избранные игры
+      <h4> Избранные игры</h4>
         {favoriteGames.length !== 0 && (
           <Link to={`/all-favorites/${profileUserId}`}>
             Увидеть все избранные игры

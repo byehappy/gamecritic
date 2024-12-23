@@ -9,7 +9,8 @@ export const TemplateCard: React.FC<{
   id?: string;
   del?: false | ((tierId: string, name: string) => void);
   disable?: boolean;
-}> = ({ img, name, id, del=false, disable = false }) => {
+  userId?:string
+}> = ({ img, name, id, del=false, disable = false,userId }) => {
   let itemImg, itemName;
   if (name !== "" && name !== null) {
     itemName = name;
@@ -29,8 +30,8 @@ export const TemplateCard: React.FC<{
           style={{
             zIndex: 2,
             position: "absolute",
-            right: 1,
-            top: 1,
+            right: 0,
+            top: -2,
             border: "none",
           }}
         >
@@ -41,7 +42,7 @@ export const TemplateCard: React.FC<{
           )}
         </Button>
       )}
-      <Link to={`/tier-list/${id}`}>
+      <Link to={`/tier-list/${id}/${userId}`}>
         <img src={itemImg} alt={name} />
         <span>{itemName}</span>
       </Link>

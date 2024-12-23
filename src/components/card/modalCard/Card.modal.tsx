@@ -187,7 +187,7 @@ export const CardModal: React.FC<{
   const gameInfo = game ? (
     <MoadalWrapperGameInfo>
       {screenshotsGame && (
-        <>
+        <div style={{ flex: 3 }}>
           <div onMouseMove={handleMouseMove} ref={sliderRef}>
             <SliderContainer onClick={handleZoomInImage}>
               <SliderImage
@@ -219,7 +219,11 @@ export const CardModal: React.FC<{
                     if (currentImageIndex > 0)
                       setCurrentImageIndex((prev) => --prev);
                   }}
-                  icon={<LeftCircleOutlined style={{ fontSize: theme.fontSizes.adaptivLogo }} />}
+                  icon={
+                    <LeftCircleOutlined
+                      style={{ fontSize: theme.fontSizes.adaptivLogo }}
+                    />
+                  }
                   size="large"
                   style={{
                     width: "fit-content",
@@ -239,7 +243,11 @@ export const CardModal: React.FC<{
                     if (currentImageIndex < screenshotsGame.length - 1)
                       setCurrentImageIndex((prev) => ++prev);
                   }}
-                  icon={<RightCircleOutlined style={{ fontSize: theme.fontSizes.adaptivLogo }} />}
+                  icon={
+                    <RightCircleOutlined
+                      style={{ fontSize: theme.fontSizes.adaptivLogo }}
+                    />
+                  }
                   size="large"
                   style={{
                     width: "fit-content",
@@ -255,45 +263,50 @@ export const CardModal: React.FC<{
               </PortalWrapper>,
               portalContainer
             )}
-        </>
+        </div>
       )}
       <div
         style={{
           display: "flex",
           flexDirection: "column",
-          maxHeight: "47vh",
+          flex: 1,
         }}
       >
-        <img
-          src={
-            game.background_image ??
-            "https://mebeliero.ru/images/photos/medium/no_image.png"
-          }
-          alt={game.name}
-          style={{
-            width: "calc(100px + 120 * (100vw / 1280))",
-            objectFit: "cover",
-            minHeight: "15vh",
-            marginBottom: "1vh",
-          }}
-        />
-        <div
-          style={{
-            overflow: "auto",
-            width: "100%",
-            maxHeight: "8em",
-            fontSize:theme.fontSizes.adaptivSmallText,
-          }}
-        >
-          {game.description_raw}
+        <div>
+          {window.innerWidth > 1024 && (
+            <img
+              src={
+                game.background_image ??
+                "https://mebeliero.ru/images/photos/medium/no_image.png"
+              }
+              alt={game.name}
+              style={{
+                width: "100%",
+                maxHeight: "100px",
+                objectFit: "cover",
+                minHeight: "15vh",
+              }}
+            />
+          )}
+          <div
+            style={{
+              overflow: "auto",
+              width: "100%",
+              maxHeight: "8em",
+              fontSize: theme.fontSizes.adaptivSmallText,
+              marginBottom: "20px",
+            }}
+          >
+            {game.description_raw}
+          </div>
         </div>
         <div
           style={{
-            height: "100%",
             display: "flex",
             flexDirection: "column",
             gap: "1vh",
-            justifyContent: "flex-end",
+            justifyContent:"space-around",
+            height:"100%",
           }}
         >
           {(game.metacritic !== null || game.metacritic === 0) && (
@@ -307,7 +320,6 @@ export const CardModal: React.FC<{
               <strong style={{ marginRight: ".4vw" }}>Рейтинг:</strong>{" "}
               <Tooltip title={`${game.rating} из 5`}>
                 <div>
-                  {" "}
                   <Rate allowHalf defaultValue={Number(game.rating)} disabled />
                 </div>
               </Tooltip>
@@ -329,7 +341,7 @@ export const CardModal: React.FC<{
           <div>
             <strong style={{ display: "flex" }}>
               Платформы:
-              <div style={{ display: "flex", gap: ".5vw", marginLeft: ".4vw" }}>
+              <div style={{ display: "flex", gap: "10px", marginLeft: ".4vw" }}>
                 {game.parent_platforms.map((platform) => (
                   <span key={uuid4()}>
                     {createElement(

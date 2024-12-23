@@ -221,7 +221,7 @@ export const CatalogGamesPage = () => {
           </UserFormWrapper>
         </UserInfoWrapper>
       )}
-      <div style={{ display: "grid", margin: "1vw" }}>
+      <div style={{ margin: "1vw",overflow:"hidden" }}>
         <Search
           style={{ marginBottom: "1vw" }}
           placeholder="Введите название игры"
@@ -234,8 +234,9 @@ export const CatalogGamesPage = () => {
           style={{
             display: "grid",
             gridTemplateColumns:
-              " repeat(auto-fit, minmax(calc(80px + 30 * (100vw / 1280)),1fr)",
-            gap: "10px"
+              " repeat(auto-fit, minmax(calc(90px + 30 * (100vw / 1280)),1fr)",
+            gap: "10px",
+            alignContent:"center"
           }}
         >
           {loading && SkeletonFactory(filterFlags.page_size, "Card")}

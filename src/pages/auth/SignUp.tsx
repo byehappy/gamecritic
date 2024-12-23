@@ -58,17 +58,16 @@ export const SignUpPage = () => {
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: "1% 0",
+        gap: "2vh 0",
         textAlign: "center",
-        width: "fit-content",
+        maxWidth: "500px",
         margin: "20vh auto",
       }}
     >
-      <h1 style={{ fontSize: "2rem" }}>Регистрация</h1>
+      <h1 style={{ fontSize: "2rem"}}>Регистрация</h1>
       <Form
         form={form}
         labelCol={{ xs: { span: 24 }, sm: { span: 6 } }}
-        wrapperCol={{ xs: { span: 24 }, sm: { span: 24 } }}
         initialValues={{ remember: true }}
         onFinish={handleRegister}
         autoComplete="off"

@@ -46,6 +46,7 @@ import { ErrorAuth } from "../../redux/slice/authSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import { setFilters } from "../../redux/slice/tierDataSlice";
 import { ExampleRow } from "../../components/exampleRow/ExampleRow";
+import { device } from "../../styles/size";
 const StyledForm = styled(Form)`
   .ant-form-item {
     margin-bottom: 0;
@@ -54,12 +55,29 @@ const StyledForm = styled(Form)`
     background: none;
   }
 `;
-const HeaderButton = styled(Button)<{ $isActive: boolean }>`
+const HeaderButton = styled.div<{ $isActive: boolean }>`
   border: none;
   background: none;
   cursor: pointer;
   padding: 0;
   color: ${(props) => (props.$isActive ? props.theme.colors.font : "grey")};
+  font-size: ${({ theme }) => theme.fontSizes.adaptivText};
+`;
+const SettingsWrapper = styled.div`
+  display: flex;
+  justify-content: space-evenly;
+  @media ${device.mobileS} {
+    flex-direction: column;
+    gap: 5vw;
+  }
+  @media ${device.tablet} {
+    flex-direction: row;
+    gap: 0;
+  }
+  h1{
+    font-size:${({theme})=> theme.fontSizes.adaptivH1};
+    margin-bottom:1vh;
+  }
 `;
 const DEFAULT_ROWS = {
   rows: [
@@ -272,7 +290,7 @@ export const CreateTierPage = () => {
                 <Input placeholder="Url-ссылка на картинку" />
               </Form.Item>
             </div>
-            <div style={{ width: "10%" }}>
+            <div style={{ width: "10%", minWidth: "100px" }}>
               <TemplateCard
                 key={uuid4()}
                 img={formValues.img}
@@ -281,19 +299,16 @@ export const CreateTierPage = () => {
               />
             </div>
           </div>
-          <div
-            style={{
-              display: "flex",
-              gap: "1vw",
-              justifyContent: "space-around",
-            }}
-          >
-            <div style={{ width: "50%" }}>
-              <h1 style={{ marginLeft: "1%" }}>Строки таблицы</h1>
+          <SettingsWrapper>
+            <div>
+              <h1 style={{ width: "320px" }}>
+                Строки таблицы
+              </h1>
               <Form.List name={"rows"}>
                 {(rows, { add, remove }) => {
                   return (
                     <Table
+                      size="small"
                       dataSource={rows}
                       pagination={false}
                       footer={() => {
@@ -344,7 +359,6 @@ export const CreateTierPage = () => {
                       />
                       <Column
                         title="Пример"
-                        onCell={() => ({ style: { width: "15vw" } })}
                         render={(_value, _row, index) => {
                           return (
                             <ExampleRow
@@ -359,7 +373,6 @@ export const CreateTierPage = () => {
                         }}
                       />
                       <Column
-                        title={"Взаимодействие"}
                         render={(_, row) => {
                           return (
                             <Button
@@ -377,7 +390,7 @@ export const CreateTierPage = () => {
               </Form.List>
             </div>
             <div>
-              <div style={{ display: "flex", gap: "1vw" }}>
+              <div style={{ display: "flex", gap: "10px"}}>
                 <HeaderButton
                   type="text"
                   $isActive={activeButton === "filter"}
@@ -386,7 +399,7 @@ export const CreateTierPage = () => {
                     carouselRef.current?.goTo(0);
                   }}
                 >
-                  <h1 style={{ marginBottom: "1vh" }}>Фильтры к играм</h1>
+                  <h4 style={{ marginBottom: "1vh" }}>Фильтры к играм</h4>
                 </HeaderButton>
                 <HeaderButton
                   type="text"
@@ -396,73 +409,79 @@ export const CreateTierPage = () => {
                     carouselRef.current?.goTo(1);
                   }}
                 >
-                  <h1 style={{ marginBottom: "1vh" }}>Свои игры</h1>
+                  <h4 style={{ marginBottom: "1vh" }}>Свои игры</h4>
                 </HeaderButton>
               </div>
               <Carousel
-                infinite={false}
                 dots={false}
-                style={{ width: "31vw" }}
-                ref={carouselRef}
+                swipe={false}
+                infinite={false}
+                style={{ maxWidth: "600px" }}
               >
-                <Form.Item name={"filter"}>
-                  <Filter handleChangeFiters={handleChangeFiters} />
-                </Form.Item>
-                <Form.Item name={"pickGame"}>
-                  <div>
-                    <Search
-                      placeholder="Введите название игры"
-                      size="large"
-                      onSearch={(value) => {
-                        handleChangeFiters("page", 1);
-                        handleChangeFiters("search", value);
-                      }}
-                    />
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: " repeat(auto-fill,130px)",
-                        gap: ".1rem",
-                        marginTop: ".25vh",
-                      }}
-                    >
-                      {loadingGames
-                        ? SkeletonFactory(filterFlags.page_size, "Card-small")
-                        : games?.map((game) => {
-                            return (
-                              <CardGame
-                                key={game.id}
-                                game={{
-                                  ...game,
-                                  disabled: !createTemplate.pickGame.find(
-                                    (pickGame) => pickGame === game.id
-                                  ),
-                                }}
-                                id={game.id}
-                                size="small"
-                                onCardClick={() =>
-                                  dispatch(toggleGameSelection(game.id))
-                                }
-                              />
-                            );
-                          })}
-                    </div>
-                    <Pagination
-                      style={{ marginTop: "1vw" }}
-                      defaultCurrent={1}
-                      defaultPageSize={10}
-                      total={totalCount}
-                      onChange={(page, pageSize) => {
-                        handleChangeFiters("page", page);
-                        handleChangeFiters("page_size", pageSize);
-                      }}
-                      pageSizeOptions={[10]}
-                    />
-                  </div>
+                <Form.Item name={"settings"}>
+                  <Carousel ref={carouselRef} dots={false} swipe={false} infinite={false}>
+                    <Form.Item name={"filter"}>
+                      <div style={{ maxWidth: "98%"}}>
+                        <Filter handleChangeFiters={handleChangeFiters} />
+                      </div>
+                    </Form.Item>
+                    <Form.Item name={"pickGame"}>
+                      <Search
+                        placeholder="Введите название игры"
+                        size="large"
+                        onSearch={(value) => {
+                          handleChangeFiters("page", 1);
+                          handleChangeFiters("search", value);
+                        }}
+                        style={{width:"99%",marginLeft:".2%"}}
+                      />
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: " repeat(auto-fill,125px)",
+                          gap: ".1rem",
+                          justifyContent: "center",
+                          marginTop: "8%",
+                        }}
+                      >
+                        {loadingGames
+                          ? SkeletonFactory(filterFlags.page_size, "Card-small")
+                          : games?.map((game) => {
+                              return (
+                                <CardGame
+                                  key={game.id}
+                                  game={{
+                                    ...game,
+                                    disabled: !createTemplate.pickGame.find(
+                                      (pickGame) => pickGame === game.id
+                                    ),
+                                  }}
+                                  id={game.id}
+                                  size="small"
+                                  onCardClick={() =>
+                                    dispatch(toggleGameSelection(game.id))
+                                  }
+                                />
+                              );
+                            })}
+                      </div>
+                      <Pagination
+                        style={{ marginTop: "1vw" }}
+                        defaultCurrent={1}
+                        defaultPageSize={10}
+                        total={totalCount}
+                        onChange={(page, pageSize) => {
+                          handleChangeFiters("page", page);
+                          handleChangeFiters("page_size", pageSize);
+                        }}
+                        pageSizeOptions={[10]}
+                      />
+                    </Form.Item>
+                  </Carousel>
                 </Form.Item>
               </Carousel>
             </div>
-          </div>
+          </SettingsWrapper>
           <div
             style={{
               width: "100%",

@@ -65,7 +65,7 @@ export default createGlobalStyle`
     }
     img:after {  
         content:"";
-        background-image:url(${({theme})=> theme.image.no_image});
+        background-image:url(${({ theme }) => theme.image.no_image});
         background-size: contain;
         backdrop-filter: blur(1000px);
         background-origin: border-box;
@@ -77,5 +77,8 @@ export default createGlobalStyle`
         left: 0;
         width: 100%;
         height: 100%;
-}
+    }
+    input[type="range"]{
+        accent-color:${({ theme }) => theme.colors.primary};
+    }
 `;

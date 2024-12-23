@@ -7,8 +7,19 @@ import { IGameDis } from "../../../interfaces/games";
 import { useAppSelector, useAppDispatch } from "../../../redux/hooks";
 import { setRows, setTrayGames } from "../../../redux/slice/tierDataSlice";
 import { ExampleRow } from "../../exampleRow/ExampleRow";
-import { useTheme } from "styled-components";
-
+import styled, { useTheme } from "styled-components";
+import { device } from "../../../styles/size";
+const ButtonsWrapper = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+  @media ${device.mobileS} {
+    flex-direction:column;
+  }
+  @media ${device.tablet} {
+    flex-direction:row;
+  }
+`;
 export const RowSettings: React.FC<{
   id: string;
   tier: TierData;
@@ -136,7 +147,7 @@ export const RowSettings: React.FC<{
             style={{
               display: "flex",
               alignItems: "center",
-              color:theme.colors.font
+              color: theme.colors.font,
             }}
           >
             Цвет:
@@ -171,13 +182,7 @@ export const RowSettings: React.FC<{
         <Button type="primary" onClick={handleSave}>
           Сохранить
         </Button>
-        <div
-          style={{
-            display: "flex",
-            gap: "0.5rem",
-            justifyContent: "space-between",
-          }}
-        >
+        <ButtonsWrapper>
           <Button onClick={() => handleManipulatorTier(index, "up")}>
             Добавить ряд сверху
           </Button>
@@ -194,7 +199,7 @@ export const RowSettings: React.FC<{
           <Button onClick={() => handleManipulatorTier(index, "down")}>
             Добавить ряд снизу
           </Button>
-        </div>
+        </ButtonsWrapper>
       </div>
     </Modal>
   );

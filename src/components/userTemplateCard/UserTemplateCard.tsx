@@ -1,14 +1,20 @@
 import Avatar from "antd/es/avatar/avatar";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { device } from "../../styles/size";
 
 export const Item = styled.div`
   width: calc(200px + 100 * (100vw / 1280));
   position: relative;
   flex: none;
-  height: 24vh;
   transition: transform 0.3s ease-in-out;
   overflow: hidden;
+  @media ${device.mobileS} {
+    height: 150px;
+  }
+  @media ${device.tablet} {
+    height: 24vh;
+  }
   img {
     object-fit: cover;
     object-position: left top;
@@ -16,7 +22,7 @@ export const Item = styled.div`
     height: 100%;
   }
   .bottom-text {
-    padding: 10px;
+    padding: 1% 5%;
     position: absolute;
     bottom: 0;
     left: 0;
@@ -27,7 +33,7 @@ export const Item = styled.div`
     height: 25%;
     gap: ${({ theme }) => theme.spacing.sm};
     display: flex;
-    align-items: stretch;
+    align-items: center;
   }
 `;
 export const UserTemplateCard: React.FC<{
@@ -44,15 +50,11 @@ export const UserTemplateCard: React.FC<{
         <img src={img} alt={name} />
       </Link>
       <div className="bottom-text">
-        <Link to={`/about/${userid}`}>
+        <Link to={`/about/${userid}`} style={{minWidth:"30px"}}>
           <Avatar
             style={{
-              backgroundColor: "gray",
-              width: "100%",
-              height: "100%",
-              minWidth: "25px",
+              backgroundColor: "white",
             }}
-            size={"large"}
             icon={<img src={userImage} alt={username} />}
           />
         </Link>
@@ -61,6 +63,8 @@ export const UserTemplateCard: React.FC<{
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
+            textWrap: "nowrap",
+            textOverflow: "ellipsis",
           }}
         >
           <Link to={`/tier-list/${id}`} style={{ color: "white" }}>

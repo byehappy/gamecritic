@@ -749,7 +749,6 @@ function TierPage() {
       <DragOverlay>
         {activeGame ? (
           <CardGameWrapper>
-            {" "}
             <CardGame id={activeGame.id} game={activeGame} />
           </CardGameWrapper>
         ) : null}
