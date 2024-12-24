@@ -22,6 +22,7 @@ const CardWrapper = styled.div<{ $size: string }>`
 `;
 const AbouteCardWrapper = styled.div`
   width:15vw;
+  min-width:250px;
   padding:1%;
   border-radius:1em;
   animation: slider 1.8s linear infinite forwards;

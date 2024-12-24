@@ -33,8 +33,9 @@ const UserInfoWrapper = styled.div`
 const IconUser = styled.img`
   border-radius: 100%;
   width: 200px;
+  height:200px;
   object-fit: cover;
-  background-color: #9494944e;
+  background-color: lightgray;
 `;
 const UserFormWrapper = styled.div`
   gap: 5%;
@@ -96,6 +97,8 @@ export const AboutePage = () => {
         setUserInfo(resInfo);
       } catch (error) {
         dispatch(setMessage(error));
+      } finally{
+        setLoading(false)
       }
     },
     [dispatch]
@@ -107,7 +110,6 @@ export const AboutePage = () => {
         return;
       }
       getInfo(userId);
-      setLoading(false);
       return;
     }
     if (!currentUser) {
@@ -117,7 +119,6 @@ export const AboutePage = () => {
     }
     getInfo(currentUser.id);
 
-    setLoading(false);
   }, [currentUser, dispatch, getInfo, navigate, userId]);
 
   useEffect(() => {
@@ -129,7 +130,7 @@ export const AboutePage = () => {
     <>
       <UserInfoWrapper>
         {loading && (
-          <div style={{ width: "12vw", height: "20vh" }}>
+          <div style={{ width: "200px",height:"200px",display:"flex"}}>
             {SkeletonFactory(1, "Icon")}
           </div>
         )}
@@ -150,8 +151,8 @@ export const AboutePage = () => {
                   <div>Описание:{userInfo.description}</div>
                 </div>
               )}
-              <div>
                 {edit && (
+              <div>
                   <div>
                     Никнейм:
                     <Input
@@ -165,10 +166,10 @@ export const AboutePage = () => {
                       required
                     />
                   </div>
-                )}
               </div>
-              <div>
+                )}
                 {edit && (
+              <div>
                   <div>
                     Описание:
                     <Input
@@ -182,8 +183,8 @@ export const AboutePage = () => {
                       required
                     />
                   </div>
-                )}
               </div>
+                )}
             </div>
             {edit && (
               <div style={{ display: "flex", marginTop: "2vh" }}>
@@ -231,6 +232,7 @@ export const AboutePage = () => {
           justifyContent: "space-around",
           flexWrap: "wrap",
           marginTop: "2vw",
+          gap:"10px"
         }}
       >
         {aboutGames?.map((e) => (

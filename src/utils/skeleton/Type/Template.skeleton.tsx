@@ -8,8 +8,8 @@ const CardWrapper = styled.div`
   animation: slider 1.8s linear infinite forwards;
   background: ${({theme})=> theme.gradient.loading};
   background-size: 1200px 100%;
-  min-height: 24vh;
-  min-width:100%;
+  min-height:100%;
+  min-width:300px;
   @keyframes slider {
     0% {
       background-position: -1200px 0;

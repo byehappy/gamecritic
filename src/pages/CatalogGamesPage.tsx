@@ -39,6 +39,9 @@ const UserFormWrapper = styled.div`
 `;
 
 const CardGameWrapper = styled.div`
+  div{
+    touch-action:auto;
+  }
   @media (max-width: 425px) {
     div {
       height: 6rem;
@@ -221,7 +224,7 @@ export const CatalogGamesPage = () => {
           </UserFormWrapper>
         </UserInfoWrapper>
       )}
-      <div style={{ margin: "1vw",overflow:"hidden" }}>
+      <div style={{ margin: "1vw", overflow: "hidden" }}>
         <Search
           style={{ marginBottom: "1vw" }}
           placeholder="Введите название игры"
@@ -236,7 +239,8 @@ export const CatalogGamesPage = () => {
             gridTemplateColumns:
               " repeat(auto-fit, minmax(calc(90px + 30 * (100vw / 1280)),1fr)",
             gap: "10px",
-            alignContent:"center"
+            alignContent: "center",
+            justifyContent: "center",
           }}
         >
           {loading && SkeletonFactory(filterFlags.page_size, "Card")}
@@ -255,6 +259,8 @@ export const CatalogGamesPage = () => {
               );
             })}
         </div>
+      </div>
+      <div style={{ display: "flex", justifyContent: "center" }}>
         <Pagination
           defaultCurrent={1}
           defaultPageSize={40}
@@ -263,12 +269,6 @@ export const CatalogGamesPage = () => {
           onChange={(page, pageSize) => {
             handleChangeFiters("page", page);
             handleChangeFiters("page_size", pageSize);
-          }}
-          style={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-            margin: "1vw 0",
           }}
         />
       </div>

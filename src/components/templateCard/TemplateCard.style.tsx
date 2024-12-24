@@ -38,8 +38,8 @@ export const Item = styled.div<{ $IsDisabled: boolean; $notClick: boolean }>`
   }
   button {
     pointer-events: auto !important;
-    span{
-      height:30px;
+    span {
+      height: 30px;
     }
   }
   a {

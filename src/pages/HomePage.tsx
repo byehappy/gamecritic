@@ -43,6 +43,7 @@ const ContainerUsersTemplateItems = styled.div`
   padding: 0 1vw;
   justify-content: space-between;
   margin: 17px 0;
+  min-height:150px;
   @media ${device.laptop} {
     overflow-x:unset;
     div{

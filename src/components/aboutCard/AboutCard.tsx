@@ -13,7 +13,6 @@ import { DEFAULT_PAGE } from "../../utils/constans";
 import { CardGame } from "../card/CardGame";
 const AbouteCardWrapper = styled.div`
   width: calc(240px + 40 * (100vw / 1280));
-  padding: 1%;
   border-radius: 1em;
   display: flex;
   flex-direction: column;
@@ -126,7 +125,7 @@ export const AboutCard: React.FC<{ card: IAboutGame; change: boolean }> = ({
   };
   return (
     <AbouteCardWrapper>
-      <div style={{width:"100%",height:"100%"}}>
+      <div style={{width:"100%",height:"100%",display:"flex"}}>
         {change ? (
           <Popover
             arrow={false}

@@ -392,7 +392,6 @@ export const CreateTierPage = () => {
             <div>
               <div style={{ display: "flex", gap: "10px"}}>
                 <HeaderButton
-                  type="text"
                   $isActive={activeButton === "filter"}
                   onClick={() => {
                     setActiveButton("filter");
@@ -402,7 +401,6 @@ export const CreateTierPage = () => {
                   <h4 style={{ marginBottom: "1vh" }}>Фильтры к играм</h4>
                 </HeaderButton>
                 <HeaderButton
-                  type="text"
                   $isActive={activeButton === "ownGames"}
                   onClick={() => {
                     setActiveButton("ownGames");

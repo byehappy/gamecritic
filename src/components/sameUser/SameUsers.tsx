@@ -1,20 +1,16 @@
-import { Carousel } from "antd";
 import styled from "styled-components";
 import { SameUsers } from "../../interfaces/users";
 import { UserCard } from "../userCard/UserCard";
-const CarouselWrapper = styled(Carousel)`
-  margin: 2vh 0;
-  padding: 0.3em;
-  display: flex;
-  button.slick-arrow {
-    color: black;
-  }
-`;
 const ContainerTopUsersItems = styled.div`
   display: flex;
   gap: 1vw;
   height: 100%;
   overflow: overlay;
+  @media (max-width: 425px) {
+    div{
+      max-height:160px;
+    }
+  }
 `;
 const HeaderTemplate = styled.div`
   display: flex;
@@ -26,21 +22,19 @@ const HeaderTemplate = styled.div`
     font-size: 1.5em;
   }
 `;
-export const SameUsersOnTier:React.FC<{sameUsers:SameUsers[]}> = ({sameUsers}) => {
-    return (
-      <div>
-        <HeaderTemplate>
-          <h1>У вас есть схожие оценки с ними!</h1>
-        </HeaderTemplate>
-        <CarouselWrapper arrows infinite={false} dots={false} draggable={false}>
-          <div>
-            <ContainerTopUsersItems>
-              {sameUsers?.map((e) => (
-                <UserCard user={e} key={e.userId} />
-              ))}
-            </ContainerTopUsersItems>
-          </div>
-        </CarouselWrapper>
-      </div>
-    );
-  };
+export const SameUsersOnTier: React.FC<{ sameUsers: SameUsers[] }> = ({
+  sameUsers,
+}) => {
+  return (
+    <div>
+      <HeaderTemplate>
+        <h1>У вас есть схожие оценки с ними!</h1>
+      </HeaderTemplate>
+      <ContainerTopUsersItems>
+        {sameUsers?.map((e) => (
+          <UserCard user={e} key={e.userId} />
+        ))}
+      </ContainerTopUsersItems>
+    </div>
+  );
+};

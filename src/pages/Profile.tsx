@@ -27,14 +27,16 @@ const ContainerItems = styled.div`
   gap: 15px;
   padding: 0 1vw;
   overflow-x: overlay;
+  min-height: 170px;
+  padding: 0 1vw;
+  margin: 17px 0;
   span {
-    text-wrap: nowrap;
     overflow: hidden;
   }
   div {
     min-width: calc(100px + 30 * (100vw / 1280));
     max-width: 130px;
-    touch-action:auto;
+    touch-action: auto;
   }
 `;
 const HeaderTemplate = styled.div`
@@ -48,12 +50,12 @@ const HeaderTemplate = styled.div`
     font-weight: 300;
     text-align: right;
     @media (max-width: 425px) {
-      width:35vw;
+      width: 35vw;
     }
   }
-  h4{
+  h4 {
     @media (max-width: 425px) {
-      width:35vw;
+      width: 35vw;
     }
   }
 `;
@@ -126,63 +128,58 @@ export const ProfilePage = () => {
           </Link>
         )}
       </HeaderTemplate>
-      <CarouselWrapper arrows infinite={false} dots={false} swipe={false}>
-        <div>
-          <ContainerItems>
-            {loadingTiers && SkeletonFactory(10, "Template")}
-            {myTiers.map((tier) => {
-              const id = uuid4();
-              return (
-                <TemplateCard
-                  key={id}
-                  img={tier.imageSrc ?? ""}
-                  name={tier.title}
-                  id={tier.id}
-                  userId={profileUserId}
-                />
-              );
-            })}
-            {!loadingTiers && myTiers.length === 0 && (
-              <span style={{ fontSize: "1.2rem" }}>
-                У вас нет созданных шаблонов
-              </span>
-            )}
-          </ContainerItems>
-        </div>
-      </CarouselWrapper>
+
+      <ContainerItems>
+        {loadingTiers && SkeletonFactory(10, "Template")}
+        {myTiers.map((tier) => {
+          const id = uuid4();
+          return (
+            <TemplateCard
+              key={id}
+              img={tier.imageSrc ?? ""}
+              name={tier.title}
+              id={tier.id}
+              userId={profileUserId}
+            />
+          );
+        })}
+        {!loadingTiers && myTiers.length === 0 && (
+          <span style={{ fontSize: "1.2rem" }}>
+            У вас нет созданных шаблонов
+          </span>
+        )}
+      </ContainerItems>
       <HeaderTemplate></HeaderTemplate>
       <HeaderTemplate>
-      <h4> Используемые шаблоны</h4>
+        <h4> Используемые шаблоны</h4>
         {tiers.length !== 0 && (
           <Link to={`/all-tierlits/${profileUserId}`}>Увидеть все шаблоны</Link>
         )}
       </HeaderTemplate>
-      <CarouselWrapper arrows infinite={false} dots={false} swipe={false}>
-        <div>
-          <ContainerItems>
-            {loadingTiers && SkeletonFactory(10, "Template")}
-            {tiers.map((tier) => {
-              const id = uuid4();
-              return (
-                <TemplateCard
-                  key={id}
-                  img={tier.imageSrc ?? ""}
-                  name={tier.title}
-                  id={tier.id}
-                  userId={profileUserId}
-                />
-              );
-            })}
-            {!loadingTiers && tiers.length === 0 && (
-              <span style={{ fontSize: "1.2rem" }}>
-                Вы еще не состовляли списки по шаблонам
-              </span>
-            )}
-          </ContainerItems>
-        </div>
-      </CarouselWrapper>
+
+      <ContainerItems>
+        {loadingTiers && SkeletonFactory(10, "Template")}
+        {tiers.map((tier) => {
+          const id = uuid4();
+          return (
+            <TemplateCard
+              key={id}
+              img={tier.imageSrc ?? ""}
+              name={tier.title}
+              id={tier.id}
+              userId={profileUserId}
+            />
+          );
+        })}
+        {!loadingTiers && tiers.length === 0 && (
+          <span style={{ fontSize: "1.2rem" }}>
+            Вы еще не состовляли списки по шаблонам
+          </span>
+        )}
+      </ContainerItems>
+
       <HeaderTemplate>
-      <h4> Избранные игры</h4>
+        <h4> Избранные игры</h4>
         {favoriteGames.length !== 0 && (
           <Link to={`/all-favorites/${profileUserId}`}>
             Увидеть все избранные игры

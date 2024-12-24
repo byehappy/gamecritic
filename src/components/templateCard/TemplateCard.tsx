@@ -42,7 +42,7 @@ export const TemplateCard: React.FC<{
           )}
         </Button>
       )}
-      <Link to={`/tier-list/${id}/${userId}`}>
+      <Link to={`/tier-list/${id}/${userId}`} style={{display:"flex"}}>
         <img src={itemImg} alt={name} />
         <span>{itemName}</span>
       </Link>

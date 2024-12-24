@@ -13,6 +13,8 @@ const UserWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding:10px;
+  justify-content:space-evenly;
   a {
     display: flex;
     justify-content: center;
@@ -51,7 +53,6 @@ export const UserCard: React.FC<{ user: TopUsers | SameUsers }> = ({
             flexDirection: "column",
             alignItems: "center",
             gap: "10px",
-            margin: "10px 0",
           }}
         >
           <img src={user.img_icon} alt={user.name} />

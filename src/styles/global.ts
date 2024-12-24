@@ -63,10 +63,12 @@ export default createGlobalStyle`
     *::-webkit-scrollbar-track:horizontal{
         background-color: rgba(255, 255, 255, 0.1);
     }
+    img {  
+       position:relative;
+    }
     img:after {  
         content:"";
         background-image:url(${({ theme }) => theme.image.no_image});
-        background-size: contain;
         backdrop-filter: blur(1000px);
         background-origin: border-box;
         background-repeat:no-repeat;
