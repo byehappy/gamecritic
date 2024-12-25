@@ -23,8 +23,8 @@ const AbouteCardWrapper = styled.div`
   }
   div {
     position: relative;
-    img{
-      width:100%;
+    img {
+      width: 100%;
     }
   }
   .bottom-text {
@@ -125,7 +125,7 @@ export const AboutCard: React.FC<{ card: IAboutGame; change: boolean }> = ({
   };
   return (
     <AbouteCardWrapper>
-      <div style={{width:"100%",height:"100%",display:"flex"}}>
+      <div style={{ width: "100%", height: "100%", display: "flex" }}>
         {change ? (
           <Popover
             arrow={false}
@@ -200,27 +200,28 @@ export const AboutCard: React.FC<{ card: IAboutGame; change: boolean }> = ({
             title={"Выбрать игру"}
           >
             <img
-              src={valueGame?.background_image ?? ""}
+              src={valueGame?.background_image}
               alt={valueGame?.name ?? card.name}
               style={{
                 objectFit: "cover",
                 cursor: "pointer",
                 width: "100%",
-                opacity: !valueGame?.name && valueGame?.background_image ? 0.25 : 1,
+                opacity:
+                  !valueGame?.name && valueGame?.background_image ? 0.25 : 1,
                 border: "1px solid black",
-              minHeight:"267px"
+                minHeight: "267px",
               }}
             />
           </Popover>
         ) : (
           <img
-            src={valueGame?.background_image ?? ""}
+            src={valueGame?.background_image}
             alt={valueGame?.name ?? card.name}
             style={{
               objectFit: "cover",
               border: "1px solid black",
-              minWidth:"100%",
-              minHeight:"267px"
+              minWidth: "100%",
+              minHeight: "267px",
             }}
           />
         )}

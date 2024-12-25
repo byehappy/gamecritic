@@ -40,6 +40,7 @@ export const SliderContainer = styled.div`
 export const SliderImage = styled.img`
   object-fit: cover;
   width:100%;
+  max-height:470px;
 `;
 
 export const PortalWrapper = styled.div`

@@ -273,7 +273,7 @@ export const CardModal: React.FC<{
         }}
       >
         <div>
-          {window.innerWidth > 1024 && (
+          {window.innerWidth > 1440 && (
             <img
               src={
                 game.background_image ??

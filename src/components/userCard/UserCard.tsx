@@ -7,6 +7,7 @@ const UserWrapper = styled.div`
   max-width: 130px;
   min-width: calc(80px + 10 * (100vw / 1280));
   aspect-ratio: 2 / 3.2;
+  height:auto;
   background-color: ${({ theme }) => theme.colors.primary};
   padding: 0.2em;
   border-radius: 1em;

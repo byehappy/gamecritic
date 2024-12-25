@@ -69,7 +69,7 @@ export default createGlobalStyle`
     img:after {  
         content:"";
         background-image:url(${({ theme }) => theme.image.no_image});
-        backdrop-filter: blur(1000px);
+        backdrop-filter: blur(200px);
         background-origin: border-box;
         background-repeat:no-repeat;
         background-position: center;

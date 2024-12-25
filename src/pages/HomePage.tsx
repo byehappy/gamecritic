@@ -28,6 +28,11 @@ const ContainerTemplateItems = styled.div`
   padding: 0 1vw;
   justify-content: space-between;
   margin: 17px 0;
+  @media ${device.mobileS} {
+    div{
+      max-width:200px;
+    }
+  }
   @media ${device.laptop} {
     overflow-x:unset;
     div{
@@ -54,10 +59,9 @@ const ContainerUsersTemplateItems = styled.div`
 const ContainerTopUsersItems = styled.div`
   display: flex;
   gap: 1vw;
-  height: 100%;
   padding: 0 1vw;
   justify-content: space-between;
-  overflow: overlay;
+  overflow-x: auto;
   margin: 17px 0;
 `;
 const IntroText = styled.h1`
