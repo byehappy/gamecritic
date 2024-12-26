@@ -27,6 +27,16 @@ const RowHeader = styled(Col)`
   color: white;
   font-size: 1rem;
 `;
+const CardGameWrapper = styled.div`
+  @media (max-width: 425px) {
+    div {
+      height: 6rem;
+      img {
+        height: 100%;
+      }
+    }
+  }
+`;
 type FormValueType = {
   rows: {
     id: string;
@@ -35,6 +45,7 @@ type FormValueType = {
   }[];
   name: string;
 };
+
 export const ExampleTierPage: React.FC<{
   formValues: FormValueType;
 }> = ({ formValues: { rows, name } }) => {
@@ -150,7 +161,9 @@ export const ExampleTierPage: React.FC<{
         {!games
           ? SkeletonFactory(10, "Card")
           : games.map((game) => (
-              <CardGame key={game.id} game={game} id={game.id} />
+              <CardGameWrapper key={game.id}>
+                <CardGame game={game} id={game.id} />
+              </CardGameWrapper>
             ))}
       </Row>
     </>

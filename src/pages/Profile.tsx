@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import styled from "styled-components";
 import { Carousel } from "antd";
 import { useCallback, useEffect, useState } from "react";
-import { getFavoriteGames, getUserTiers } from "../axios";
+import { getFavoriteGames, getPreviewFavoriteGames, getUserTiers } from "../axios";
 import uuid4 from "uuid4";
 import { TemplateCard } from "../components/templateCard/TemplateCard";
 import { setMessage } from "../redux/slice/messageSlice";
@@ -91,14 +91,13 @@ export const ProfilePage = () => {
   const fillFavoriteGames = useCallback(async () => {
     if (profileUserId) {
       try {
-        const jsonGameIds = await getFavoriteGames(profileUserId).then(
-          (res) => res.data.game_ids
+        const gameIds = await getPreviewFavoriteGames(profileUserId).then(
+          (res) => res.data
         );
-        if (!jsonGameIds) {
+        if (!gameIds) {
           setLoadingFavorites(false);
           return;
         }
-        const gameIds: string[] = JSON.parse(jsonGameIds);
         const gameRequests = gameIds.map((id) =>
           gameRequest(Number(id)).then((res) => res.data)
         );
@@ -186,10 +185,8 @@ export const ProfilePage = () => {
           </Link>
         )}
       </HeaderTemplate>
-      <CarouselWrapper arrows infinite={false} dots={false} swipe={false}>
-        <div>
           <ContainerItems>
-            {loadingFavorites && SkeletonFactory(10, "Card")}
+            {loadingFavorites && SkeletonFactory(8, "Card")}
             {favoriteGames.map((game) => {
               return <CardGame key={game.id} game={game} id={game.id} />;
             })}
@@ -199,8 +196,6 @@ export const ProfilePage = () => {
               </span>
             )}
           </ContainerItems>
-        </div>
-      </CarouselWrapper>
     </div>
   );
 };

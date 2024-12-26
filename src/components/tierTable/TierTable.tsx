@@ -10,7 +10,6 @@ import { useAppSelector, useAppDispatch } from "../../redux/hooks";
 import { setRows } from "../../redux/slice/tierDataSlice";
 import { SkeletonFactory } from "../../utils/skeleton/skeleton-factory";
 import { getTextColor } from "../../utils/textColorWithBg";
-import { device } from "../../styles/size";
 
 const DroppableWrapper = styled.div<{ $isOver: boolean }>`
   background-color: ${(props) =>
@@ -55,12 +54,6 @@ const Container = styled.div`
 const FilterRow = styled.div`
   background: #ff9f00;
   display: flex;
-  @media ${device.mobileS} {
-    flex-direction: column;
-  }
-  @media ${device.tablet} {
-    flex-direction: row;
-  }
   justify-content: center;
   align-items: center;
   color: white;
@@ -142,14 +135,14 @@ export const TierTable: React.FC<{
             </SortableContext>
             {currentUser && (
               <FilterRow>
-                <SettingOutlined
-                  style={{ fontSize: theme.fontSizes.adaptivText }}
-                  onClick={() => setIsOpenTierId(tier.id)}
-                />
-                <div style={{ display: "flex", flexDirection: "column" }}>
+                <div style={{ display: "flex", flexDirection: "column",gap:"10px" }}>
                   <UpOutlined
                     style={{ fontSize: theme.fontSizes.adaptivText }}
                     onClick={() => changeIndex(index, "up")}
+                  />
+                  <SettingOutlined
+                    style={{ fontSize: theme.fontSizes.adaptivText }}
+                    onClick={() => setIsOpenTierId(tier.id)}
                   />
                   <DownOutlined
                     style={{ fontSize: theme.fontSizes.adaptivText }}

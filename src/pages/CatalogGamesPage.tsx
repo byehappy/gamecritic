@@ -28,7 +28,7 @@ const IconUser = styled.img`
   height: calc(100px + 100 * (100vw / 1280));
   max-height: 200px;
   border-radius: 100%;
-  background-color: #9494944e;
+  background-color: white;
 `;
 const UserFormWrapper = styled.div`
   padding: 3%;
@@ -37,11 +37,14 @@ const UserFormWrapper = styled.div`
   flex-direction: column;
   width: 75%;
 `;
-
-const CardGameWrapper = styled.div`
-  div{
-    touch-action:auto;
-  }
+const ContainerGames = styled.div`
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(calc(90px + 30 * (100vw / 1280)), 1fr)
+  );
+  gap: 10px;
+  justify-items: center;
   @media (max-width: 425px) {
     div {
       height: 6rem;
@@ -49,6 +52,11 @@ const CardGameWrapper = styled.div`
         height: 100%;
       }
     }
+  }
+  `;
+const CardGameWrapper = styled.div`
+  div {
+    touch-action: auto;
   }
 `;
 export const CatalogGamesPage = () => {
@@ -233,16 +241,7 @@ export const CatalogGamesPage = () => {
             handleChangeFiters("search", value);
           }}
         />
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns:
-              " repeat(auto-fit, minmax(calc(90px + 30 * (100vw / 1280)),1fr)",
-            gap: "10px",
-            alignContent: "center",
-            justifyContent: "center",
-          }}
-        >
+        <ContainerGames>
           {loading && SkeletonFactory(filterFlags.page_size, "Card")}
           {!loading &&
             games?.map((game) => {
@@ -258,7 +257,7 @@ export const CatalogGamesPage = () => {
                 </CardGameWrapper>
               );
             })}
-        </div>
+        </ContainerGames>
       </div>
       <div style={{ display: "flex", justifyContent: "center" }}>
         <Pagination

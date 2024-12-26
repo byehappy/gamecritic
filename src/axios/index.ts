@@ -29,6 +29,7 @@ export {
 } from "./requests/gamecriticAPI/tierData.requests";
 export {
   getFavoriteGames,
+  getPreviewFavoriteGames,
   addFavoriteGame,
   checkFavoriteGame,
   delFavoriteGame,

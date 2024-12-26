@@ -9,7 +9,7 @@ const CardWrapper = styled.div`
   background: ${({theme})=> theme.gradient.loading};
   background-size: 1200px 100%;
   min-height:100%;
-  min-width:300px;
+  width:100%;
   @keyframes slider {
     0% {
       background-position: -1200px 0;

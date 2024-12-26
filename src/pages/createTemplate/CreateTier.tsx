@@ -63,20 +63,23 @@ const HeaderButton = styled.div<{ $isActive: boolean }>`
   color: ${(props) => (props.$isActive ? props.theme.colors.font : "grey")};
   font-size: ${({ theme }) => theme.fontSizes.adaptivText};
 `;
-const SettingsWrapper = styled.div`
-  display: flex;
-  justify-content: space-evenly;
-  @media ${device.mobileS} {
-    flex-direction: column;
-    gap: 5vw;
+const GridFormContainer = styled.div`
+  margin-top: 1vw;
+  display: grid;
+  row-gap: 20px;
+  grid-template-columns: 50% 50%;
+  & > div:nth-child(5) {
+    grid-column: 1 / 3;
   }
-  @media ${device.tablet} {
-    flex-direction: row;
-    gap: 0;
+  & > div:nth-child(3) {
+    @media (max-width:768px){
+      grid-column: 1 / 3;
+    }
   }
-  h1{
-    font-size:${({theme})=> theme.fontSizes.adaptivH1};
-    margin-bottom:1vh;
+  & > div:nth-child(4) {
+    @media (max-width:768px){
+      grid-column: 1 / 3;
+    }
   }
 `;
 const DEFAULT_ROWS = {
@@ -263,47 +266,60 @@ export const CreateTierPage = () => {
           onValuesChange={saveChangeValues}
           style={{ display: visibleForm ? "block" : "none" }}
         >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: "1vw",
-              margin: "5vh 0",
-            }}
-          >
+          <GridFormContainer>
             <div
-              style={{ display: "flex", flexDirection: "column", gap: "1vh" }}
+              style={{
+                display: "flex",
+                gap: "1vw",
+                justifyContent: "center",
+                margin: "5vh 1vw",
+              }}
             >
-              <Form.Item
-                name={"name"}
-                rules={[
-                  {
-                    required: true,
-                    message: "Введите название шаблона",
-                  },
-                ]}
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "1vh",
+                  minWidth: "140px",
+                  width: "40%",
+                }}
               >
-                <Input placeholder="Название шаблона" />
-              </Form.Item>
-              <Form.Item name="img">
-                <Input placeholder="Url-ссылка на картинку" />
-              </Form.Item>
+                <Form.Item
+                  name={"name"}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Введите название шаблона",
+                    },
+                  ]}
+                >
+                  Название:
+                  <Input placeholder="Название шаблона" />
+                </Form.Item>
+                <Form.Item name="img">
+                  Ссылка:
+                  <Input placeholder="Url-ссылка на картинку" />
+                </Form.Item>
+              </div>
             </div>
-            <div style={{ width: "10%", minWidth: "100px" }}>
-              <TemplateCard
-                key={uuid4()}
-                img={formValues.img}
-                name={formValues.name}
-                del={false}
-              />
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <div style={{ width: "130px" }}>
+                <TemplateCard
+                  key={uuid4()}
+                  img={formValues.img}
+                  name={formValues.name}
+                  del={false}
+                />
+              </div>
             </div>
-          </div>
-          <SettingsWrapper>
             <div>
-              <h1 style={{ width: "320px" }}>
-                Строки таблицы
-              </h1>
+              <h1 style={{ width: "320px" }}>Строки таблицы</h1>
               <Form.List name={"rows"}>
                 {(rows, { add, remove }) => {
                   return (
@@ -340,7 +356,7 @@ export const CreateTierPage = () => {
                               }}
                             >
                               <Form.Item name={[index, "name"]}>
-                                <Input placeholder="Название строки" />
+                                <Input placeholder="Название строки" style={{minWidth:"130px",width:"60%"}}/>
                               </Form.Item>
                               <Form.Item name={[index, "color"]} shouldUpdate>
                                 <ColorPicker
@@ -361,7 +377,8 @@ export const CreateTierPage = () => {
                         title="Пример"
                         render={(_value, _row, index) => {
                           return (
-                            <ExampleRow
+                            <div style={{maxWidth:"130px",minWidth:"100px"}}>
+                              <ExampleRow
                               name={form.getFieldValue(["rows", index, "name"])}
                               color={form.getFieldValue([
                                 "rows",
@@ -369,18 +386,21 @@ export const CreateTierPage = () => {
                                 "color",
                               ])}
                             />
+                            </div>
                           );
                         }}
                       />
                       <Column
                         render={(_, row) => {
                           return (
-                            <Button
+                            <div style={{display:"flex",width:"100%",height:"100%",justifyContent:"center",alignItems:"center"}}>
+                              <Button
                               icon={<MinusOutlined />}
                               shape={"circle"}
                               size="large"
                               onClick={() => remove(row.name)}
                             />
+                            </div>
                           );
                         }}
                       />
@@ -389,8 +409,8 @@ export const CreateTierPage = () => {
                 }}
               </Form.List>
             </div>
-            <div>
-              <div style={{ display: "flex", gap: "10px"}}>
+            <div style={{display:"flex",flexDirection:"column",alignItems:"center"}}>
+              <div style={{ display: "flex", gap: "10px",marginBottom:"10px" }}>
                 <HeaderButton
                   $isActive={activeButton === "filter"}
                   onClick={() => {
@@ -398,7 +418,7 @@ export const CreateTierPage = () => {
                     carouselRef.current?.goTo(0);
                   }}
                 >
-                  <h4 style={{ marginBottom: "1vh" }}>Фильтры к играм</h4>
+                  <h4>Фильтры к играм</h4>
                 </HeaderButton>
                 <HeaderButton
                   $isActive={activeButton === "ownGames"}
@@ -407,7 +427,7 @@ export const CreateTierPage = () => {
                     carouselRef.current?.goTo(1);
                   }}
                 >
-                  <h4 style={{ marginBottom: "1vh" }}>Свои игры</h4>
+                  <h4>Свои игры</h4>
                 </HeaderButton>
               </div>
               <Carousel
@@ -417,9 +437,14 @@ export const CreateTierPage = () => {
                 style={{ maxWidth: "600px" }}
               >
                 <Form.Item name={"settings"}>
-                  <Carousel ref={carouselRef} dots={false} swipe={false} infinite={false}>
+                  <Carousel
+                    ref={carouselRef}
+                    dots={false}
+                    swipe={false}
+                    infinite={false}
+                  >
                     <Form.Item name={"filter"}>
-                      <div style={{ maxWidth: "98%"}}>
+                      <div style={{ maxWidth: "98%",marginLeft:"5px" }}>
                         <Filter handleChangeFiters={handleChangeFiters} />
                       </div>
                     </Form.Item>
@@ -431,7 +456,7 @@ export const CreateTierPage = () => {
                           handleChangeFiters("page", 1);
                           handleChangeFiters("search", value);
                         }}
-                        style={{width:"99%",marginLeft:".2%"}}
+                        style={{ width: "99%", marginLeft: ".2%" }}
                       />
                       <div
                         style={{
@@ -439,7 +464,7 @@ export const CreateTierPage = () => {
                           gridTemplateColumns: " repeat(auto-fill,125px)",
                           gap: ".1rem",
                           justifyContent: "center",
-                          marginTop: "8%",
+                          marginTop: "10px",
                         }}
                       >
                         {loadingGames
@@ -464,7 +489,7 @@ export const CreateTierPage = () => {
                             })}
                       </div>
                       <Pagination
-                        style={{ marginTop: "1vw" }}
+                        style={{ marginTop: "1vw",justifyContent:"center" }}
                         defaultCurrent={1}
                         defaultPageSize={10}
                         total={totalCount}
@@ -479,39 +504,41 @@ export const CreateTierPage = () => {
                 </Form.Item>
               </Carousel>
             </div>
-          </SettingsWrapper>
-          <div
-            style={{
-              width: "100%",
-              display: "flex",
-              justifyContent: "center",
-              marginTop: "1vw",
-            }}
-          >
-            <Form.Item shouldUpdate>
-              {() => (
-                <Button
-                  htmlType="submit"
-                  disabled={
-                    tierId
-                      ? false
-                      : form
-                          .getFieldsError()
-                          .some(({ errors }) => errors.length) ||
-                        !form.isFieldsTouched()
-                  }
-                  loading={pending}
-                >
-                  Сохранить
-                </Button>
-              )}
-            </Form.Item>
-          </div>
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                marginTop: "1vw",
+              }}
+            >
+              <Form.Item shouldUpdate>
+                {() => (
+                  <Button
+                    htmlType="submit"
+                    disabled={
+                      tierId
+                        ? false
+                        : form
+                            .getFieldsError()
+                            .some(({ errors }) => errors.length) ||
+                          !form.isFieldsTouched()
+                    }
+                    loading={pending}
+                  >
+                    Сохранить
+                  </Button>
+                )}
+              </Form.Item>
+            </div>
+          </GridFormContainer>
         </StyledForm>
       )}
-      <div style={{ display: visibleForm ? "none" : "block" }}>
-        <ExampleTierPage formValues={formValues} />
-      </div>
+      {!visibleForm && (
+        <div style={{ display: visibleForm ? "none" : "block" }}>
+          <ExampleTierPage formValues={formValues} />
+        </div>
+      )}
       <FloatButton
         style={{ zIndex: 5 }}
         icon={<EyeOutlined />}

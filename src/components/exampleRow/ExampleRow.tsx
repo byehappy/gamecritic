@@ -23,14 +23,13 @@ export const ExampleRow: React.FC<{ name: string; color: string }> = ({
   return (
     <div
       style={{
-        width: "50%",
         background: color,
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         wordBreak: "break-all",
         height: "15vh",
-        minWidth:"100px"
+        minWidth:"100%"
       }}
     >
       <span

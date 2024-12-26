@@ -2,7 +2,12 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { TemplateCard } from "../components/templateCard/TemplateCard";
 import { useCallback, useEffect, useState } from "react";
-import { DeleteTier, getPreviewTiers, getTopUsers, getUsersTiers } from "../axios";
+import {
+  DeleteTier,
+  getPreviewTiers,
+  getTopUsers,
+  getUsersTiers,
+} from "../axios";
 import uuid4 from "uuid4";
 import { SkeletonFactory } from "../utils/skeleton/skeleton-factory";
 import { UserTemplateCard } from "../components/userTemplateCard/UserTemplateCard";
@@ -13,30 +18,33 @@ import { setMessage } from "../redux/slice/messageSlice";
 import { TimeoutRequest } from "../utils/cancelableReq";
 import { useToaster } from "../utils/hooks/useToaster";
 import { device } from "../styles/size";
-import { Tier, UserTier } from "../axios/requests/gamecriticAPI/tierData.requests";
+import {
+  Tier,
+  UserTier,
+} from "../axios/requests/gamecriticAPI/tierData.requests";
 
 const ContainerTemplateItems = styled.div`
   display: flex;
   overflow-x: auto;
   gap: 10px;
-  @media ${device.mobileS} {
-    height: 150px;
-  }
-  @media ${device.tablet} {
-    height: 24vh;
-  }
   padding: 0 1vw;
   justify-content: space-between;
   margin: 17px 0;
   @media ${device.mobileS} {
+    height: 150px;
     div{
+      min-width:200px;
       max-width:200px;
     }
   }
+  @media ${device.tablet} {
+    height: 24vh;
+  }
   @media ${device.laptop} {
-    overflow-x:unset;
-    div{
-      width:15%;
+    overflow-x: unset;
+    div {
+      width: 15%;
+      min-width:15%;
     }
   }
 `;
@@ -48,11 +56,17 @@ const ContainerUsersTemplateItems = styled.div`
   padding: 0 1vw;
   justify-content: space-between;
   margin: 17px 0;
-  min-height:150px;
+  min-height: 150px;
+  div{
+    min-width:225px;
+  }
+  @media (min-width: 768px) {
+    min-height:200px;
+  }
   @media ${device.laptop} {
-    overflow-x:unset;
-    div{
-      width:24%;
+    overflow-x: unset;
+    div {
+      width: 24%;
     }
   }
 `;
@@ -153,15 +167,13 @@ export const HomePage = () => {
       </IntroText>
       <div>
         <HeaderTemplate>
-        <h4>Шаблоны по видеоиграм</h4>
+          <h4>Шаблоны по видеоиграм</h4>
           <Link to={"/all"}>Увидеть все шаблоны</Link>
         </HeaderTemplate>
         {!tiers && (
-          <div>
             <ContainerTemplateItems>
               {SkeletonFactory(6, "Template")}
             </ContainerTemplateItems>
-          </div>
         )}
         {tiers && (
           <ContainerTemplateItems>
@@ -179,7 +191,9 @@ export const HomePage = () => {
         )}
       </div>
       <div>
-        <HeaderTemplate><h4>Шаблоны других пользователей</h4></HeaderTemplate>
+        <HeaderTemplate>
+          <h4>Шаблоны других пользователей</h4>
+        </HeaderTemplate>
         {!usersTiers && (
           <div>
             <ContainerUsersTemplateItems>
@@ -204,7 +218,9 @@ export const HomePage = () => {
         )}
       </div>
       <div>
-        <HeaderTemplate><h4>Рекорды по пройденным играм</h4></HeaderTemplate>
+        <HeaderTemplate>
+          <h4>Рекорды по пройденным играм</h4>
+        </HeaderTemplate>
         {!topUsers && (
           <div>
             <ContainerTopUsersItems>

@@ -35,12 +35,14 @@ export const Dot = styled.div<{ $isActive: boolean }>`
 export const SliderContainer = styled.div`
   position: relative;
   cursor: zoom-in;
+  display:flex;
+  height:100%;
 `;
 
 export const SliderImage = styled.img`
   object-fit: cover;
-  width:100%;
-  max-height:470px;
+  width: 100%;
+  height:100%;
 `;
 
 export const PortalWrapper = styled.div`
@@ -67,6 +69,7 @@ export const PortalWrapper = styled.div`
 export const MoadalWrapperGameInfo = styled.div`
   display: flex;
   gap: 10px;
+  max-height:700px;
   @media ${device.mobileS} {
     flex-direction: column;
   }

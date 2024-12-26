@@ -36,7 +36,7 @@ const AbouteCardWrapper = styled.div`
   }
   div{
     width:100%;
-    height:5vh;
+    height:10vh;
   }
   @keyframes slider {
     0% {

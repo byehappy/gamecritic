@@ -22,18 +22,19 @@ const UserInfoWrapper = styled.div`
   @media (max-width: 425px) {
     flex-direction: column;
     align-items: center;
-    div {
-      width: 100%;
-    }
   }
   @media ${device.tablet} {
     flex-direction: row;
   }
 `;
+const UserIconWrapper = styled.div`
+  min-width: 200px;
+  height: 200px;
+`;
 const IconUser = styled.img`
   border-radius: 100%;
   width: 200px;
-  height:200px;
+  height: 200px;
   object-fit: cover;
   background-color: lightgray;
 `;
@@ -42,6 +43,7 @@ const UserFormWrapper = styled.div`
   display: flex;
   font-size: ${({ theme }) => theme.fontSizes.adaptivText};
   flex-direction: column;
+  width: 100%;
   @media ${device.tablet} {
     width: 75%;
   }
@@ -78,11 +80,11 @@ export const AboutePage = () => {
         img_icon: img,
       });
       dispatch(setMessage({ success: result.data.success }));
-      setUserInfo((prev) => ({
-        ...prev,
+      setUserInfo({
         name: editInfo.name,
         description: editInfo.description,
-      }));
+        init_image: result.data.image_icon,
+      });      
       dispatch(setImageIcon(result.data.image_icon));
     } catch (error) {
       dispatch(setMessage(error));
@@ -97,8 +99,8 @@ export const AboutePage = () => {
         setUserInfo(resInfo);
       } catch (error) {
         dispatch(setMessage(error));
-      } finally{
-        setLoading(false)
+      } finally {
+        setLoading(false);
       }
     },
     [dispatch]
@@ -118,9 +120,8 @@ export const AboutePage = () => {
       return;
     }
     getInfo(currentUser.id);
-
   }, [currentUser, dispatch, getInfo, navigate, userId]);
-
+  
   useEffect(() => {
     if (!edit) {
       setEditInfo({ name: userInfo.name, description: userInfo.description });
@@ -130,15 +131,13 @@ export const AboutePage = () => {
     <>
       <UserInfoWrapper>
         {loading && (
-          <div style={{ width: "200px",height:"200px",display:"flex"}}>
-            {SkeletonFactory(1, "Icon")}
-          </div>
-        )}
-        {edit && !loading && userInfo.init_image && (
-          <IconEditor editor={editor} init_image={userInfo.init_image} />
+          <UserIconWrapper>{SkeletonFactory(1, "Icon")} </UserIconWrapper>
         )}
         {!loading && userInfo.init_image && !edit && (
           <IconUser src={userInfo.init_image} />
+        )}
+        {edit && !loading && userInfo.init_image && (
+          <IconEditor editor={editor} init_image={userInfo.init_image} />
         )}
         {userInfo ? (
           <UserFormWrapper>
@@ -151,8 +150,8 @@ export const AboutePage = () => {
                   <div>Описание:{userInfo.description}</div>
                 </div>
               )}
-                {edit && (
-              <div>
+              {edit && (
+                <div>
                   <div>
                     Никнейм:
                     <Input
@@ -166,10 +165,10 @@ export const AboutePage = () => {
                       required
                     />
                   </div>
-              </div>
-                )}
-                {edit && (
-              <div>
+                </div>
+              )}
+              {edit && (
+                <div>
                   <div>
                     Описание:
                     <Input
@@ -183,8 +182,8 @@ export const AboutePage = () => {
                       required
                     />
                   </div>
-              </div>
-                )}
+                </div>
+              )}
             </div>
             {edit && (
               <div style={{ display: "flex", marginTop: "2vh" }}>
@@ -232,7 +231,7 @@ export const AboutePage = () => {
           justifyContent: "space-around",
           flexWrap: "wrap",
           marginTop: "2vw",
-          gap:"10px"
+          gap: "10px",
         }}
       >
         {aboutGames?.map((e) => (

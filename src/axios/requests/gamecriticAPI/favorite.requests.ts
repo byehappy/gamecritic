@@ -1,3 +1,4 @@
+import { AxiosPromise } from "axios";
 import { instanceAPI } from ".";
 
 export const checkFavoriteGame = async(id: string,gameId:number) => {
@@ -5,6 +6,9 @@ export const checkFavoriteGame = async(id: string,gameId:number) => {
   };
   export const getFavoriteGames = (id: string) => {
     return instanceAPI.get(`/user/favorites/${id}`);
+  };
+  export const getPreviewFavoriteGames = (id: string):AxiosPromise<string[]> => {
+    return instanceAPI.get(`/user/preview/favorites/${id}`);
   };
   export const addFavoriteGame = (id: string,gameId:number) => {
     return instanceAPI.post(`/user/favorites/${id}/${gameId}`);

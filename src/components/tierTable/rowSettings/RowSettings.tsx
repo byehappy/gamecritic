@@ -1,24 +1,16 @@
-import { Button, Checkbox, ColorPicker, Input } from "antd";
+import { Button, ColorPicker, Input } from "antd";
 import { TierData } from "../../../interfaces/tierData";
 import { Modal } from "../../modal/Modal";
-import { useState } from "react";
 import uuid4 from "uuid4";
 import { IGameDis } from "../../../interfaces/games";
 import { useAppSelector, useAppDispatch } from "../../../redux/hooks";
 import { setRows, setTrayGames } from "../../../redux/slice/tierDataSlice";
 import { ExampleRow } from "../../exampleRow/ExampleRow";
 import styled, { useTheme } from "styled-components";
-import { device } from "../../../styles/size";
 const ButtonsWrapper = styled.div`
-  display: flex;
-  gap: 0.5rem;
-  justify-content: space-between;
-  @media ${device.mobileS} {
-    flex-direction:column;
-  }
-  @media ${device.tablet} {
-    flex-direction:row;
-  }
+  display: grid;
+  grid-template-columns: 55% 42%;
+  gap: 10px;
 `;
 export const RowSettings: React.FC<{
   id: string;
@@ -30,6 +22,7 @@ export const RowSettings: React.FC<{
   const theme = useTheme();
   const tierData = useAppSelector((state) => state.tierData);
   const dispatch = useAppDispatch();
+  const findedTier = tierData.rows.find((tier) => id === tier.id);
   function enabledGamesInTray(
     games: IGameDis[],
     findedTier?: TierData
@@ -74,13 +67,22 @@ export const RowSettings: React.FC<{
       )
     );
   };
-  const updateTier = (
-    id: string,
-    tierName?: string,
-    color: string = "primary",
-    deleteGames: boolean = false
-  ) => {
-    const findedTier = tierData.rows.find((tier) => id === tier.id);
+  function clearGames() {
+    dispatch(
+      setRows(
+        tierData.rows.map((tier) =>
+          tier.id === id
+            ? {
+                ...tier,
+                games: [],
+              }
+            : tier
+        )
+      )
+    );
+    dispatch(setTrayGames(enabledGamesInTray(tierData.games, findedTier)));
+  }
+  const updateTier = (tierName?: string, color?: string) => {
     dispatch(
       setRows(
         tierData.rows.map((tier) =>
@@ -88,34 +90,12 @@ export const RowSettings: React.FC<{
             ? {
                 ...tier,
                 name: tierName ?? tier.name,
-                color,
-                games: deleteGames ? [] : tier.games,
+                color: color ?? tier.color,
               }
             : tier
         )
       )
     );
-    dispatch(
-      setTrayGames(
-        deleteGames
-          ? enabledGamesInTray(tierData.games, findedTier)
-          : tierData.games
-      )
-    );
-  };
-  const [settingsRow, setSettingsRow] = useState({
-    tierName: tier.name,
-    color: tier.color,
-    deleteGames: false,
-  });
-  const handleSave = () => {
-    updateTier(
-      id,
-      settingsRow.tierName,
-      settingsRow.color,
-      settingsRow.deleteGames
-    );
-    onClose();
   };
   return (
     <Modal
@@ -124,10 +104,9 @@ export const RowSettings: React.FC<{
       onClose={onClose}
       widthMin={true}
     >
-      <div style={{ display: "flex", marginBottom: "1vh" }}>
+      <div style={{ display: "flex", marginBottom: "1vh", gap: "5%" }}>
         <div
           style={{
-            width: "50%",
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-evenly",
@@ -135,13 +114,8 @@ export const RowSettings: React.FC<{
         >
           <Input
             placeholder="Название"
-            value={settingsRow.tierName}
-            onChange={(e) =>
-              setSettingsRow((prev) => ({
-                ...prev,
-                tierName: e.target.value,
-              }))
-            }
+            value={tier.name}
+            onChange={(e) => updateTier(e.target.value)}
           />
           <div
             style={{
@@ -152,55 +126,36 @@ export const RowSettings: React.FC<{
           >
             Цвет:
             <ColorPicker
-              value={settingsRow.color}
-              onChange={(color) =>
-                setSettingsRow((prev) => ({
-                  ...prev,
-                  color: color.toHexString(),
-                }))
-              }
+              value={tier.color}
+              onChangeComplete={(color) => updateTier(undefined, color.toHexString())}
             />
           </div>
-          <Checkbox
-            onChange={(e) =>
-              setSettingsRow((prev) => ({
-                ...prev,
-                deleteGames: e.target.checked,
-              }))
-            }
-          >
-            Очистить игры
-          </Checkbox>
         </div>
-        <div
-          style={{ width: "50%", display: "flex", justifyContent: "center" }}
-        >
-          <ExampleRow name={settingsRow.tierName} color={settingsRow.color} />
+        <div style={{ width: "45%", display: "flex", justifyContent: "end" }}>
+          <ExampleRow name={tier.name} color={tier.color} />
         </div>
       </div>
-      <div style={{ display: "flex", gap: "2vh 0", flexDirection: "column" }}>
-        <Button type="primary" onClick={handleSave}>
-          Сохранить
+      <ButtonsWrapper>
+        <Button onClick={() => handleManipulatorTier(index, "up")}>
+          Добавить ряд сверху
         </Button>
-        <ButtonsWrapper>
-          <Button onClick={() => handleManipulatorTier(index, "up")}>
-            Добавить ряд сверху
-          </Button>
-          <Button
-            danger
-            type="primary"
-            onClick={() => {
-              handleManipulatorTier(index, undefined, true);
-              onClose();
-            }}
-          >
-            Удалить ряд
-          </Button>
-          <Button onClick={() => handleManipulatorTier(index, "down")}>
-            Добавить ряд снизу
-          </Button>
-        </ButtonsWrapper>
-      </div>
+        <Button danger onClick={clearGames}>
+          Очистить игры
+        </Button>
+        <Button onClick={() => handleManipulatorTier(index, "down")}>
+          Добавить ряд снизу
+        </Button>
+        <Button
+          danger
+          type="primary"
+          onClick={() => {
+            handleManipulatorTier(index, undefined, true);
+            onClose();
+          }}
+        >
+          Удалить ряд
+        </Button>
+      </ButtonsWrapper>
     </Modal>
   );
 };

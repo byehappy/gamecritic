@@ -188,7 +188,7 @@ export const CardModal: React.FC<{
     <MoadalWrapperGameInfo>
       {screenshotsGame && (
         <div style={{ flex: 3 }}>
-          <div onMouseMove={handleMouseMove} ref={sliderRef}>
+          <div onMouseMove={handleMouseMove} ref={sliderRef} style={{height:"100%"}}>
             <SliderContainer onClick={handleZoomInImage}>
               <SliderImage
                 src={screenshotsGame[currentImageIndex].image}
@@ -273,7 +273,7 @@ export const CardModal: React.FC<{
         }}
       >
         <div>
-          {window.innerWidth > 1440 && (
+          {window.innerWidth >= 1440 && (
             <img
               src={
                 game.background_image ??
@@ -307,6 +307,8 @@ export const CardModal: React.FC<{
             gap: "1vh",
             justifyContent:"space-around",
             height:"100%",
+            fontSize: theme.fontSizes.adaptivSmallText,
+
           }}
         >
           {(game.metacritic !== null || game.metacritic === 0) && (

@@ -14,13 +14,17 @@ import { useParams } from "react-router-dom";
 
 const TepmlatesContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(calc(100px + 30 * (100vw / 1280)), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(calc(90px + 30 * (100vw / 1280)), 1fr));
   column-gap:1vw;
   row-gap:10px;
-  height: 100%;
   padding: 0 1vw;
   ${Item}:hover {
     transform: scale(1.15, 1.15);
+  }
+  div{
+    max-width:calc(100px + 30 * (100vw / 1280));
+    min-height:12rem;
+    line-break:anywhere;
   }
 `;
 
