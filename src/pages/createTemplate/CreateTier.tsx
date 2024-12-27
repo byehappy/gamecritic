@@ -28,12 +28,13 @@ import { FilterFlags } from "../../interfaces/filters";
 import { DEFAULT_PAGE } from "../../utils/constans";
 import { CardGame } from "../../components/card/CardGame";
 import { gamesRequest, getTierById, UpdateTier } from "../../axios";
-import { IGame } from "../../interfaces/games";
+import { IGame, IGameDis } from "../../interfaces/games";
 import { SkeletonFactory } from "../../utils/skeleton/skeleton-factory";
 import Search from "antd/es/input/Search";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
   clearCreateTier,
+  selectUniqGame,
   toggleGameSelection,
 } from "../../redux/slice/createTemplateSlice";
 import { useForm } from "antd/es/form/Form";
@@ -46,7 +47,6 @@ import { ErrorAuth } from "../../redux/slice/authSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import { setFilters } from "../../redux/slice/tierDataSlice";
 import { ExampleRow } from "../../components/exampleRow/ExampleRow";
-import { device } from "../../styles/size";
 const StyledForm = styled(Form)`
   .ant-form-item {
     margin-bottom: 0;
@@ -72,12 +72,12 @@ const GridFormContainer = styled.div`
     grid-column: 1 / 3;
   }
   & > div:nth-child(3) {
-    @media (max-width:768px){
+    @media (max-width: 768px) {
       grid-column: 1 / 3;
     }
   }
   & > div:nth-child(4) {
-    @media (max-width:768px){
+    @media (max-width: 768px) {
       grid-column: 1 / 3;
     }
   }
@@ -284,6 +284,7 @@ export const CreateTierPage = () => {
                   width: "40%",
                 }}
               >
+                Название:
                 <Form.Item
                   name={"name"}
                   rules={[
@@ -293,11 +294,10 @@ export const CreateTierPage = () => {
                     },
                   ]}
                 >
-                  Название:
                   <Input placeholder="Название шаблона" />
                 </Form.Item>
+                Ссылка:
                 <Form.Item name="img">
-                  Ссылка:
                   <Input placeholder="Url-ссылка на картинку" />
                 </Form.Item>
               </div>
@@ -319,7 +319,7 @@ export const CreateTierPage = () => {
               </div>
             </div>
             <div>
-              <h1 style={{ width: "320px" }}>Строки таблицы</h1>
+              <h1 style={{ width: "310px" }}>Строки таблицы</h1>
               <Form.List name={"rows"}>
                 {(rows, { add, remove }) => {
                   return (
@@ -356,7 +356,10 @@ export const CreateTierPage = () => {
                               }}
                             >
                               <Form.Item name={[index, "name"]}>
-                                <Input placeholder="Название строки" style={{minWidth:"130px",width:"60%"}}/>
+                                <Input
+                                  placeholder="Название строки"
+                                  style={{ minWidth: "130px", width: "60%" }}
+                                />
                               </Form.Item>
                               <Form.Item name={[index, "color"]} shouldUpdate>
                                 <ColorPicker
@@ -377,15 +380,21 @@ export const CreateTierPage = () => {
                         title="Пример"
                         render={(_value, _row, index) => {
                           return (
-                            <div style={{maxWidth:"130px",minWidth:"100px"}}>
+                            <div
+                              style={{ maxWidth: "130px", minWidth: "100px" }}
+                            >
                               <ExampleRow
-                              name={form.getFieldValue(["rows", index, "name"])}
-                              color={form.getFieldValue([
-                                "rows",
-                                index,
-                                "color",
-                              ])}
-                            />
+                                name={form.getFieldValue([
+                                  "rows",
+                                  index,
+                                  "name",
+                                ])}
+                                color={form.getFieldValue([
+                                  "rows",
+                                  index,
+                                  "color",
+                                ])}
+                              />
                             </div>
                           );
                         }}
@@ -393,13 +402,21 @@ export const CreateTierPage = () => {
                       <Column
                         render={(_, row) => {
                           return (
-                            <div style={{display:"flex",width:"100%",height:"100%",justifyContent:"center",alignItems:"center"}}>
+                            <div
+                              style={{
+                                display: "flex",
+                                width: "100%",
+                                height: "100%",
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
                               <Button
-                              icon={<MinusOutlined />}
-                              shape={"circle"}
-                              size="large"
-                              onClick={() => remove(row.name)}
-                            />
+                                icon={<MinusOutlined />}
+                                shape={"circle"}
+                                size="large"
+                                onClick={() => remove(row.name)}
+                              />
                             </div>
                           );
                         }}
@@ -409,8 +426,16 @@ export const CreateTierPage = () => {
                 }}
               </Form.List>
             </div>
-            <div style={{display:"flex",flexDirection:"column",alignItems:"center"}}>
-              <div style={{ display: "flex", gap: "10px",marginBottom:"10px" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <div
+                style={{ display: "flex", gap: "10px", marginBottom: "10px" }}
+              >
                 <HeaderButton
                   $isActive={activeButton === "filter"}
                   onClick={() => {
@@ -444,61 +469,90 @@ export const CreateTierPage = () => {
                     infinite={false}
                   >
                     <Form.Item name={"filter"}>
-                      <div style={{ maxWidth: "98%",marginLeft:"5px" }}>
+                      <div style={{ maxWidth: "98%", marginLeft: "5px" }}>
                         <Filter handleChangeFiters={handleChangeFiters} />
                       </div>
                     </Form.Item>
                     <Form.Item name={"pickGame"}>
-                      <Search
-                        placeholder="Введите название игры"
-                        size="large"
-                        onSearch={(value) => {
-                          handleChangeFiters("page", 1);
-                          handleChangeFiters("search", value);
-                        }}
-                        style={{ width: "99%", marginLeft: ".2%" }}
-                      />
-                      <div
-                        style={{
-                          display: "grid",
-                          gridTemplateColumns: " repeat(auto-fill,125px)",
-                          gap: ".1rem",
-                          justifyContent: "center",
-                          marginTop: "10px",
-                        }}
-                      >
-                        {loadingGames
-                          ? SkeletonFactory(filterFlags.page_size, "Card-small")
-                          : games?.map((game) => {
-                              return (
-                                <CardGame
-                                  key={game.id}
-                                  game={{
-                                    ...game,
-                                    disabled: !createTemplate.pickGame.find(
-                                      (pickGame) => pickGame === game.id
-                                    ),
-                                  }}
-                                  id={game.id}
-                                  size="small"
-                                  onCardClick={() =>
-                                    dispatch(toggleGameSelection(game.id))
-                                  }
-                                />
+                      <div>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "10px",
+                          }}
+                        >
+                          <Search
+                            placeholder="Введите название игры"
+                            size="large"
+                            onSearch={(value) => {
+                              handleChangeFiters("page", 1);
+                              handleChangeFiters("search", value);
+                            }}
+                            style={{ width: "99%", marginLeft: ".2%" }}
+                          />
+                          <Button
+                            type="primary"
+                            onClick={() => {
+                              games?.forEach(
+                                (game) =>
+                                  !(game as IGameDis).disabled &&
+                                  dispatch(selectUniqGame(game.id))
                               );
-                            })}
+                            }}
+                            loading={loadingGames}
+                            disabled={games?.every((e) =>
+                              createTemplate.pickGame.includes(e.id)
+                            )}
+                          >
+                            Добавить все
+                          </Button>
+                        </div>
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: " repeat(auto-fill,125px)",
+                            gap: ".1rem",
+                            justifyContent: "center",
+                            marginTop: "10px",
+                          }}
+                        >
+                          {loadingGames
+                            ? SkeletonFactory(
+                                filterFlags.page_size,
+                                "Card-small"
+                              )
+                            : games?.map((game) => {
+                                return (
+                                  <CardGame
+                                    key={game.id}
+                                    game={{
+                                      ...game,
+                                      disabled: !createTemplate.pickGame.find(
+                                        (pickGame) => pickGame === game.id
+                                      ),
+                                    }}
+                                    id={game.id}
+                                    size="small"
+                                    onCardClick={() =>
+                                      dispatch(toggleGameSelection(game.id))
+                                    }
+                                  />
+                                );
+                              })}
+                        </div>
+                        <Pagination
+                          style={{ marginTop: "1vw", justifyContent: "center" }}
+                          defaultCurrent={1}
+                          defaultPageSize={10}
+                          total={totalCount}
+                          onChange={(page, pageSize) => {
+                            handleChangeFiters("page", page);
+                            handleChangeFiters("page_size", pageSize);
+                          }}
+                          pageSizeOptions={[10]}
+                        />
                       </div>
-                      <Pagination
-                        style={{ marginTop: "1vw",justifyContent:"center" }}
-                        defaultCurrent={1}
-                        defaultPageSize={10}
-                        total={totalCount}
-                        onChange={(page, pageSize) => {
-                          handleChangeFiters("page", page);
-                          handleChangeFiters("page_size", pageSize);
-                        }}
-                        pageSizeOptions={[10]}
-                      />
                     </Form.Item>
                   </Carousel>
                 </Form.Item>

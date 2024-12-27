@@ -57,7 +57,10 @@ export const Modal: React.FC<{
         <ModalWindow ref={ref} $widthMin={widthMin}>
           <ModalHeader $haveHeader={header !== undefined}>
             {header}
-            <CloseOutlined style={{color:theme.colors.font}} onClick={onClose} />
+            <CloseOutlined
+              style={{ color: theme.colors.font }}
+              onClick={onClose}
+            />
           </ModalHeader>
           {children}
         </ModalWindow>

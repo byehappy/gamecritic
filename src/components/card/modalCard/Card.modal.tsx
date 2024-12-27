@@ -188,12 +188,22 @@ export const CardModal: React.FC<{
     <MoadalWrapperGameInfo>
       {screenshotsGame && (
         <div style={{ flex: 3 }}>
-          <div onMouseMove={handleMouseMove} ref={sliderRef} style={{height:"100%"}}>
+          <div
+            onMouseMove={handleMouseMove}
+            ref={sliderRef}
+            style={{ height: "100%" }}
+          >
             <SliderContainer onClick={handleZoomInImage}>
-              <SliderImage
-                src={screenshotsGame[currentImageIndex].image}
-                alt={`Скриншот ${currentImageIndex + 1}`}
-              />
+              {screenshotsGame.map((e, index) => (
+                <SliderImage
+                  key={e.id}
+                  style={{
+                    display: index === currentImageIndex ? "block" : "none",
+                  }}
+                  src={e.image}
+                  alt={`Скриншот ${currentImageIndex + 1}`}
+                />
+              ))}
               <DotsContainer>
                 {screenshotsGame.map((_, index) => (
                   <Dot
@@ -305,10 +315,9 @@ export const CardModal: React.FC<{
             display: "flex",
             flexDirection: "column",
             gap: "1vh",
-            justifyContent:"space-around",
-            height:"100%",
+            justifyContent: "space-around",
+            height: "100%",
             fontSize: theme.fontSizes.adaptivSmallText,
-
           }}
         >
           {(game.metacritic !== null || game.metacritic === 0) && (

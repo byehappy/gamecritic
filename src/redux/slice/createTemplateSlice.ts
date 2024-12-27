@@ -43,6 +43,14 @@ const CreateTemplateSlice = createSlice({
         state.pickGame.push(action.payload);
       }
     },
+    selectUniqGame: (state, action) => {
+      const gameIndex = state.pickGame.findIndex(
+        (game) => game === action.payload
+      );
+      if (gameIndex === -1) {
+        state.pickGame.push(action.payload);
+      }
+    },
     clearCreateTier: () => {
       return initialState;
     },
@@ -51,5 +59,5 @@ const CreateTemplateSlice = createSlice({
 
 const { reducer, actions } = CreateTemplateSlice;
 
-export const { setFilter, toggleGameSelection, clearCreateTier } = actions;
+export const { setFilter, toggleGameSelection, clearCreateTier,selectUniqGame } = actions;
 export default reducer;

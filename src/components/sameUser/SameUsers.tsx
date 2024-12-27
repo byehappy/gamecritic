@@ -1,11 +1,17 @@
 import styled from "styled-components";
 import { SameUsers } from "../../interfaces/users";
 import { UserCard } from "../userCard/UserCard";
+import { device } from "../../styles/size";
 const ContainerTopUsersItems = styled.div`
   display: flex;
   gap: 1vw;
   height: 100%;
-  overflow: overlay;
+  overflow-x: auto;
+  margin:2% 0;
+  @media ${device.laptop} {
+    overflow-y:visible;
+    overflow-x:clip;
+  }
   @media (max-width: 425px) {
     div{
       max-height:160px;

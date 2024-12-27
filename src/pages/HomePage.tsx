@@ -29,12 +29,12 @@ const ContainerTemplateItems = styled.div`
   gap: 10px;
   padding: 0 1vw;
   justify-content: space-between;
-  margin: 17px 0;
+  margin: 2% 0;
   @media ${device.mobileS} {
     height: 150px;
-    div{
-      min-width:200px;
-      max-width:200px;
+    div {
+      min-width: 200px;
+      max-width: 200px;
     }
   }
   @media ${device.tablet} {
@@ -44,7 +44,7 @@ const ContainerTemplateItems = styled.div`
     overflow-x: unset;
     div {
       width: 15%;
-      min-width:15%;
+      min-width: 15%;
     }
   }
 `;
@@ -55,13 +55,13 @@ const ContainerUsersTemplateItems = styled.div`
   height: 100%;
   padding: 0 1vw;
   justify-content: space-between;
-  margin: 17px 0;
+  margin: 2% 0;
   min-height: 150px;
-  div{
-    min-width:225px;
+  div {
+    min-width: 225px;
   }
   @media (min-width: 768px) {
-    min-height:200px;
+    min-height: 200px;
   }
   @media ${device.laptop} {
     overflow-x: unset;
@@ -75,8 +75,12 @@ const ContainerTopUsersItems = styled.div`
   gap: 1vw;
   padding: 0 1vw;
   justify-content: space-between;
+  margin: 2% 0;
   overflow-x: auto;
-  margin: 17px 0;
+  @media ${device.laptop} {
+    overflow-y:visible;
+    overflow-x:clip;
+  }
 `;
 const IntroText = styled.h1`
   display: flex;
@@ -171,9 +175,9 @@ export const HomePage = () => {
           <Link to={"/all"}>Увидеть все шаблоны</Link>
         </HeaderTemplate>
         {!tiers && (
-            <ContainerTemplateItems>
-              {SkeletonFactory(6, "Template")}
-            </ContainerTemplateItems>
+          <ContainerTemplateItems>
+            {SkeletonFactory(6, "Template")}
+          </ContainerTemplateItems>
         )}
         {tiers && (
           <ContainerTemplateItems>
@@ -222,20 +226,16 @@ export const HomePage = () => {
           <h4>Рекорды по пройденным играм</h4>
         </HeaderTemplate>
         {!topUsers && (
-          <div>
-            <ContainerTopUsersItems>
-              {SkeletonFactory(10, "Card")}
-            </ContainerTopUsersItems>
-          </div>
+          <ContainerTopUsersItems>
+            {SkeletonFactory(10, "Card")}
+          </ContainerTopUsersItems>
         )}
         {topUsers && (
-          <div>
-            <ContainerTopUsersItems>
-              {topUsers?.map((e) => (
-                <UserCard user={e} key={e.id} />
-              ))}
-            </ContainerTopUsersItems>
-          </div>
+          <ContainerTopUsersItems>
+            {topUsers?.map((e,index) => (
+              <UserCard user={e} key={e.id} first={index === 0}/>
+            ))}
+          </ContainerTopUsersItems>
         )}
       </div>
     </>

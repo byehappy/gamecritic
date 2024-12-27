@@ -2,20 +2,27 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { TopUsers } from "../../axios/requests/gamecriticAPI/passGame.request";
 import { SameUsers } from "../../interfaces/users";
-
+import { device } from "../../styles/size";
+import crown from "../../assets/crown.svg";
 const UserWrapper = styled.div`
   max-width: 130px;
   min-width: calc(80px + 10 * (100vw / 1280));
   aspect-ratio: 2 / 3.2;
-  height:auto;
+  height: auto;
   background-color: ${({ theme }) => theme.colors.primary};
   padding: 0.2em;
   border-radius: 1em;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding:10px;
-  justify-content:space-evenly;
+  padding: 10px;
+  justify-content: space-evenly;
+  transition: transform 0.3s ease-in-out;
+  @media ${device.laptop} {
+    &:hover {
+      transform: scale(1.25);
+    }
+  }
   a {
     display: flex;
     justify-content: center;
@@ -42,9 +49,10 @@ const UserWrapper = styled.div`
     }
   }
 `;
-export const UserCard: React.FC<{ user: TopUsers | SameUsers }> = ({
-  user,
-}) => {
+export const UserCard: React.FC<{
+  user: TopUsers | SameUsers;
+  first?: boolean;
+}> = ({ user, first }) => {
   if ("gameCount" in user) {
     return (
       <UserWrapper>
@@ -54,8 +62,10 @@ export const UserCard: React.FC<{ user: TopUsers | SameUsers }> = ({
             flexDirection: "column",
             alignItems: "center",
             gap: "10px",
+            position:"relative"
           }}
         >
+          {first && <img src={crown} alt={"crown"} style={{position:"absolute",zIndex:2,top:-50,right:-40}}/>}
           <img src={user.img_icon} alt={user.name} />
           {user.name}
         </Link>
