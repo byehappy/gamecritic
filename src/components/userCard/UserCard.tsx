@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { TopUsers } from "../../axios/requests/gamecriticAPI/passGame.request";
 import { SameUsers } from "../../interfaces/users";
 import { device } from "../../styles/size";
-import crown from "../../assets/crown.svg";
 const UserWrapper = styled.div`
   max-width: 130px;
   min-width: calc(80px + 10 * (100vw / 1280));
@@ -52,7 +51,7 @@ const UserWrapper = styled.div`
 export const UserCard: React.FC<{
   user: TopUsers | SameUsers;
   first?: boolean;
-}> = ({ user, first }) => {
+}> = ({ user }) => {
   if ("gameCount" in user) {
     return (
       <UserWrapper>
@@ -62,10 +61,8 @@ export const UserCard: React.FC<{
             flexDirection: "column",
             alignItems: "center",
             gap: "10px",
-            position:"relative"
           }}
         >
-          {first && <img src={crown} alt={"crown"} style={{position:"absolute",zIndex:2,top:-50,right:-40}}/>}
           <img src={user.img_icon} alt={user.name} />
           {user.name}
         </Link>

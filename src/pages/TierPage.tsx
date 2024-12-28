@@ -596,7 +596,7 @@ function TierPage() {
                             cancelableReq.cancel,
                             cancelableReq.resume,
                             cancelableReq.pause,
-                            "Оменить сброс?"
+                            "Отменить сброс?"
                           );
                           cancelableReq.request.finally(() =>
                             setReqIds((prev) =>
@@ -647,7 +647,7 @@ function TierPage() {
                             cancelableReq.cancel,
                             cancelableReq.resume,
                             cancelableReq.pause,
-                            "Оменить удаление шаблона?"
+                            "Отменить удаление шаблона?"
                           );
                           cancelableReq.request
                             .then(() => {

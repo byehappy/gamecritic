@@ -284,7 +284,6 @@ export const CreateTierPage = () => {
                   width: "40%",
                 }}
               >
-                Название:
                 <Form.Item
                   name={"name"}
                   rules={[
@@ -294,11 +293,16 @@ export const CreateTierPage = () => {
                     },
                   ]}
                 >
-                  <Input placeholder="Название шаблона" />
+                  <div>
+                    Название:
+                    <Input placeholder="Название шаблона" />
+                  </div>
                 </Form.Item>
-                Ссылка:
                 <Form.Item name="img">
-                  <Input placeholder="Url-ссылка на картинку" />
+                  <div>
+                    Ссылка:
+                    <Input placeholder="Url-ссылка на картинку" />
+                  </div>
                 </Form.Item>
               </div>
             </div>
@@ -307,6 +311,7 @@ export const CreateTierPage = () => {
                 width: "100%",
                 display: "flex",
                 justifyContent: "center",
+                alignItems: "center",
               }}
             >
               <div style={{ width: "130px" }}>

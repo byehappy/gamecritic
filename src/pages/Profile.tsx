@@ -1,9 +1,8 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import styled from "styled-components";
-import { Carousel } from "antd";
 import { useCallback, useEffect, useState } from "react";
-import { getFavoriteGames, getPreviewFavoriteGames, getUserTiers } from "../axios";
+import { getPreviewFavoriteGames, getUserTiers } from "../axios";
 import uuid4 from "uuid4";
 import { TemplateCard } from "../components/templateCard/TemplateCard";
 import { setMessage } from "../redux/slice/messageSlice";
@@ -15,13 +14,7 @@ import {
   getAuthorTiersSize,
   Tier,
 } from "../axios/requests/gamecriticAPI/tierData.requests";
-const CarouselWrapper = styled(Carousel)`
-  margin-top: 2vh;
-  padding: 0.3em;
-  button.slick-arrow {
-    color: black;
-  }
-`;
+
 const ContainerItems = styled.div`
   display: flex;
   gap: 15px;
@@ -185,17 +178,17 @@ export const ProfilePage = () => {
           </Link>
         )}
       </HeaderTemplate>
-          <ContainerItems>
-            {loadingFavorites && SkeletonFactory(8, "Card")}
-            {favoriteGames.map((game) => {
-              return <CardGame key={game.id} game={game} id={game.id} />;
-            })}
-            {!loadingFavorites && favoriteGames.length === 0 && (
-              <span style={{ fontSize: "1.2rem" }}>
-                Вы не добавили игры в избранное
-              </span>
-            )}
-          </ContainerItems>
+      <ContainerItems>
+        {loadingFavorites && SkeletonFactory(8, "Card")}
+        {favoriteGames.map((game) => {
+          return <CardGame key={game.id} game={game} id={game.id} />;
+        })}
+        {!loadingFavorites && favoriteGames.length === 0 && (
+          <span style={{ fontSize: "1.2rem" }}>
+            Вы не добавили игры в избранное
+          </span>
+        )}
+      </ContainerItems>
     </div>
   );
 };

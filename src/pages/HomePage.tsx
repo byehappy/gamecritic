@@ -77,9 +77,10 @@ const ContainerTopUsersItems = styled.div`
   justify-content: space-between;
   margin: 2% 0;
   overflow-x: auto;
+  position:relative;
   @media ${device.laptop} {
-    overflow-y:visible;
-    overflow-x:clip;
+    overflow-y: visible;
+    overflow-x: clip;
   }
 `;
 const IntroText = styled.h1`
@@ -147,7 +148,7 @@ export const HomePage = () => {
             cancelableReq.cancel,
             cancelableReq.resume,
             cancelableReq.pause,
-            `Оменить удаление шаблона:${title}?`,
+            `Отменить удаление шаблона:${title}?`,
             tierId
           );
           cancelableReq.request.finally(() =>

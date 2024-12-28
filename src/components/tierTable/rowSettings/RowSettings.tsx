@@ -7,6 +7,7 @@ import { useAppSelector, useAppDispatch } from "../../../redux/hooks";
 import { setRows, setTrayGames } from "../../../redux/slice/tierDataSlice";
 import { ExampleRow } from "../../exampleRow/ExampleRow";
 import styled, { useTheme } from "styled-components";
+import { useState } from "react";
 const ButtonsWrapper = styled.div`
   display: grid;
   grid-template-columns: 55% 42%;
@@ -23,6 +24,7 @@ export const RowSettings: React.FC<{
   const tierData = useAppSelector((state) => state.tierData);
   const dispatch = useAppDispatch();
   const findedTier = tierData.rows.find((tier) => id === tier.id);
+  const [confirmModal, setConfirmModal] = useState<string>();
   function enabledGamesInTray(
     games: IGameDis[],
     findedTier?: TierData
@@ -127,7 +129,9 @@ export const RowSettings: React.FC<{
             Цвет:
             <ColorPicker
               value={tier.color}
-              onChangeComplete={(color) => updateTier(undefined, color.toHexString())}
+              onChangeComplete={(color) =>
+                updateTier(undefined, color.toHexString())
+              }
             />
           </div>
         </div>
@@ -139,7 +143,12 @@ export const RowSettings: React.FC<{
         <Button onClick={() => handleManipulatorTier(index, "up")}>
           Добавить ряд сверху
         </Button>
-        <Button danger onClick={clearGames}>
+        <Button
+          danger
+          onClick={() => {
+            setConfirmModal("clear");
+          }}
+        >
           Очистить игры
         </Button>
         <Button onClick={() => handleManipulatorTier(index, "down")}>
@@ -149,12 +158,91 @@ export const RowSettings: React.FC<{
           danger
           type="primary"
           onClick={() => {
-            handleManipulatorTier(index, undefined, true);
-            onClose();
+            setConfirmModal("delete");
           }}
         >
           Удалить ряд
         </Button>
+        {confirmModal && (
+          <Modal
+            key={`second-modal`}
+            isOpen={confirmModal.length > 0}
+            onClose={() => setConfirmModal("")}
+            widthMin={true}
+            zIndex={101}
+          >
+              {confirmModal === "clear" ? (
+              <div style={{minWidth:"40vw"}}>
+                <div style={{ fontSize: theme.fontSizes.normal }}>
+                  Вы точно хотите очистить все игры?
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginTop: "5%",
+                  }}
+                >
+                  <Button
+                    danger
+                    type="primary"
+                    style={{ width: "45%" }}
+                    onClick={() => {
+                      clearGames();
+                      onClose();
+                    }}
+                  >
+                    Очистить
+                  </Button>
+                  <Button
+                    type="primary"
+                    style={{ width: "45%" }}
+                    onClick={() => {
+                      setConfirmModal("");
+                    }}
+                  >
+                    Отмена
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div style={{minWidth:"40vw"}}>
+                <div style={{ fontSize: theme.fontSizes.normal }}>
+                  Вы точно хотите удалить данный ряд?
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginTop: "5%",
+                  }}
+                >
+                  <Button
+                    danger
+                    type="primary"
+                    style={{ width: "45%" }}
+                    onClick={() => {
+                      setConfirmModal("");
+                      handleManipulatorTier(index, undefined, true);
+                      onClose();
+                    }}
+                  >
+                    Удалить
+                  </Button>
+                  <Button
+                    type="primary"
+                    style={{ width: "45%" }}
+                    onClick={() => {
+                      setConfirmModal("");
+                    }}
+                  >
+                    Отмена
+                  </Button>
+                </div>
+              </div>
+            )}
+          </Modal>
+        )}
       </ButtonsWrapper>
     </Modal>
   );

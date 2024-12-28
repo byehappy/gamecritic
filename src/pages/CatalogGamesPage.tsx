@@ -36,6 +36,7 @@ const UserFormWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 75%;
+  font-size: ${({ theme }) => theme.fontSizes.adaptivText};
 `;
 const ContainerGames = styled.div`
   display: grid;

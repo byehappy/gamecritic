@@ -11,7 +11,15 @@ export const Modal: React.FC<{
   children: ReactNode;
   header?: ReactNode;
   widthMin?: boolean;
-}> = ({ isOpen, onClose, children, header, widthMin = false }) => {
+  zIndex?: number;
+}> = ({
+  isOpen,
+  onClose,
+  children,
+  header,
+  widthMin = false,
+  zIndex = 100,
+}) => {
   const theme = useTheme();
   const ref = useRef() as React.MutableRefObject<HTMLDivElement>;
   const checkKeyEscape = useCallback(
@@ -53,7 +61,7 @@ export const Modal: React.FC<{
 
   return createPortal(
     isOpen ? (
-      <ModalOverlay>
+      <ModalOverlay $zIndex={zIndex}>
         <ModalWindow ref={ref} $widthMin={widthMin}>
           <ModalHeader $haveHeader={header !== undefined}>
             {header}

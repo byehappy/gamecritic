@@ -95,12 +95,12 @@ export const CardGame: React.FC<{
         onClick={() => handleClick(game)}
       >
         <img
-          style={{ objectFit: "cover", width: "100%" }}
+          style={{ objectFit: "cover", width: "100%",display:"flex" }}
           alt={game.name}
           src={
             game.background_image
               ? game.background_image.replace("/media/", "/media/crop/600/400/")
-              : "https://mebeliero.ru/images/photos/medium/no_image.png"
+              : ""
           }
           draggable={!game.disabled}
         />

@@ -16,10 +16,11 @@ type State = {
 const AvatarWrapper = styled.div`
   display: flex;
   gap: 1vw;
+  max-height:200px;
   @media (max-width: 425px) {
     flex-direction: column;
     align-items: center;
-    margin-bottom:5%;
+    margin-bottom: 5%;
     div {
       max-width: 200px;
     }
@@ -93,6 +94,7 @@ const IconEditor: React.FC<{
               image={state.image}
               crossOrigin="anonymous"
               border={0}
+              backgroundColor="white"
             />
             <input
               name="newImage"
@@ -113,6 +115,7 @@ const IconEditor: React.FC<{
           max="5"
           step="0.1"
           defaultValue="1"
+          style={{ width: "200px" }}
         />
         <br />
         Поворот:
@@ -124,6 +127,7 @@ const IconEditor: React.FC<{
           max="360"
           step="1"
           defaultValue="0"
+          style={{ width: "200px" }}
         />
         <br />
         <label>

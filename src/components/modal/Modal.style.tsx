@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const ModalOverlay = styled.div`
+export const ModalOverlay = styled.div<{$zIndex:number}>`
   position: fixed;
   top: 0;
   left: 0;
@@ -10,8 +10,7 @@ export const ModalOverlay = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 100;
-  
+  z-index: ${(props)=> props.$zIndex}
 `
 
 export const ModalWindow = styled.div<{$widthMin:boolean}>`

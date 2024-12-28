@@ -1,3 +1,5 @@
+import { setMessage } from "../redux/slice/messageSlice";
+import { store } from "../redux/store";
 import { DEFAULT_TIMEOUT_REQUEST } from "./constans";
 
 type ActiveReq = {
@@ -40,8 +42,13 @@ export const TimeoutRequest = <T>(
     controller.signal.addEventListener("abort", () => {
       if (timeoutId) clearTimeout(timeoutId);
       if (tierId) delete activeReq[tierId];
-      return reject(new Error("отмена"));
+      const error = new Error();
+      error.message = "Отменено";
+      error.name = "Cancel";
+      return reject(error);
     });
+  }).catch((error) => {
+    if (error.name !== "Cancel") store.dispatch(setMessage(error));
   });
   const pause = () => {
     if (timeoutId && start !== null) {

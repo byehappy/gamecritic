@@ -92,7 +92,7 @@ export const CardModal: React.FC<{
         } else {
           setScreenshotsGame([
             {
-              image: "https://mebeliero.ru/images/photos/medium/no_image.png",
+              image: "",
               id: uuid4(),
             },
           ]);
@@ -286,8 +286,7 @@ export const CardModal: React.FC<{
           {window.innerWidth >= 1440 && (
             <img
               src={
-                game.background_image ??
-                "https://mebeliero.ru/images/photos/medium/no_image.png"
+                game.background_image
               }
               alt={game.name}
               style={{
