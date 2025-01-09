@@ -44,6 +44,7 @@ export const ExampleRow: React.FC<{ name: string; color: string }> = ({
           lineHeight: "1.2em",
           color: getTextColor(color),
           padding: "0 1em",
+          fontSize:"14px"
         }}
         ref={textRef}
       >

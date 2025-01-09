@@ -1,17 +1,24 @@
-import { Button, ColorPicker, Input } from "antd";
+import { Button, Checkbox, ColorPicker, Input } from "antd";
 import { TierData } from "../../../interfaces/tierData";
 import { Modal } from "../../modal/Modal";
+import { useState } from "react";
 import uuid4 from "uuid4";
 import { IGameDis } from "../../../interfaces/games";
 import { useAppSelector, useAppDispatch } from "../../../redux/hooks";
 import { setRows, setTrayGames } from "../../../redux/slice/tierDataSlice";
 import { ExampleRow } from "../../exampleRow/ExampleRow";
 import styled, { useTheme } from "styled-components";
-import { useState } from "react";
+import { device } from "../../../styles/size";
 const ButtonsWrapper = styled.div`
-  display: grid;
-  grid-template-columns: 55% 42%;
-  gap: 10px;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+  @media ${device.mobileS} {
+    flex-direction: column;
+  }
+  @media ${device.tablet} {
+    flex-direction: row;
+  }
 `;
 export const RowSettings: React.FC<{
   id: string;
@@ -23,8 +30,7 @@ export const RowSettings: React.FC<{
   const theme = useTheme();
   const tierData = useAppSelector((state) => state.tierData);
   const dispatch = useAppDispatch();
-  const findedTier = tierData.rows.find((tier) => id === tier.id);
-  const [confirmModal, setConfirmModal] = useState<string>();
+  const [confirmModal, setConfirmModal] = useState<boolean>(false);
   function enabledGamesInTray(
     games: IGameDis[],
     findedTier?: TierData
@@ -69,22 +75,13 @@ export const RowSettings: React.FC<{
       )
     );
   };
-  function clearGames() {
-    dispatch(
-      setRows(
-        tierData.rows.map((tier) =>
-          tier.id === id
-            ? {
-                ...tier,
-                games: [],
-              }
-            : tier
-        )
-      )
-    );
-    dispatch(setTrayGames(enabledGamesInTray(tierData.games, findedTier)));
-  }
-  const updateTier = (tierName?: string, color?: string) => {
+  const updateTier = (
+    id: string,
+    tierName?: string,
+    color: string = "primary",
+    deleteGames: boolean = false
+  ) => {
+    const findedTier = tierData.rows.find((tier) => id === tier.id);
     dispatch(
       setRows(
         tierData.rows.map((tier) =>
@@ -92,12 +89,34 @@ export const RowSettings: React.FC<{
             ? {
                 ...tier,
                 name: tierName ?? tier.name,
-                color: color ?? tier.color,
+                color,
+                games: deleteGames ? [] : tier.games,
               }
             : tier
         )
       )
     );
+    dispatch(
+      setTrayGames(
+        deleteGames
+          ? enabledGamesInTray(tierData.games, findedTier)
+          : tierData.games
+      )
+    );
+  };
+  const [settingsRow, setSettingsRow] = useState({
+    tierName: tier.name,
+    color: tier.color,
+    deleteGames: false,
+  });
+  const handleSave = () => {
+    updateTier(
+      id,
+      settingsRow.tierName,
+      settingsRow.color,
+      settingsRow.deleteGames
+    );
+    onClose();
   };
   return (
     <Modal
@@ -106,9 +125,10 @@ export const RowSettings: React.FC<{
       onClose={onClose}
       widthMin={true}
     >
-      <div style={{ display: "flex", marginBottom: "1vh", gap: "5%" }}>
+      <div style={{ display: "flex", marginBottom: "1vh" }}>
         <div
           style={{
+            width: "50%",
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-evenly",
@@ -116,8 +136,13 @@ export const RowSettings: React.FC<{
         >
           <Input
             placeholder="Название"
-            value={tier.name}
-            onChange={(e) => updateTier(e.target.value)}
+            value={settingsRow.tierName}
+            onChange={(e) =>
+              setSettingsRow((prev) => ({
+                ...prev,
+                tierName: e.target.value,
+              }))
+            }
           />
           <div
             style={{
@@ -128,122 +153,100 @@ export const RowSettings: React.FC<{
           >
             Цвет:
             <ColorPicker
-              value={tier.color}
-              onChangeComplete={(color) =>
-                updateTier(undefined, color.toHexString())
+              value={settingsRow.color}
+              onChange={(color) =>
+                setSettingsRow((prev) => ({
+                  ...prev,
+                  color: color.toHexString(),
+                }))
               }
             />
           </div>
+          <Checkbox
+            onChange={(e) =>
+              setSettingsRow((prev) => ({
+                ...prev,
+                deleteGames: e.target.checked,
+              }))
+            }
+          >
+            Очистить игры
+          </Checkbox>
         </div>
-        <div style={{ width: "45%", display: "flex", justifyContent: "end" }}>
-          <ExampleRow name={tier.name} color={tier.color} />
+        <div
+          style={{ width: "45%", display: "flex", justifyContent: "center" }}
+        >
+          <div style={{ width: "calc(80px + 20 * (100vw / 1280))" }}>
+            <ExampleRow name={settingsRow.tierName} color={settingsRow.color} />
+          </div>
         </div>
       </div>
-      <ButtonsWrapper>
-        <Button onClick={() => handleManipulatorTier(index, "up")}>
-          Добавить ряд сверху
+      <div style={{ display: "flex", gap: "2vh 0", flexDirection: "column" }}>
+        <Button type="primary" onClick={handleSave}>
+          Сохранить
         </Button>
-        <Button
-          danger
-          onClick={() => {
-            setConfirmModal("clear");
-          }}
-        >
-          Очистить игры
-        </Button>
-        <Button onClick={() => handleManipulatorTier(index, "down")}>
-          Добавить ряд снизу
-        </Button>
-        <Button
-          danger
-          type="primary"
-          onClick={() => {
-            setConfirmModal("delete");
-          }}
-        >
-          Удалить ряд
-        </Button>
-        {confirmModal && (
-          <Modal
-            key={`second-modal`}
-            isOpen={confirmModal.length > 0}
-            onClose={() => setConfirmModal("")}
-            widthMin={true}
-            zIndex={101}
+        <ButtonsWrapper>
+          <Button onClick={() => handleManipulatorTier(index, "up")}>
+            Добавить ряд сверху
+          </Button>
+          <Button
+            danger
+            type="primary"
+            onClick={() => {
+              setConfirmModal(true)
+            }}
           >
-              {confirmModal === "clear" ? (
-              <div style={{minWidth:"40vw"}}>
-                <div style={{ fontSize: theme.fontSizes.normal }}>
-                  Вы точно хотите очистить все игры?
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginTop: "5%",
-                  }}
-                >
-                  <Button
-                    danger
-                    type="primary"
-                    style={{ width: "45%" }}
-                    onClick={() => {
-                      clearGames();
-                      onClose();
-                    }}
-                  >
-                    Очистить
-                  </Button>
-                  <Button
-                    type="primary"
-                    style={{ width: "45%" }}
-                    onClick={() => {
-                      setConfirmModal("");
-                    }}
-                  >
-                    Отмена
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div style={{minWidth:"40vw"}}>
-                <div style={{ fontSize: theme.fontSizes.normal }}>
-                  Вы точно хотите удалить данный ряд?
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginTop: "5%",
-                  }}
-                >
-                  <Button
-                    danger
-                    type="primary"
-                    style={{ width: "45%" }}
-                    onClick={() => {
-                      setConfirmModal("");
-                      handleManipulatorTier(index, undefined, true);
-                      onClose();
-                    }}
-                  >
-                    Удалить
-                  </Button>
-                  <Button
-                    type="primary"
-                    style={{ width: "45%" }}
-                    onClick={() => {
-                      setConfirmModal("");
-                    }}
-                  >
-                    Отмена
-                  </Button>
-                </div>
-              </div>
-            )}
-          </Modal>
-        )}
-      </ButtonsWrapper>
+            Удалить ряд
+          </Button>
+          <Button onClick={() => handleManipulatorTier(index, "down")}>
+            Добавить ряд снизу
+          </Button>
+        </ButtonsWrapper>
+      </div>
+      {confirmModal && (
+        <Modal
+          key={`second-modal`}
+          isOpen={confirmModal}
+          onClose={() => setConfirmModal(false)}
+          widthMin={true}
+          zIndex={101}
+        >
+          <div style={{ minWidth: "40vw" }}>
+            <div style={{ fontSize: theme.fontSizes.normal }}>
+              Вы точно хотите удалить данный ряд?
+            </div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginTop: "5%",
+              }}
+            >
+              <Button
+                danger
+                type="primary"
+                style={{ width: "45%" }}
+                onClick={() => {
+                  setConfirmModal(false);
+                  handleManipulatorTier(index, undefined, true);
+                  onClose();
+                }}
+              >
+                Удалить
+              </Button>
+              <Button
+                type="primary"
+                style={{ width: "45%" }}
+                onClick={() => {
+                  setConfirmModal(false);
+                }}
+              >
+                Отмена
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </Modal>
   );
 };

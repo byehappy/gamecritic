@@ -16,11 +16,9 @@ type State = {
 const AvatarWrapper = styled.div`
   display: flex;
   gap: 1vw;
-  max-height:200px;
-  @media (max-width: 425px) {
+  @media (max-width: 768px) {
     flex-direction: column;
     align-items: center;
-    margin-bottom: 5%;
     div {
       max-width: 200px;
     }
@@ -28,8 +26,9 @@ const AvatarWrapper = styled.div`
       width: 100%;
     }
   }
-  @media ${device.tablet} {
+  @media ${device.laptop} {
     flex-direction: row;
+    max-height:200px;
   }
 `;
 
@@ -130,7 +129,7 @@ const IconEditor: React.FC<{
           style={{ width: "200px" }}
         />
         <br />
-        <label>
+        <label style={{display:"flex",justifyContent:"center",marginTop:"10px"}}>
           <input
             type="file"
             accept="image/png, image/jpeg, .svg"
