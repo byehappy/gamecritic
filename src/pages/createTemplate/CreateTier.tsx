@@ -54,6 +54,9 @@ const StyledForm = styled(Form)`
   .ant-table {
     background: none;
   }
+  .ant-carousel{
+    width:100%;
+  }
 `;
 const HeaderButton = styled.div<{ $isActive: boolean }>`
   border: none;
@@ -249,7 +252,6 @@ export const CreateTierPage = () => {
       event.preventDefault();
     }
   }
-
   return (
     <div>
       {loading ? (
@@ -464,7 +466,6 @@ export const CreateTierPage = () => {
                 dots={false}
                 swipe={false}
                 infinite={false}
-                style={{ maxWidth: "600px" }}
               >
                 <Form.Item name={"settings"}>
                   <Carousel
