@@ -27,7 +27,7 @@ import {
   checkFavoriteGame,
   delFavoriteGame,
 } from "../../../axios";
-import { platformIcons } from "../../../assets/icons/platfroms";
+import { platformIcons } from "@/public/assets/icons/platfroms";
 import {
   SliderContainer,
   SliderImage,

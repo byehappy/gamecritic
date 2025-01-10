@@ -484,6 +484,7 @@ function TierPage() {
       const canvas = await html2canvas(document.getElementById("table")!, {
         useCORS: false,
         proxy: "http://localhost:3001/proxy",
+        scale:0.4
       });
       const image = canvas.toDataURL("img/png");
       try {

@@ -63,7 +63,7 @@ export const UserCard: React.FC<{
             gap: "10px",
           }}
         >
-          <img src={user.img_icon} alt={user.name} />
+          <img src={user.img_icon} alt={user.name} style={{aspectRatio:"1/1"}}/>
           {user.name}
         </Link>
         <div>

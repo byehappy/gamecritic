@@ -10,7 +10,7 @@ import {
   InfoIcon,
   SuccessIcon,
   WarningIcon,
-} from "../assets/icons/toaster";
+} from "@/public/assets/icons/toaster/index";
 import uuid4 from "uuid4";
 import styled, { keyframes } from "styled-components";
 import { TOAST_TIMEOUT } from "./constans";

@@ -3,7 +3,7 @@ import { useState, useCallback, useEffect } from "react";
 import { platformsRequest } from "../../../axios";
 import { FilterFlags } from "../../../interfaces/filters";
 import { TreeDataState } from "../../../interfaces/filters/filterState";
-import { platformIcons } from "../../../assets/icons/platfroms";
+import { platformIcons } from "@/public/assets/icons/platfroms";
 import { useLocation } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../../redux/hooks";
 import { setFilter } from "../../../redux/slice/createTemplateSlice";

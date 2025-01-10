@@ -1,5 +1,5 @@
-import GlobalStyle from "./styles/global";
 import { RouterProvider } from "react-router-dom";
+import GlobalStyle from "./styles/global";
 import { router } from "./routes";
 import { ConfigProvider } from "antd";
 import ThemeProvider from "./utils/theme-provider";

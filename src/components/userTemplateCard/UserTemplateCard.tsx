@@ -46,7 +46,7 @@ export const UserTemplateCard: React.FC<{
 }> = ({ img, name, id, username, userid, userImage }) => {
   return (
     <Item>
-      <Link to={`/tier-list/${id}/${userid}`}>
+      <Link to={`/tier-list/${id}/${userid}`} style={{display:"flex",height:"100%"}}>
         <img src={img} alt={name} />
       </Link>
       <div className="bottom-text">

@@ -1,20 +1,6 @@
 import { createGlobalStyle } from "styled-components";
-import SilkscreenRegular from "../assets/fonts/Silkscreen-Regular.ttf";
-import Raleway from "../assets/fonts/Raleway-VariableFont_wght.ttf";
 import { device } from "./size";
 export default createGlobalStyle`
-    @font-face {
-        font-family: "Raleway";
-        font-style: normal;
-        font-weight: 400;
-        src: url(${Raleway});
-    }
-    @font-face {
-        font-family: "Silkscreen";
-        font-style: normal;
-        font-weight: 400;
-        src: url(${SilkscreenRegular});
-    }
     #root{
         display:flex;
         flex-direction:column;
@@ -69,7 +55,8 @@ export default createGlobalStyle`
     img:after {  
         content:"";
         background-image:url(${({ theme }) => theme.image.no_image});
-        backdrop-filter: blur(200px);
+        background-color:(${({ theme }) => theme.colors.bg});
+        backdrop-filter: blur(300px);
         background-origin: border-box;
         background-repeat:no-repeat;
         background-position: center;
