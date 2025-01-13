@@ -45,6 +45,7 @@ const HeaderTemplate = styled.div`
     @media (max-width: 425px) {
       width: 35vw;
     }
+    text-decoration:underline;
   }
   h4 {
     @media (max-width: 425px) {

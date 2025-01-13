@@ -22,7 +22,7 @@ export const register = createAsyncThunk(
   async ({ username, email, password }: RegisterType, thunkAPI) => {
     try {
       const response = await signUp(username, email, password);
-      return response;
+      return response.status;
     } catch (e) {
       const error = e as AxiosError;
       const message = error.response?.data as ErrorAuth;

@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { ErrorAuth, register } from "../../redux/slice/authSlice";
-import { Link, Navigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Input, Button, Form } from "antd";
 import { setMessage } from "../../redux/slice/messageSlice";
 import { useForm } from "antd/es/form/Form";
 
 export const SignUpPage = () => {
+  const navigate = useNavigate();
   const { isLoggedIn } = useAppSelector((state) => state.auth);
   const [successful, setSuccessful] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -18,7 +19,17 @@ export const SignUpPage = () => {
     confirmPassword: string;
     username: string;
   };
-
+  useEffect(() => {
+    if (isLoggedIn) {
+      return navigate("/");
+    }
+  }, [isLoggedIn, navigate]);
+  useEffect(() => {
+    if (successful) {
+      dispatch(setMessage({ success: "Вы успешно зарегистрировались" }));
+      return navigate("/auth/sign-in");
+    }
+  }, [dispatch, navigate, successful]);
   const handleRegister = (formValue: {
     username: string;
     email: string;
@@ -30,7 +41,7 @@ export const SignUpPage = () => {
 
     dispatch(register({ username, email, password }))
       .unwrap()
-      .then((res) => res.status === 200 && setSuccessful(true))
+      .then((res) => res === 200 && setSuccessful(true))
       .catch((_error) => {
         const e = _error as ErrorAuth;
         form.setFields(
@@ -45,13 +56,6 @@ export const SignUpPage = () => {
         setLoading(false);
       });
   };
-  if (isLoggedIn) {
-    return <Navigate to="/" />;
-  }
-  if (successful) {
-    dispatch(setMessage({ success: "Вы успешно зарегистрировались" }));
-    return <Navigate to="/auth/sign-in" />;
-  }
 
   return (
     <div
@@ -64,7 +68,7 @@ export const SignUpPage = () => {
         margin: "20vh auto",
       }}
     >
-      <h1 style={{ fontSize: "2rem"}}>Регистрация</h1>
+      <h1 style={{ fontSize: "2rem" }}>Регистрация</h1>
       <Form
         form={form}
         labelCol={{ xs: { span: 24 }, sm: { span: 6 } }}
@@ -91,7 +95,8 @@ export const SignUpPage = () => {
           <Input
             placeholder="Почта"
             onChange={() => {
-              form.setFields([{ name: "email", errors: [] }]);
+              if (form.getFieldError("email").length > 0)
+                form.setFields([{ name: "email", errors: [] }]);
             }}
           />
         </Form.Item>
@@ -108,7 +113,8 @@ export const SignUpPage = () => {
           <Input
             placeholder="Логин"
             onChange={() => {
-              form.setFields([{ name: "username", errors: [] }]);
+              if (form.getFieldError("username").length > 0)
+                form.setFields([{ name: "username", errors: [] }]);
             }}
           />
         </Form.Item>
@@ -129,7 +135,8 @@ export const SignUpPage = () => {
           <Input.Password
             placeholder="Пароль"
             onChange={() => {
-              form.setFields([{ name: "password", errors: [] }]);
+              if (form.getFieldError("password").length > 0)
+                form.setFields([{ name: "password", errors: [] }]);
             }}
           />
         </Form.Item>

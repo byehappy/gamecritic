@@ -484,7 +484,7 @@ function TierPage() {
       const canvas = await html2canvas(document.getElementById("table")!, {
         useCORS: false,
         proxy: "http://localhost:3001/proxy",
-        scale:0.4
+        scale: 0.4,
       });
       const image = canvas.toDataURL("img/png");
       try {
@@ -680,9 +680,18 @@ function TierPage() {
             }
           >
             <Button
-              icon={<SettingOutlined />}
-              size="large"
-              style={{ float: "right" }}
+              icon={
+                <SettingOutlined
+                  style={{ fontSize: theme.fontSizes.adaptivText }}
+                />
+              }
+              style={{
+                float: "right",
+                width: "fit-content",
+                height: "fit-content",
+                padding: "0.4vw",
+                maxWidth: "90px",
+              }}
             />
           </Popover>
         )}

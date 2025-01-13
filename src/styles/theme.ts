@@ -2,10 +2,11 @@ import { ITheme, ThemeEnum } from "../interfaces/styled";
 
 export const baseTheme: ITheme = {
   colors: {
-    primary: "#AB5EF1",
+    primary: "#b36ef2",
     success: "green",
     danger: "red",
     bg: "",
+    bg2:"",
     font: "",
     altFont: "",
     backgroundLoading: "",
@@ -60,6 +61,7 @@ export const lightTheme: StyledTheme = {
   colors: {
     ...baseTheme.colors,
     bg: "#fbfbfb",
+    bg2:"#f7f8fa",
     font: "#000",
     altFont: "white",
     backgroundLoading: "white",
@@ -83,6 +85,7 @@ export const darkTheme: StyledTheme = {
   colors: {
     ...baseTheme.colors,
     bg: "#242223",
+    bg2:"#1c1b1c",
     font: "#fbfbfb",
     altFont: "black",
     backgroundLoading: "black",

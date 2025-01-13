@@ -4,21 +4,18 @@ import { DeleteOutlined, RollbackOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 
 export const TemplateCard: React.FC<{
-  img: string | null;
+  img: string;
   name: string;
   id?: string;
   del?: false | ((tierId: string, name: string) => void);
   disable?: boolean;
   userId?: string;
-}> = ({ img, name, id, del = false, disable = false, userId = "" }) => {
-  let itemImg, itemName;
+}> = ({ img = "", name, id, del = false, disable = false, userId = "" }) => {
+  let itemName;
   if (name !== "" && name !== null) {
     itemName = name;
   } else {
     itemName = "Ваш шаблон";
-  }
-  if (img !== "" && img !== null) {
-    itemImg = img;
   }
   return (
     <Item $IsDisabled={disable} $notClick={!id}>
@@ -41,7 +38,7 @@ export const TemplateCard: React.FC<{
         </Button>
       )}
       <Link to={`/tier-list/${id}/${userId}`} style={{ display: "flex" }}>
-        <img src={itemImg} alt={name} />
+        <img src={img} alt={name} />
         <span>{itemName}</span>
       </Link>
     </Item>

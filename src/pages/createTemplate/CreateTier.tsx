@@ -54,8 +54,8 @@ const StyledForm = styled(Form)`
   .ant-table {
     background: none;
   }
-  .ant-carousel{
-    width:100%;
+  .ant-carousel {
+    width: 100%;
   }
 `;
 const HeaderButton = styled.div<{ $isActive: boolean }>`
@@ -462,11 +462,7 @@ export const CreateTierPage = () => {
                   <h4>Свои игры</h4>
                 </HeaderButton>
               </div>
-              <Carousel
-                dots={false}
-                swipe={false}
-                infinite={false}
-              >
+              <Carousel dots={false} swipe={false} infinite={false}>
                 <Form.Item name={"settings"}>
                   <Carousel
                     ref={carouselRef}
@@ -602,7 +598,13 @@ export const CreateTierPage = () => {
       <FloatButton
         style={{ zIndex: 5 }}
         icon={<EyeOutlined />}
-        tooltip={<div>Посмотреть на шаблон</div>}
+        tooltip={
+          <div>
+            {visibleForm
+              ? "Посмотреть на шаблон"
+              : "Вернуться к созданию шаблона"}
+          </div>
+        }
         onClick={() => setVisibleForm(!visibleForm)}
       />
     </div>

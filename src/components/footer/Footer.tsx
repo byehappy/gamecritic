@@ -4,11 +4,13 @@ import { useTheme } from "../../utils/hooks/useTheme";
 import { MoonOutlined, SunOutlined } from "@ant-design/icons";
 import { device } from "../../styles/size";
 const StyledFooter = styled.footer`
+  margin: 30px 0 15px;
   color: ${({ theme }) => theme.colors.font};
   flex-shrink: 0;
   min-height: 5vh;
   display: flex;
   justify-content: space-between;
+  position:relative;
   @media ${device.mobileS} {
     padding: 5px;
   }
@@ -30,13 +32,12 @@ const StyledFooter = styled.footer`
 `;
 
 export const Footer = () => {
-  const { themeName, toggleTheme } = useTheme();
+  const { themeName, toggleTheme,theme } = useTheme();
   return (
     <StyledFooter>
-      <div>
-        GameCrititc<span> - Сделано Разживаловым Евгением 2024г.</span>
-      </div>
-      <Tooltip title="Смена темы">
+      <div style={{flex:2}}>GameCrititc</div>
+      <span style={{fontSize:theme.fontSizes.adaptivSmallText,flex:3}}>Сделано Разживаловым Евгением 2024г.</span>
+      <Tooltip title="Смена темы" style={{flex:1}}>
         <Button
           onClick={() => {
             localStorage.setItem(

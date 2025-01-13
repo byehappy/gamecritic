@@ -62,26 +62,22 @@ export const SignInPage = () => {
         onFinish={handleLogin}
         autoComplete="off"
       >
-        <Form.Item<FieldType>
-          label="Логин"
-          name="login"
-        >
+        <Form.Item<FieldType> label="Логин" name="login">
           <Input
             placeholder="Логин"
             onChange={() => {
-              form.setFields([{ name: "login", errors: [] }]);
+              if (form.getFieldError("login").length > 0)
+                form.setFields([{ name: "login", errors: [] }]);
             }}
           />
         </Form.Item>
 
-        <Form.Item<FieldType>
-          label="Пароль"
-          name="password"
-        >
+        <Form.Item<FieldType> label="Пароль" name="password">
           <Input.Password
             placeholder="Пароль"
             onChange={() => {
-              form.setFields([{ name: "password", errors: [] }]);
+              if (form.getFieldError("password").length > 0)
+                form.setFields([{ name: "password", errors: [] }]);
             }}
           />
         </Form.Item>

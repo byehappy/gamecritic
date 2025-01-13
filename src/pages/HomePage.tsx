@@ -26,9 +26,8 @@ import {
 const ContainerTemplateItems = styled.div`
   display: flex;
   overflow-x: auto;
-  gap: 10px;
+  gap: 2%;
   padding: 0 1vw;
-  justify-content: space-between;
   margin: 2% 0;
   @media ${device.mobileS} {
     height: 150px;
@@ -51,10 +50,9 @@ const ContainerTemplateItems = styled.div`
 const ContainerUsersTemplateItems = styled.div`
   display: flex;
   overflow: auto;
-  gap: 10px;
+  gap: 1.3%;
   height: 100%;
   padding: 0 1vw;
-  justify-content: space-between;
   margin: 2% 0;
   min-height: 150px;
   div {
@@ -72,9 +70,8 @@ const ContainerUsersTemplateItems = styled.div`
 `;
 const ContainerTopUsersItems = styled.div`
   display: flex;
-  gap: 1vw;
   padding: 0 1vw;
-  justify-content: space-between;
+  gap:2vw;
   margin: 2% 0;
   overflow-x: auto;
   position:relative;
@@ -104,6 +101,7 @@ const HeaderTemplate = styled.div`
     font-weight: 300;
     font-size: ${({ theme }) => theme.fontSizes.adaptivSmallText};
     text-align: right;
+    text-decoration:underline;
   }
 `;
 

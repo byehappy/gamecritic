@@ -9,6 +9,7 @@ export interface ITheme {
     success: string;
     danger: string;
     bg: string;
+    bg2: string;
     font: string;
     altFont: string;
     backgroundLoading: string;

@@ -34,6 +34,7 @@ export default createGlobalStyle`
         &:hover{
             color:${({ theme }) => theme.colors.links.secondaryColor};
         }
+        text-underline-offset: 3px;
     }
     *::-webkit-scrollbar {
         width: 4px;       

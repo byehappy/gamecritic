@@ -19,7 +19,7 @@ const UserInfoWrapper = styled.div`
   min-height: 200px;
   padding: 2vh 5vw;
   gap: 5%;
-  align-items:center;
+  align-items: center;
   @media (max-width: 425px) {
     flex-direction: column;
     align-items: center;
@@ -85,7 +85,7 @@ export const AboutePage = () => {
         name: editInfo.name,
         description: editInfo.description,
         init_image: result.data.image_icon,
-      });      
+      });
       dispatch(setImageIcon(result.data.image_icon));
     } catch (error) {
       dispatch(setMessage(error));
@@ -122,7 +122,7 @@ export const AboutePage = () => {
     }
     getInfo(currentUser.id);
   }, [currentUser, dispatch, getInfo, navigate, userId]);
-  
+
   useEffect(() => {
     if (!edit) {
       setEditInfo({ name: userInfo.name, description: userInfo.description });
@@ -218,7 +218,8 @@ export const AboutePage = () => {
               style={{
                 background: theme.colors.primary,
                 width: "50px",
-                alignSelf:"flex-start"
+                alignSelf: "flex-start",
+                margin:"auto"
               }}
               onClick={() => setEdit(true)}
             >

@@ -10,6 +10,7 @@ import { device } from "../../styles/size";
 
 const StyledHeader = styled.header`
   color: ${({ theme }) => theme.colors.font};
+  background-color:${({ theme }) => theme.colors.bg2};
   height: 8vh;
   display: flex;
   align-items: center;
